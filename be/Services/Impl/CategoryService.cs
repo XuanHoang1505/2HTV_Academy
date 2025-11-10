@@ -51,23 +51,23 @@ namespace App.Services.Implementations
 
             var entity = _mapper.Map<Category>(dto);
 
-            // Nếu có parentId thì kiểm tra parent tồn tại
-            if (entity.ParentId.HasValue)
-            {
-                var parent = await _repository.GetByIdAsync(entity.ParentId.Value);
-                if (parent == null)
-                    throw new AppException(ErrorCode.ParentCategoryNotFound, "Danh mục cha không tồn tại.");
-            }
+            // // Nếu có parentId thì kiểm tra parent tồn tại
+            // if (entity.ParentId.HasValue)
+            // {
+            //     var parent = await _repository.GetByIdAsync(entity.ParentId.Value);
+            //     if (parent == null)
+            //         throw new AppException(ErrorCode.ParentCategoryNotFound, "Danh mục cha không tồn tại.");
+            // }
 
             var created = await _repository.AddAsync(entity);
             var dtoResult = _mapper.Map<CategoryDTO>(created);
 
-            if (created.ParentId.HasValue)
-            {
-                var parent = await _repository.GetByIdAsync(created.ParentId.Value);
-                dtoResult.ParentName = parent?.Name;
-                dtoResult.ParentSlug = parent?.Slug;
-            }
+            // if (created.ParentId.HasValue)
+            // {
+            //     var parent = await _repository.GetByIdAsync(created.ParentId.Value);
+            //     dtoResult.ParentName = parent?.Name;
+            //     dtoResult.ParentSlug = parent?.Slug;
+            // }
 
             return dtoResult;
         }
@@ -79,12 +79,12 @@ namespace App.Services.Implementations
                 throw new AppException(ErrorCode.CategoryNotFound, $"Không tìm thấy danh mục với ID = {id}");
 
             // Nếu update slug → check duplicate
-            if (!string.Equals(existing.Slug, dto.Slug, StringComparison.OrdinalIgnoreCase))
-            {
-                var dup = await _repository.GetBySlugAsync(dto.Slug);
-                if (dup != null && dup.Id != id)
-                    throw new AppException(ErrorCode.CategorySlugAlreadyExists, $"Slug '{dto.Slug}' đã tồn tại.");
-            }
+            // if (!string.Equals(existing.Slug, dto.Slug, StringComparison.OrdinalIgnoreCase))
+            // {
+            //     var dup = await _repository.GetBySlugAsync(dto.Slug);
+            //     if (dup != null && dup.Id != id)
+            //         throw new AppException(ErrorCode.CategorySlugAlreadyExists, $"Slug '{dto.Slug}' đã tồn tại.");
+            // }
 
             // Nếu có parentId thì kiểm tra parent tồn tại
             if (dto.ParentId.HasValue)
@@ -99,12 +99,12 @@ namespace App.Services.Implementations
 
             var dtoResult = _mapper.Map<CategoryDTO>(existing);
 
-            if (existing.ParentId.HasValue)
-            {
-                var parent = await _repository.GetByIdAsync(existing.ParentId.Value);
-                dtoResult.ParentName = parent?.Name;
-                dtoResult.ParentSlug = parent?.Slug;
-            }
+            // if (existing.ParentId.HasValue)
+            // {
+            //     var parent = await _repository.GetByIdAsync(existing.ParentId.Value);
+            //     dtoResult.ParentName = parent?.Name;
+            //     dtoResult.ParentSlug = parent?.Slug;
+            // }
 
             return dtoResult;
         }

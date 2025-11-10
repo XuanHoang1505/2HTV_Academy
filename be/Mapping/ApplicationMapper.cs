@@ -1,4 +1,6 @@
-﻿using AutoMapper;
+﻿using App.Domain.Models;
+using App.DTOs;
+using AutoMapper;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -8,7 +10,7 @@ namespace footballnew.Mappings
     {
         public ApplicationMapper()
         {
-           
-        }
+            CreateMap<Category, CategoryDTO>().ReverseMap();     
+            }
     }
 }

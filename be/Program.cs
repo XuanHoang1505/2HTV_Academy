@@ -1,5 +1,9 @@
 using System.Text.Json.Serialization;
 using App.Data;
+using App.Repositories.Implementations;
+using App.Repositories.Interfaces;
+using App.Services.Implementations;
+using App.Services.Interfaces;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
@@ -30,6 +34,13 @@ builder.Services.Configure<IdentityOptions>(options =>
 });
 
 builder.Services.AddAutoMapper(typeof(Program));
+
+//Dang ki repository
+builder.Services.AddScoped<ICategoryRepository, CategoryRepository>();
+
+
+//Dang ki service
+builder.Services.AddScoped<ICategoryService, CategoryService>();
 
 builder.Services.AddControllers()
     .AddJsonOptions(options =>

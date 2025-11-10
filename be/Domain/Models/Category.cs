@@ -1,13 +1,16 @@
-using System.Collections.Generic;
+
+using App.Data;
 
 namespace App.Domain.Models
 {
     public class Category
     {
         public int Id { get; set; }
-        public int? ParentId { get; set; }
         public string Name { get; set; } = null!;
         public string? Description { get; set; }
-        public string Slug { get; set; } = null!;
+        public string Educator { get; set; } = null!; 
+
+        public ApplicationUser EducatorUser { get; set; } = null!;
+        public ICollection<Course> Courses { get; set; } = new List<Course>();
     }
 }

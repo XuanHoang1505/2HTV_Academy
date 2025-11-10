@@ -3,7 +3,7 @@ using App.Domain.Models;
 using App.Repositories.Interfaces;
 using Microsoft.EntityFrameworkCore;
 
-namespace footballnew.Repositories.Implementations
+namespace App.Repositories.Implementations
 {
     public class CategoryRepository : ICategoryRepository
     {
@@ -23,7 +23,7 @@ namespace footballnew.Repositories.Implementations
         public async Task<Category?> GetBySlugAsync(string slug)
         {
             return await _context.Categories
-                .FirstOrDefaultAsync(c => c.Slug == slug);
+                .FirstOrDefaultAsync(c => c.Name == slug);
         }
 
         public async Task<IEnumerable<Category>> GetAllAsync()
