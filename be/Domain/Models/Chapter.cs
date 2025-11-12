@@ -8,7 +8,6 @@ namespace App.Domain.Models
         public string ChapterId { get; set; } = null!;
         public int ChapterOrder { get; set; }
         public string ChapterTitle { get; set; } = null!;
-        public int Order { get; set; }
         public int CourseId { get; set; }
         public Course Course { get; set; } = null!;
 
