@@ -6,6 +6,7 @@ using App.Services.Implementations;
 using App.Services.Interfaces;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -37,10 +38,11 @@ builder.Services.AddAutoMapper(typeof(Program));
 
 //Dang ki repository
 builder.Services.AddScoped<ICategoryRepository, CategoryRepository>();
-
+builder.Services.AddScoped<IChapterRepository, ChapterRepository>();
 
 //Dang ki service
 builder.Services.AddScoped<ICategoryService, CategoryService>();
+builder.Services.AddScoped<IChapterService, ChapterService>();
 
 builder.Services.AddControllers()
     .AddJsonOptions(options =>
@@ -68,6 +70,11 @@ app.UseCors("AllowAll");
 
 app.UseAuthentication();
 app.UseAuthorization();
+using (var scope = app.Services.CreateScope())
+{
+    var db = scope.ServiceProvider.GetRequiredService<AppDBContext>();
+    db.Database.Migrate();
+}
 
 app.MapControllers();
 
