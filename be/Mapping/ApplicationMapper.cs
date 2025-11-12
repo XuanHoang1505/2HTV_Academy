@@ -10,8 +10,9 @@ namespace footballnew.Mappings
     {
         public ApplicationMapper()
         {
-            CreateMap<Category, CategoryDTO>().ReverseMap();   
+            CreateMap<Category, CategoryDTO>().ReverseMap();
             CreateMap<Chapter, ChapterDTO>().ReverseMap(); 
+            CreateMap<Lecture, LectureDTO>().ReverseMap(); 
         }
     }
 }

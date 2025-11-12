@@ -39,10 +39,13 @@ builder.Services.AddAutoMapper(typeof(Program));
 //Dang ki repository
 builder.Services.AddScoped<ICategoryRepository, CategoryRepository>();
 builder.Services.AddScoped<IChapterRepository, ChapterRepository>();
+builder.Services.AddScoped<ILectureRepository, LectureRepository>();
 
 //Dang ki service
 builder.Services.AddScoped<ICategoryService, CategoryService>();
 builder.Services.AddScoped<IChapterService, ChapterService>();
+builder.Services.AddScoped<ILectureService, LectureService>();
+
 
 builder.Services.AddControllers()
     .AddJsonOptions(options =>
