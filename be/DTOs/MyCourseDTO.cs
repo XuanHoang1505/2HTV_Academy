@@ -1,4 +1,5 @@
-using App.DTOs;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace App.DTOs;
 
@@ -21,6 +22,5 @@ public class MyCourseDTO
     public int TotalChapters { get; set; }
     public int TotalLectures { get; set; }
 
-    public IEnumerable<ChapterDTO> Chapters { get; set; } = Enumerable.Empty<ChapterDTO>();
+    public IEnumerable<MyCourseChapterDTO> Chapters { get; set; } = Enumerable.Empty<MyCourseChapterDTO>();
 }
-

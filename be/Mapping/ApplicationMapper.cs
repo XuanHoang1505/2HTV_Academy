@@ -14,6 +14,10 @@ namespace footballnew.Mappings
             CreateMap<Chapter, ChapterDTO>().ReverseMap();
             CreateMap<Lecture, LectureDTO>().ReverseMap();
 
+            CreateMap<Chapter, MyCourseChapterDTO>()
+                .ForMember(dest => dest.Lectures,
+                    opt => opt.MapFrom(src => src.ChapterContent));
+
             CreateMap<Course, MyCourseDTO>()
                 .ForMember(dest => dest.CategoryName,
                     opt => opt.MapFrom(src => src.Category.Name))
@@ -27,6 +31,7 @@ namespace footballnew.Mappings
                         .Count()))
                 .ForMember(dest => dest.Chapters,
                     opt => opt.MapFrom(src => src.CourseContent));
+
         }
     }
 }

@@ -1,3 +1,4 @@
+using System.Linq;
 using App.Data;
 using App.Domain.Models;
 using App.Repositories.Interfaces;
@@ -22,6 +23,17 @@ public class MyCourseRepository : IMyCourseRepository
             .Include(c => c.CourseContent)
             .Where(c => c.EnrolledStudents.Any(s => s.Id == studentId))
             .ToListAsync();
+    }
+
+    public async Task<Course?> GetCourseDetailAsync(string studentId, int courseId)
+    {
+        return await _context.Courses
+            .Include(c => c.Category)
+            .Include(c => c.Educator)
+            .Include(c => c.CourseContent)
+                .ThenInclude(ch => ch.ChapterContent)
+            .Where(c => c.EnrolledStudents.Any(s => s.Id == studentId))
+            .FirstOrDefaultAsync(c => c.Id == courseId);
     }
 }
 

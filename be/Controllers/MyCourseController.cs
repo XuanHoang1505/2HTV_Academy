@@ -25,5 +25,17 @@ public class MyCourseController : ControllerBase
         var courses = await _myCourseService.GetByStudentIdAsync(studentId);
         return Ok(courses);
     }
+
+    [HttpGet("{studentId}/{courseId:int}")]
+    public async Task<IActionResult> GetDetail(string studentId, int courseId)
+    {
+        if (string.IsNullOrWhiteSpace(studentId))
+        {
+            return BadRequest(new { message = "studentId is required." });
+        }
+
+        var course = await _myCourseService.GetDetailByStudentAsync(studentId, courseId);
+        return Ok(course);
+    }
 }
 
