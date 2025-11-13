@@ -40,11 +40,13 @@ builder.Services.AddAutoMapper(typeof(Program));
 builder.Services.AddScoped<ICategoryRepository, CategoryRepository>();
 builder.Services.AddScoped<IChapterRepository, ChapterRepository>();
 builder.Services.AddScoped<ILectureRepository, LectureRepository>();
+builder.Services.AddScoped<IMyCourseRepository, MyCourseRepository>();
 
 //Dang ki service
 builder.Services.AddScoped<ICategoryService, CategoryService>();
 builder.Services.AddScoped<IChapterService, ChapterService>();
 builder.Services.AddScoped<ILectureService, LectureService>();
+builder.Services.AddScoped<IMyCourseService, MyCourseService>();
 
 
 builder.Services.AddControllers()
