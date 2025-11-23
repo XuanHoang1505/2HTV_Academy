@@ -50,6 +50,7 @@ namespace App.Utils.Exceptions
         ParentCategoryNotFound = 6003,
         ArticleSlugAlreadyExists = 6004,
         TagAlreadyExists = 6005,
+        CourseNotFound= 6011,
 
         // 🔹 Lỗi upload/file
         FileUploadFailed = 7001,
