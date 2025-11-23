@@ -97,6 +97,8 @@ builder.Services.AddScoped<IUserRepository, UserRepository>();
 //Dang ki service
 builder.Services.AddScoped<ICategoryService, CategoryService>();
 builder.Services.AddScoped<IUserService, UserService>();
+builder.Services.AddScoped<ICourseService, CourseService>();
+
 
 // Đăng ký dịch vụ JWT
 builder.Services.AddScoped<JwtTokenProvider>();
@@ -107,6 +109,10 @@ builder.Services.AddScoped<ISendMailService, SendMailService>();
 
 // Đăng ký dịch vụ OTP
 builder.Services.AddTransient<OtpService>();
+builder.Services.AddScoped<ICourseRepository, CourseRepository>();
+//Dang ki service
+builder.Services.AddScoped<ICategoryService, CategoryService>();
+
 
 builder.Services.AddControllers()
     .AddJsonOptions(options =>

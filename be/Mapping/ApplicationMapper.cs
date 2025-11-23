@@ -24,7 +24,16 @@ namespace App.Mappings
             CreateMap<CartItem, CartItemDTO>()
                 .ForMember(dest => dest.CourseName, opt => opt.MapFrom(src => src.Course.CourseTitle))
                 .ForMember(dest => dest.CourseImage, opt => opt.MapFrom(src => src.Course.CourseThumbnail));
-        }
+            CreateMap<Category, CategoryDTO>();
+            CreateMap<CategoryDTO, Category>()
+             .ForMember(dest => dest.Id, opt => opt.Ignore());
 
+
+            CreateMap<Course, CourseDTO>()
+             .ForMember(dest => dest.EducatorName, opt => opt.MapFrom(src => src.Educator.FullName));
+            CreateMap<CourseDTO, Course>()
+             .ForMember(dest => dest.Id, opt => opt.Ignore());
+
+        }
     }
 }
