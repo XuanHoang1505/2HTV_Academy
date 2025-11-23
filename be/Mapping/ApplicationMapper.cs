@@ -1,16 +1,30 @@
-﻿using App.Domain.Models;
+﻿using App.Data;
+using App.Domain.Models;
 using App.DTOs;
 using AutoMapper;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace footballnew.Mappings
+namespace App.Mappings
 {
     public class ApplicationMapper : Profile
     {
         public ApplicationMapper()
         {
-            CreateMap<Category, CategoryDTO>().ReverseMap();     
-            }
+            CreateMap<Category, CategoryDTO>().ReverseMap();
+            CreateMap<ApplicationUser, UserDTO>().ReverseMap();
+
+            CreateMap<ApplicationUser, RegisterDTO>().ReverseMap();
+
+            CreateMap<Cart, CartDTO>()
+            .ForMember(dest => dest.Total, opt => opt.MapFrom(src => src.CartItems.Sum(ci => ci.Price)))
+            .ForMember(dest => dest.ItemCount, opt => opt.MapFrom(src => src.CartItems.Count));
+
+            // CartItem -> CartItemDto
+            CreateMap<CartItem, CartItemDTO>()
+                .ForMember(dest => dest.CourseName, opt => opt.MapFrom(src => src.Course.CourseTitle))
+                .ForMember(dest => dest.CourseImage, opt => opt.MapFrom(src => src.Course.CourseThumbnail));
+        }
+
     }
 }
