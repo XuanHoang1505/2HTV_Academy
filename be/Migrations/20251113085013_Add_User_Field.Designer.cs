@@ -4,6 +4,7 @@ using App.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace be.Migrations
 {
     [DbContext(typeof(AppDBContext))]
-    partial class AppDBContextModelSnapshot : ModelSnapshot
+    [Migration("20251113085013_Add_User_Field")]
+    partial class Add_User_Field
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -47,6 +50,7 @@ namespace be.Migrations
                         .HasColumnType("varchar(100)");
 
                     b.Property<string>("ImageUrl")
+                        .IsRequired()
                         .HasColumnType("longtext");
 
                     b.Property<bool>("IsLocked")
@@ -103,55 +107,6 @@ namespace be.Migrations
                     b.ToTable("Users", (string)null);
                 });
 
-            modelBuilder.Entity("App.Domain.Models.Cart", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<string>("UserId")
-                        .IsRequired()
-                        .HasColumnType("varchar(255)");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("UserId")
-                        .IsUnique();
-
-                    b.ToTable("Carts");
-                });
-
-            modelBuilder.Entity("App.Domain.Models.CartItem", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<DateTime>("AddedAt")
-                        .HasColumnType("datetime(6)");
-
-                    b.Property<int>("CartId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("CourseId")
-                        .HasColumnType("int");
-
-                    b.Property<decimal>("Price")
-                        .HasColumnType("decimal(65,30)");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("CartId");
-
-                    b.HasIndex("CourseId");
-
-                    b.ToTable("CartItems");
-                });
-
             modelBuilder.Entity("App.Domain.Models.Category", b =>
                 {
                     b.Property<int>("Id")
@@ -163,11 +118,20 @@ namespace be.Migrations
                     b.Property<string>("Description")
                         .HasColumnType("longtext");
 
+                    b.Property<string>("Educator")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
+                    b.Property<string>("EducatorUserId")
+                        .HasColumnType("varchar(255)");
+
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasColumnType("longtext");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("EducatorUserId");
 
                     b.ToTable("Categories");
                 });
@@ -524,34 +488,13 @@ namespace be.Migrations
                     b.ToTable("UserTokens", (string)null);
                 });
 
-            modelBuilder.Entity("App.Domain.Models.Cart", b =>
+            modelBuilder.Entity("App.Domain.Models.Category", b =>
                 {
-                    b.HasOne("App.Data.ApplicationUser", "User")
-                        .WithOne("Cart")
-                        .HasForeignKey("App.Domain.Models.Cart", "UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("User");
-                });
-
-            modelBuilder.Entity("App.Domain.Models.CartItem", b =>
-                {
-                    b.HasOne("App.Domain.Models.Cart", "Cart")
-                        .WithMany("CartItems")
-                        .HasForeignKey("CartId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("App.Domain.Models.Course", "Course")
+                    b.HasOne("App.Data.ApplicationUser", "EducatorUser")
                         .WithMany()
-                        .HasForeignKey("CourseId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
+                        .HasForeignKey("EducatorUserId");
 
-                    b.Navigation("Cart");
-
-                    b.Navigation("Course");
+                    b.Navigation("EducatorUser");
                 });
 
             modelBuilder.Entity("App.Domain.Models.Chapter", b =>
@@ -720,19 +663,11 @@ namespace be.Migrations
 
             modelBuilder.Entity("App.Data.ApplicationUser", b =>
                 {
-                    b.Navigation("Cart")
-                        .IsRequired();
-
                     b.Navigation("CourseProgresses");
 
                     b.Navigation("EducatorCourses");
 
                     b.Navigation("Purchases");
-                });
-
-            modelBuilder.Entity("App.Domain.Models.Cart", b =>
-                {
-                    b.Navigation("CartItems");
                 });
 
             modelBuilder.Entity("App.Domain.Models.Category", b =>

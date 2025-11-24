@@ -6,6 +6,7 @@ namespace App.Utils.Exceptions
         InvalidLogin = 1001,
         UnauthorizedAccess = 1002,
         Forbidden = 1003,
+        InvalidData = 1004,
 
         // 🔹 Lỗi tài khoản và người dùng (User & Account Errors)
         EmailAlreadyExists = 2001,
@@ -46,11 +47,17 @@ namespace App.Utils.Exceptions
         ReviewAlreadyExists = 4091,
         VerificationTokenInvalidOrExpired = 4092,
         CategoryNotFound = 6001,
+
+        CartNotFound = 6006,
+        CartItemNotFound = 6007,
+        CourseAlreadyInCart = 6008,
+        CourseNotFound = 6009,
+        EmptyCart = 6010,
+
         CategorySlugAlreadyExists = 6002,
         ParentCategoryNotFound = 6003,
         ArticleSlugAlreadyExists = 6004,
         TagAlreadyExists = 6005,
-        CourseNotFound= 6011,
 
         // 🔹 Lỗi upload/file
         FileUploadFailed = 7001,

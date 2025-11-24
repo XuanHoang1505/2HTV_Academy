@@ -18,6 +18,8 @@ namespace App.Data
         public DbSet<Lecture> Lectures { get; set; }
         public DbSet<CourseProgress> CourseProgresses { get; set; }
         public DbSet<Purchase> Purchases { get; set; }
+        public DbSet<Cart> Carts { get; set; }
+        public DbSet<CartItem> CartItems { get; set; }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
@@ -38,7 +40,7 @@ namespace App.Data
                 }
             }
 
-              // Course - Category (1-n)
+            // Course - Category (1-n)
             modelBuilder.Entity<Course>()
                 .HasOne(c => c.Category)
                 .WithMany(cat => cat.Courses)
@@ -126,6 +128,27 @@ namespace App.Data
                 .WithMany(u => u.CourseProgresses)
                 .HasForeignKey(cp => cp.UserId)
                 .OnDelete(DeleteBehavior.Cascade);
+
+            // Cart – User (1–1)
+            modelBuilder.Entity<Cart>()
+                .HasOne(c => c.User)
+                .WithOne(u => u.Cart)
+                .HasForeignKey<Cart>(c => c.UserId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            // Cart – CartItem (1–n)
+            modelBuilder.Entity<CartItem>()
+                .HasOne(ci => ci.Cart)
+                .WithMany(c => c.CartItems)
+                .HasForeignKey(ci => ci.CartId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            // Course – CartItem (1–n)
+            modelBuilder.Entity<CartItem>()
+                .HasOne(ci => ci.Course)
+                .WithMany()
+                .HasForeignKey(ci => ci.CourseId)
+                .OnDelete(DeleteBehavior.Restrict);
         }
     }
 }

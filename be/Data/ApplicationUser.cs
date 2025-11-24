@@ -1,5 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using App.Domain.Models;
+using App.Enums;
 using Microsoft.AspNetCore.Identity;
 
 namespace App.Data
@@ -8,8 +9,11 @@ namespace App.Data
     {
         [Required, StringLength(100)]
         public string FullName { get; set; } = null!;
-        public string ImageUrl { get; set; } = null!;
+        public string? ImageUrl { get; set; } 
         public bool IsLocked { get; set; } = false;
+        public string? RefreshToken { get; set; }
+        public DateTime? RefreshTokenExpiryTime { get; set; }
+        public Cart Cart { get; set; } = null!;
 
         public ICollection<Course> EnrolledCourses { get; set; } = new List<Course>();
         public ICollection<Course> EducatorCourses { get; set; } = new List<Course>();
