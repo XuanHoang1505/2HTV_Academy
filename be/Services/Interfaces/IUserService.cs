@@ -13,6 +13,7 @@ namespace App.Services.Interfaces
         Task<bool> ResetPasswordAsync(string email, string newPassword);
         Task<bool> ChangePasswordAsync(string userId, string oldPassword, string newPassword);
         Task<bool> VerifyPasswordAsync(string userId, string password);
+        Task<bool> SendResetPasswordEmailAsync(string email);
         Task LogoutAsync(string userId);
         Task<bool> SendOtpVerifyEmail(string email);
         Task<bool> ConfirmEmailAsync(string email);

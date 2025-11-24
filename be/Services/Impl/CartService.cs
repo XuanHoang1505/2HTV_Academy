@@ -5,7 +5,7 @@ using App.Services.Interfaces;
 using App.Utils.Exceptions;
 using AutoMapper;
 
-namespace App.Services.Impl
+namespace App.Services.Implementations
 {
     public class CartService : ICartService
     {
@@ -65,7 +65,7 @@ namespace App.Services.Impl
             {
                 CartId = cart.Id,
                 CourseId = courseId,
-                Price = course.Price,
+                Price = course.CoursePrice,
                 AddedAt = DateTime.UtcNow
             };
 

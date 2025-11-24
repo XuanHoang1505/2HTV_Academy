@@ -18,10 +18,15 @@ namespace App.Controllers
             _cartService = cartService;
         }
 
+        public string? GetUserId()
+        {
+            return User.FindFirst("userId")?.Value;
+        }
+
         [HttpGet]
         public async Task<IActionResult> GetCart()
         {
-            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var userId = GetUserId();
             if (string.IsNullOrEmpty(userId))
                 return Unauthorized();
 
@@ -32,7 +37,7 @@ namespace App.Controllers
         [HttpGet("summary")]
         public async Task<IActionResult> GetCartSummary()
         {
-            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var userId = GetUserId();
             if (string.IsNullOrEmpty(userId))
                 return Unauthorized();
 
@@ -43,7 +48,7 @@ namespace App.Controllers
         [HttpPost("add")]
         public async Task<IActionResult> AddToCart([FromBody] AddToCartDTO request)
         {
-            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var userId = GetUserId();
             if (string.IsNullOrEmpty(userId))
                 return Unauthorized();
 
@@ -54,7 +59,7 @@ namespace App.Controllers
         [HttpDelete("remove/{courseId}")]
         public async Task<IActionResult> RemoveFromCart(int courseId)
         {
-            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var userId = GetUserId();
             if (string.IsNullOrEmpty(userId))
                 return Unauthorized();
 
@@ -65,7 +70,7 @@ namespace App.Controllers
         [HttpDelete("clear")]
         public async Task<IActionResult> ClearCart()
         {
-            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var userId = GetUserId();
             if (string.IsNullOrEmpty(userId))
                 return Unauthorized();
 
@@ -76,7 +81,7 @@ namespace App.Controllers
         [HttpGet("check/{courseId}")]
         public async Task<IActionResult> CheckCourseInCart(int courseId)
         {
-            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var userId = GetUserId();
             if (string.IsNullOrEmpty(userId))
                 return Unauthorized();
 

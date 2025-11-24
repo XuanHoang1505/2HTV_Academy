@@ -19,7 +19,7 @@ namespace App.Controllers
         }
 
         [HttpPost("login")]
-        public async Task<IActionResult> Login([FromForm] LoginDTO loginDTO)
+        public async Task<IActionResult> Login([FromBody] LoginDTO loginDTO)
         {
             var response = await _userService.LoginAsync(loginDTO.UserName, loginDTO.Password);
             if (response?.AccessToken == null)
@@ -29,7 +29,7 @@ namespace App.Controllers
         }
 
         [HttpPost("register")]
-        public async Task<IActionResult> Register([FromForm] RegisterDTO registerDTO)
+        public async Task<IActionResult> Register([FromBody] RegisterDTO registerDTO)
         {
             var result = await _userService.RegisterUserAsync(registerDTO);
             if (result == false)
@@ -49,7 +49,7 @@ namespace App.Controllers
         [HttpPost("forgot-password")]
         public async Task<IActionResult> ForgotPassword([FromBody] ForgotPasswordDTO forgotPasswordDTO)
         {
-            var isSend = await _userService.SendOtpVerifyEmail(forgotPasswordDTO.Email);
+            var isSend = await _userService.SendResetPasswordEmailAsync(forgotPasswordDTO.Email);
             if (!isSend)
                 return BadRequest(new { message = "Không thể gửi mã OTP. Vui lòng thử lại sau." });
 

@@ -214,6 +214,18 @@ namespace App.Services.Implementations
             await _userManager.UpdateAsync(user);
         }
 
+        public async Task<bool> SendResetPasswordEmailAsync(string email)
+        {
+            var isExist = await _userRepository.IsEmailExistsAsync(email);
+            if (!isExist)
+                throw new AppException(ErrorCode.UserNotFound, "Email của bạn không tồn tại trong hệ thống");
+
+            var otp = await _otpService.SendOtp(email);
+            if (otp == null)
+                return false;
+            return true;
+        }
+
         public async Task<bool> SendOtpVerifyEmail(string email)
         {
             var isExist = await _userRepository.IsEmailExistsAsync(email);

@@ -11,7 +11,6 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
 
-
 namespace App.Providers
 {
     public class JwtTokenProvider
@@ -19,13 +18,20 @@ namespace App.Providers
         private readonly string _jwtSecretKey;
         private readonly int _jwtExpiration;
         private readonly int _refreshTokenExpiration;
-
+        private readonly string _validIssuer;      // ← Thêm mới
+        private readonly string _validAudience;    // ← Thêm mới
         private readonly UserManager<ApplicationUser> _userManager;
+
         public JwtTokenProvider(IConfiguration configuration, UserManager<ApplicationUser> userManager)
         {
-            _jwtSecretKey = configuration["JWT:Secret"] ?? throw new Exception("JWT Secret Key không được tìm thấy.");
-            _jwtExpiration = int.Parse(configuration["JWT:ExpirationInMinutes"] ?? "15"); // 60 phút mặc định
-            _refreshTokenExpiration = int.Parse(configuration["JWT:RefreshExpirationInDays"] ?? "30"); // 30 ngày mặc định
+            _jwtSecretKey = configuration["JWT:Secret"] 
+                ?? throw new Exception("JWT Secret Key không được tìm thấy.");
+            _validIssuer = configuration["JWT:ValidIssuer"] 
+                ?? throw new Exception("JWT ValidIssuer không được tìm thấy.");
+            _validAudience = configuration["JWT:ValidAudience"] 
+                ?? throw new Exception("JWT ValidAudience không được tìm thấy.");
+            _jwtExpiration = int.Parse(configuration["JWT:ExpirationInMinutes"] ?? "60");
+            _refreshTokenExpiration = int.Parse(configuration["JWT:RefreshExpirationInDays"] ?? "30");
             _userManager = userManager;
         }
 
@@ -39,8 +45,8 @@ namespace App.Providers
             {
                 new Claim(JwtRegisteredClaimNames.Sub, username),
                 new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
-                new Claim(ClaimTypes.NameIdentifier, userId.ToString()), 
-                new Claim("userId", userId.ToString()) 
+                new Claim(ClaimTypes.NameIdentifier, userId), 
+                new Claim("userId", userId) 
             };
 
             // Thêm danh sách quyền (roles)
@@ -50,8 +56,8 @@ namespace App.Providers
             }
 
             var token = new JwtSecurityToken(
-                issuer: "footballnews.com",
-                audience: "FootballNewsUsers",
+                issuer: _validIssuer,      // ← Sửa: Dùng từ config
+                audience: _validAudience,  // ← Sửa: Dùng từ config
                 claims: claims,
                 expires: DateTime.UtcNow.AddMinutes(_jwtExpiration),
                 signingCredentials: credentials
@@ -91,8 +97,8 @@ namespace App.Providers
                 {
                     ValidateIssuer = true,
                     ValidateAudience = true,
-                    ValidIssuer = "footballnews.com",
-                    ValidAudience = "FootballNewsUsers",
+                    ValidIssuer = _validIssuer,      // ← Sửa: Dùng từ config
+                    ValidAudience = _validAudience,  // ← Sửa: Dùng từ config
                     IssuerSigningKey = new SymmetricSecurityKey(key),
                     ValidateLifetime = true,
                     ClockSkew = TimeSpan.Zero
@@ -105,6 +111,7 @@ namespace App.Providers
                 return false;
             }
         }
+
         public TokenResponse GenerateTokenPair(string username, List<string> roles, string userId)
         {
             string accessToken = GenerateToken(username, roles, userId);
@@ -116,6 +123,7 @@ namespace App.Providers
                 RefreshToken = refreshToken
             };
         }
+
         public async Task<TokenResponse?> RefreshTokenAsync(string refreshToken, IUserRepository userRepository)
         {
             var user = await userRepository.GetUserByRefreshTokenAsync(refreshToken);
@@ -139,7 +147,5 @@ namespace App.Providers
                 RefreshToken = newRefreshToken
             };
         }
-
     }
-
 }

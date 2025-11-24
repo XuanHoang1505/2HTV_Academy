@@ -3,7 +3,7 @@ using App.Domain.Models;
 using App.Repositories.Interfaces;
 using Microsoft.EntityFrameworkCore;
 
-namespace App.Repositories.Impl
+namespace App.Repositories.Implementations
 {
     public class CartRepository : ICartRepository
     {
