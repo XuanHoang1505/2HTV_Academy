@@ -1,4 +1,4 @@
-﻿using App.Data;
+using App.Data;
 using App.Domain.Models;
 using App.DTOs;
 using AutoMapper;
@@ -11,11 +11,43 @@ namespace App.Mappings
     {
         public ApplicationMapper()
         {
+            // Category
             CreateMap<Category, CategoryDTO>().ReverseMap();
-<<<<<<< HEAD
+            CreateMap<CategoryDTO, Category>()
+                .ForMember(dest => dest.Id, opt => opt.Ignore());
+
+            // Chapter
             CreateMap<Chapter, ChapterDTO>().ReverseMap();
+
+            // Lecture
             CreateMap<Lecture, LectureDTO>().ReverseMap();
 
+            // User
+            CreateMap<ApplicationUser, UserDTO>().ReverseMap();
+            CreateMap<ApplicationUser, RegisterDTO>().ReverseMap();
+
+            // Cart
+            CreateMap<Cart, CartDTO>()
+                .ForMember(dest => dest.Total,
+                    opt => opt.MapFrom(src => src.CartItems.Sum(ci => ci.Price)))
+                .ForMember(dest => dest.ItemCount,
+                    opt => opt.MapFrom(src => src.CartItems.Count));
+
+            CreateMap<CartItem, CartItemDTO>()
+                .ForMember(dest => dest.CourseName,
+                    opt => opt.MapFrom(src => src.Course.CourseTitle))
+                .ForMember(dest => dest.CourseImage,
+                    opt => opt.MapFrom(src => src.Course.CourseThumbnail));
+
+            // Course
+            CreateMap<Course, CourseDTO>()
+                .ForMember(dest => dest.EducatorName,
+                    opt => opt.MapFrom(src => src.Educator.FullName));
+
+            CreateMap<CourseDTO, Course>()
+                .ForMember(dest => dest.Id, opt => opt.Ignore());
+
+            // MyCourse mappings
             CreateMap<Chapter, MyCourseChapterDTO>()
                 .ForMember(dest => dest.Lectures,
                     opt => opt.MapFrom(src => src.ChapterContent));
@@ -28,40 +60,10 @@ namespace App.Mappings
                 .ForMember(dest => dest.TotalChapters,
                     opt => opt.MapFrom(src => src.CourseContent.Count))
                 .ForMember(dest => dest.TotalLectures,
-                    opt => opt.MapFrom(src => src.CourseContent
-                        .SelectMany(ch => ch.ChapterContent)
-                        .Count()))
+                    opt => opt.MapFrom(src =>
+                        src.CourseContent.SelectMany(ch => ch.ChapterContent).Count()))
                 .ForMember(dest => dest.Chapters,
                     opt => opt.MapFrom(src => src.CourseContent));
-=======
-            CreateMap<ApplicationUser, UserDTO>().ReverseMap();
-
-            CreateMap<ApplicationUser, RegisterDTO>().ReverseMap();
-
-            CreateMap<Cart, CartDTO>()
-            .ForMember(dest => dest.Total, opt => opt.MapFrom(src => src.CartItems.Sum(ci => ci.Price)))
-            .ForMember(dest => dest.ItemCount, opt => opt.MapFrom(src => src.CartItems.Count));
-
-            // CartItem -> CartItemDto
-            CreateMap<CartItem, CartItemDTO>()
-                .ForMember(dest => dest.CourseName, opt => opt.MapFrom(src => src.Course.CourseTitle))
-                .ForMember(dest => dest.CourseImage, opt => opt.MapFrom(src => src.Course.CourseThumbnail));
-            CreateMap<Category, CategoryDTO>();
-            CreateMap<CategoryDTO, Category>()
-             .ForMember(dest => dest.Id, opt => opt.Ignore());
-
-
-            CreateMap<Course, CourseDTO>()
-             .ForMember(dest => dest.EducatorName, opt => opt.MapFrom(src => src.Educator.FullName));
-            CreateMap<CourseDTO, Course>()
-             .ForMember(dest => dest.Id, opt => opt.Ignore());
->>>>>>> 42de4bc14a3044038e7dc8528f59dcb1f419d231
-
-            CreateMap<Purchase, PurchaseDTO>().ReverseMap();
-            CreateMap<PurchaseItem, PurchaseItemDTO>().ReverseMap();
-
-
         }
     }
 }
-

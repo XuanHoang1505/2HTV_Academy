@@ -1,19 +1,19 @@
-using System.Text;
 using System.Text.Json.Serialization;
-using App.Configurations;
 using App.Data;
-using App.Providers;
 using App.Repositories.Implementations;
 using App.Repositories.Interfaces;
-using App.Services;
 using App.Services.Implementations;
 using App.Services.Interfaces;
-using App.Utils.Exceptions;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
+using App.Utils.Exceptions;
+using App.Providers;
+using App.Configurations;
+using App.Services;
 using Microsoft.IdentityModel.Tokens;
-
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -50,18 +50,19 @@ builder.Services.AddAuthentication(options =>
 {
     options.SaveToken = true;
     options.RequireHttpsMetadata = false;
-    options.TokenValidationParameters = new Microsoft.IdentityModel.Tokens.TokenValidationParameters
+    options.TokenValidationParameters = new TokenValidationParameters
     {
         ValidateIssuer = true,
         ValidateAudience = true,
         ValidAudience = builder.Configuration["JWT:ValidAudience"],
         ValidIssuer = builder.Configuration["JWT:ValidIssuer"],
-        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes
-            (builder.Configuration["JWT:Secret"])),
+        IssuerSigningKey = new SymmetricSecurityKey(
+            Encoding.UTF8.GetBytes(builder.Configuration["JWT:Secret"])
+        ),
         ValidateLifetime = true,
         ClockSkew = TimeSpan.Zero
     };
-    options.Events = new Microsoft.AspNetCore.Authentication.JwtBearer.JwtBearerEvents
+    options.Events = new JwtBearerEvents
     {
         OnTokenValidated = context =>
         {
@@ -91,35 +92,43 @@ builder.Services.AddCors(options =>
         });
 });
 
-//Dang ki repository
+
+// -----------------------------
+// REGISTER REPOSITORIES
+// -----------------------------
 builder.Services.AddScoped<ICategoryRepository, CategoryRepository>();
-builder.Services.AddScoped<IUserRepository, UserRepository>();
-builder.Services.AddScoped<ICartRepository, CartRepository>();
 builder.Services.AddScoped<IChapterRepository, ChapterRepository>();
 builder.Services.AddScoped<ILectureRepository, LectureRepository>();
 builder.Services.AddScoped<IMyCourseRepository, MyCourseRepository>();
 
-//Dang ki service
+builder.Services.AddScoped<IUserRepository, UserRepository>();
+builder.Services.AddScoped<ICartRepository, CartRepository>();
+builder.Services.AddScoped<ICourseRepository, CourseRepository>();
+
+// -----------------------------
+// REGISTER SERVICES
+// -----------------------------
 builder.Services.AddScoped<ICategoryService, CategoryService>();
-builder.Services.AddScoped<IUserService, UserService>();
-builder.Services.AddScoped<ICourseService, CourseService>();
-builder.Services.AddScoped<ICartService, CartService>();
 builder.Services.AddScoped<IChapterService, ChapterService>();
 builder.Services.AddScoped<ILectureService, LectureService>();
 builder.Services.AddScoped<IMyCourseService, MyCourseService>();
 
+builder.Services.AddScoped<IUserService, UserService>();
+builder.Services.AddScoped<ICourseService, CourseService>();
+builder.Services.AddScoped<ICartService, CartService>();
 
-// Đăng ký dịch vụ JWT
+// JWT provider
 builder.Services.AddScoped<JwtTokenProvider>();
 
-// Đăng ký dịch vụ Email
+// Email service
 builder.Services.Configure<EmailSetting>(builder.Configuration.GetSection("EmailSettings"));
 builder.Services.AddScoped<ISendMailService, SendMailService>();
 
-// Đăng ký dịch vụ OTP
+// OTP service
 builder.Services.AddTransient<OtpService>();
 
 
+// JSON Options
 builder.Services.AddControllers()
     .AddJsonOptions(options =>
     {
@@ -127,11 +136,6 @@ builder.Services.AddControllers()
         options.JsonSerializerOptions.DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull;
         options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
     });
-
-builder.Services.AddControllers().AddJsonOptions(options =>
-{
-    options.JsonSerializerOptions.ReferenceHandler = System.Text.Json.Serialization.ReferenceHandler.IgnoreCycles;
-});
 
 var app = builder.Build();
 
@@ -148,6 +152,8 @@ app.UseMiddleware<GlobalExceptionMiddleware>();
 
 app.UseAuthentication();
 app.UseAuthorization();
+
+// Auto migrate database
 using (var scope = app.Services.CreateScope())
 {
     var db = scope.ServiceProvider.GetRequiredService<AppDBContext>();
