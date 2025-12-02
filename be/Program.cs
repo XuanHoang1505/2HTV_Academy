@@ -1,19 +1,19 @@
+using System.Text;
 using System.Text.Json.Serialization;
+using App.Configurations;
 using App.Data;
+using App.Providers;
 using App.Repositories.Implementations;
 using App.Repositories.Interfaces;
+using App.Services;
 using App.Services.Implementations;
 using App.Services.Interfaces;
+using App.Utils.Exceptions;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
-using App.Utils.Exceptions;
-using App.Providers;
-using App.Configurations;
-using App.Services;
 using Microsoft.IdentityModel.Tokens;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
-using System.Text;
-using footballnew.Services;
+
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -95,17 +95,18 @@ builder.Services.AddCors(options =>
 builder.Services.AddScoped<ICategoryRepository, CategoryRepository>();
 builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddScoped<ICartRepository, CartRepository>();
-builder.Services.AddScoped<IPurchaseRepository, PurchaseRepository>();
-builder.Services.AddScoped<ICourseRepository, CourseRepository>();
-
+builder.Services.AddScoped<IChapterRepository, ChapterRepository>();
+builder.Services.AddScoped<ILectureRepository, LectureRepository>();
+builder.Services.AddScoped<IMyCourseRepository, MyCourseRepository>();
 
 //Dang ki service
 builder.Services.AddScoped<ICategoryService, CategoryService>();
 builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<ICourseService, CourseService>();
 builder.Services.AddScoped<ICartService, CartService>();
-builder.Services.AddScoped<CloudinaryService>();
-builder.Services.AddScoped<IPurchaseService, PurchaseService>();
+builder.Services.AddScoped<IChapterService, ChapterService>();
+builder.Services.AddScoped<ILectureService, LectureService>();
+builder.Services.AddScoped<IMyCourseService, MyCourseService>();
 
 
 // Đăng ký dịch vụ JWT
@@ -117,7 +118,6 @@ builder.Services.AddScoped<ISendMailService, SendMailService>();
 
 // Đăng ký dịch vụ OTP
 builder.Services.AddTransient<OtpService>();
-
 
 
 builder.Services.AddControllers()
@@ -148,8 +148,12 @@ app.UseMiddleware<GlobalExceptionMiddleware>();
 
 app.UseAuthentication();
 app.UseAuthorization();
+using (var scope = app.Services.CreateScope())
+{
+    var db = scope.ServiceProvider.GetRequiredService<AppDBContext>();
+    db.Database.Migrate();
+}
 
 app.MapControllers();
 
 app.Run();
-
