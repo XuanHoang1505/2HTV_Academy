@@ -4,7 +4,7 @@ using App.Domain.Models;
 using App.Repositories.Interfaces;
 using App.Services.Interfaces;
 using App.Utils.Exceptions;
-using footballnew.Services;
+using App.Services;
 
 namespace App.Services.Implementations
 {
