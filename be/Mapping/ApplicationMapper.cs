@@ -34,6 +34,10 @@ namespace App.Mappings
             CreateMap<CourseDTO, Course>()
              .ForMember(dest => dest.Id, opt => opt.Ignore());
 
+            CreateMap<Purchase, PurchaseDTO>().ReverseMap();
+            CreateMap<PurchaseItem, PurchaseItemDTO>().ReverseMap();
+
+
         }
     }
 }

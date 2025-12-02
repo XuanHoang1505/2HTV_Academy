@@ -13,6 +13,7 @@ using App.Services;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using System.Text;
+using footballnew.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -94,12 +95,17 @@ builder.Services.AddCors(options =>
 builder.Services.AddScoped<ICategoryRepository, CategoryRepository>();
 builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddScoped<ICartRepository, CartRepository>();
+builder.Services.AddScoped<IPurchaseRepository, PurchaseRepository>();
+builder.Services.AddScoped<ICourseRepository, CourseRepository>();
+
 
 //Dang ki service
 builder.Services.AddScoped<ICategoryService, CategoryService>();
 builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<ICourseService, CourseService>();
 builder.Services.AddScoped<ICartService, CartService>();
+builder.Services.AddScoped<CloudinaryService>();
+builder.Services.AddScoped<IPurchaseService, PurchaseService>();
 
 
 // Đăng ký dịch vụ JWT
@@ -111,9 +117,7 @@ builder.Services.AddScoped<ISendMailService, SendMailService>();
 
 // Đăng ký dịch vụ OTP
 builder.Services.AddTransient<OtpService>();
-builder.Services.AddScoped<ICourseRepository, CourseRepository>();
-//Dang ki service
-builder.Services.AddScoped<ICategoryService, CategoryService>();
+
 
 
 builder.Services.AddControllers()

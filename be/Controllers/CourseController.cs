@@ -14,6 +14,11 @@ namespace App.Controllers
             _courseService = courseService;
         }
 
+        public string? GetUserId()
+        {
+            return User.FindFirst("userId")?.Value;
+        }
+
         [HttpGet]
         public async Task<IActionResult> GetAllCourse()
         {
@@ -31,6 +36,8 @@ namespace App.Controllers
         [HttpPost]
         public async Task<IActionResult> CreateCourse(CourseDTO dto)
         {
+            var userId = GetUserId();
+            dto.EducatorId = userId;
             var course = await _courseService.CreateAsync(dto);
             return Ok(course);
         }
@@ -38,6 +45,8 @@ namespace App.Controllers
         [HttpPut("{id}")]
         public async Task<IActionResult> UpdateCourse(int id, CourseDTO dto)
         {
+            var userId = GetUserId();
+            dto.EducatorId = userId;
             var course = await _courseService.UpdateAsync(id, dto);
             return Ok(course);
         }
@@ -46,6 +55,13 @@ namespace App.Controllers
         public async Task<IActionResult> DeleteCourse(int id)
         {
             var course = await _courseService.DeleteAsync(id);
+            return Ok(course);
+        }
+
+        [HttpGet("detail/{id}")]
+        public async Task<IActionResult> CourseDetail(int id)
+        {
+            var course = await _courseService.CourseDetailAsync(id);
             return Ok(course);
         }
     }
