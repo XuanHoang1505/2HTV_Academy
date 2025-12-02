@@ -98,5 +98,99 @@ namespace App.Services.Implementations
             return _mapper.Map<CourseDetailDTO>(course);
         }
 
+        public async Task<IEnumerable<UserDTO>> GetStudentsByCourseIdAsync(int courseId)
+        {
+            var existingCourse = await _repository.GetByIdAsync(courseId);
+            if (existingCourse == null)
+            {
+                throw new AppException(ErrorCode.CourseNotFound, $"Không tìm thấy khóa học với ID = {courseId}");
+            }
+
+            var students = await _repository.GetStudentsByCourseIdAsync(courseId);
+            return _mapper.Map<IEnumerable<UserDTO>>(students);
+        }
+
+        public async Task<IEnumerable<StudentCourseProgressDTO>> GetStudentProgressByCourseIdAsync(int courseId)
+        {
+            var course = await _repository.CourseDetailAsync(courseId);
+            if (course == null)
+            {
+                throw new AppException(ErrorCode.CourseNotFound, $"Không tìm thấy khóa học với ID = {courseId}");
+            }
+
+            // Tổng số bài giảng trong khóa
+            var totalLectures = course.CourseContent
+                .SelectMany(ch => ch.ChapterContent)
+                .Count();
+
+            if (totalLectures == 0)
+            {
+                // Nếu chưa có lecture, trả về danh sách rỗng
+                return Enumerable.Empty<StudentCourseProgressDTO>();
+            }
+
+            var progresses = await _repository.GetCourseProgressByCourseIdAsync(courseId);
+
+            var result = progresses.Select(cp =>
+            {
+                var completedLectureCount = 0;
+                if (!string.IsNullOrWhiteSpace(cp.LectureCompleted))
+                {
+                    completedLectureCount = cp.LectureCompleted
+                        .Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries)
+                        .Length;
+                }
+
+                var percent = totalLectures == 0
+                    ? 0
+                    : (double)completedLectureCount / totalLectures * 100.0;
+
+                return new StudentCourseProgressDTO
+                {
+                    UserId = cp.UserId,
+                    FullName = cp.User.FullName,
+                    Email = cp.User.Email,
+                    CourseId = cp.CourseId,
+                    Completed = cp.Completed,
+                    TotalLectures = totalLectures,
+                    CompletedLectures = completedLectureCount,
+                    ProgressPercent = Math.Round(percent, 2),
+                    LectureCompletedRaw = cp.LectureCompleted
+                };
+            });
+
+            return result;
+        }
+
+        public async Task RevokeStudentAccessAsync(int courseId, string studentId)
+        {
+            // Kiểm tra khóa học tồn tại
+            var course = await _repository.GetByIdAsync(courseId);
+            if (course == null)
+            {
+                throw new AppException(ErrorCode.CourseNotFound,
+                    $"Không tìm thấy khóa học với ID = {courseId}");
+            }
+
+            // Kiểm tra học viên có đang thuộc khóa này không
+            var enrolled = await _repository.IsStudentEnrolledAsync(studentId, courseId);
+            if (!enrolled)
+            {
+                throw new AppException(ErrorCode.ResourceNotFound,
+                    $"Học viên với ID = {studentId} không thuộc khóa học {courseId}");
+            }
+
+            // Gỡ học viên khỏi khóa
+            var removed = await _repository.RemoveStudentFromCourseAsync(studentId, courseId);
+            if (!removed)
+            {
+                throw new AppException(ErrorCode.InternalServerError,
+                    "Không thể thu hồi quyền truy cập khóa học do lỗi hệ thống.");
+            }
+
+            // Xóa tiến độ học nếu có
+            await _repository.RemoveCourseProgressForStudentAsync(studentId, courseId);
+        }
+
     }
 }
