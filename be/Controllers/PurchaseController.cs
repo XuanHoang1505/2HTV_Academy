@@ -1,3 +1,4 @@
+using App.DTOs;
 using Microsoft.AspNetCore.Mvc;
 
 [ApiController]
@@ -24,6 +25,7 @@ public class PurchaseController : ControllerBase
         var items = await _purchaseService.GetPurchaseItemByPurchaseIdAsync(purchaseId);
         return Ok(items);
     }
+
 
     [HttpPut("{id}")]
     public async Task<IActionResult> UpdatePurchase(int id, PurchaseDTO dto)

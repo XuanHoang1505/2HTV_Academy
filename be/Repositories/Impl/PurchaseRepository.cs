@@ -29,6 +29,12 @@ public class PurchaseRepository : IPurchaseRepository
             .ToListAsync();
     }
 
+    public async Task<Purchase> CreateAsync(Purchase purchase)
+    {
+        await _context.Purchases.AddAsync(purchase);
+        await _context.SaveChangesAsync();
+        return purchase;
+    }
     public async Task UpdatePurchaseAsync(Purchase purchase)
     {
         _context.Purchases.Update(purchase);

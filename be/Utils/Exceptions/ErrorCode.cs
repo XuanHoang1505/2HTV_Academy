@@ -73,6 +73,8 @@ namespace App.Utils.Exceptions
         // 🔹 Lỗi like/vote
         AlreadyLiked = 9001,
         AlreadyDisliked = 9002,
-        VoteNotFound = 9003
+        VoteNotFound = 9003,
+
+        PurchaseNotFound = 9004
     }
 }
