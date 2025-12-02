@@ -5,7 +5,7 @@ using Microsoft.Extensions.Logging;
 using System;
 using System.IO;
 using System.Threading.Tasks;
-namespace footballnew.Services
+namespace App.Services
 {
     public class CloudinaryService
     {

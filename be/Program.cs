@@ -98,6 +98,7 @@ builder.Services.AddScoped<ICartRepository, CartRepository>();
 builder.Services.AddScoped<IChapterRepository, ChapterRepository>();
 builder.Services.AddScoped<ILectureRepository, LectureRepository>();
 builder.Services.AddScoped<IMyCourseRepository, MyCourseRepository>();
+builder.Services.AddScoped<ICourseRepository, CourseRepository>();
 
 //Dang ki service
 builder.Services.AddScoped<ICategoryService, CategoryService>();
@@ -107,6 +108,7 @@ builder.Services.AddScoped<ICartService, CartService>();
 builder.Services.AddScoped<IChapterService, ChapterService>();
 builder.Services.AddScoped<ILectureService, LectureService>();
 builder.Services.AddScoped<IMyCourseService, MyCourseService>();
+builder.Services.AddScoped<CloudinaryService>();
 
 
 // Đăng ký dịch vụ JWT

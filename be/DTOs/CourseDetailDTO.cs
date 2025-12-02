@@ -1,3 +1,5 @@
+using App.DTOs;
+
 public class CourseDetailDTO
 {
     public int Id { get; set; }

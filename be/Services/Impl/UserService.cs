@@ -7,7 +7,7 @@ using App.Repositories.Interfaces;
 using App.Services.Interfaces;
 using App.Utils.Exceptions;
 using AutoMapper;
-using footballnew.Services;
+using App.Services;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
