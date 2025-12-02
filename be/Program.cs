@@ -6,6 +6,9 @@ using App.Services.Implementations;
 using App.Services.Interfaces;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+<<<<<<< HEAD
+using Microsoft.Extensions.DependencyInjection;
+=======
 using App.Utils.Exceptions;
 using App.Providers;
 using App.Configurations;
@@ -13,6 +16,7 @@ using App.Services;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using System.Text;
+>>>>>>> 42de4bc14a3044038e7dc8528f59dcb1f419d231
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -92,6 +96,17 @@ builder.Services.AddCors(options =>
 
 //Dang ki repository
 builder.Services.AddScoped<ICategoryRepository, CategoryRepository>();
+<<<<<<< HEAD
+builder.Services.AddScoped<IChapterRepository, ChapterRepository>();
+builder.Services.AddScoped<ILectureRepository, LectureRepository>();
+builder.Services.AddScoped<IMyCourseRepository, MyCourseRepository>();
+
+//Dang ki service
+builder.Services.AddScoped<ICategoryService, CategoryService>();
+builder.Services.AddScoped<IChapterService, ChapterService>();
+builder.Services.AddScoped<ILectureService, LectureService>();
+builder.Services.AddScoped<IMyCourseService, MyCourseService>();
+=======
 builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddScoped<ICartRepository, CartRepository>();
 
@@ -114,6 +129,7 @@ builder.Services.AddTransient<OtpService>();
 builder.Services.AddScoped<ICourseRepository, CourseRepository>();
 //Dang ki service
 builder.Services.AddScoped<ICategoryService, CategoryService>();
+>>>>>>> 42de4bc14a3044038e7dc8528f59dcb1f419d231
 
 
 builder.Services.AddControllers()
@@ -144,6 +160,11 @@ app.UseMiddleware<GlobalExceptionMiddleware>();
 
 app.UseAuthentication();
 app.UseAuthorization();
+using (var scope = app.Services.CreateScope())
+{
+    var db = scope.ServiceProvider.GetRequiredService<AppDBContext>();
+    db.Database.Migrate();
+}
 
 app.MapControllers();
 

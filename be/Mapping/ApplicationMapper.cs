@@ -12,6 +12,28 @@ namespace App.Mappings
         public ApplicationMapper()
         {
             CreateMap<Category, CategoryDTO>().ReverseMap();
+<<<<<<< HEAD
+            CreateMap<Chapter, ChapterDTO>().ReverseMap();
+            CreateMap<Lecture, LectureDTO>().ReverseMap();
+
+            CreateMap<Chapter, MyCourseChapterDTO>()
+                .ForMember(dest => dest.Lectures,
+                    opt => opt.MapFrom(src => src.ChapterContent));
+
+            CreateMap<Course, MyCourseDTO>()
+                .ForMember(dest => dest.CategoryName,
+                    opt => opt.MapFrom(src => src.Category.Name))
+                .ForMember(dest => dest.EducatorName,
+                    opt => opt.MapFrom(src => src.Educator.FullName))
+                .ForMember(dest => dest.TotalChapters,
+                    opt => opt.MapFrom(src => src.CourseContent.Count))
+                .ForMember(dest => dest.TotalLectures,
+                    opt => opt.MapFrom(src => src.CourseContent
+                        .SelectMany(ch => ch.ChapterContent)
+                        .Count()))
+                .ForMember(dest => dest.Chapters,
+                    opt => opt.MapFrom(src => src.CourseContent));
+=======
             CreateMap<ApplicationUser, UserDTO>().ReverseMap();
 
             CreateMap<ApplicationUser, RegisterDTO>().ReverseMap();
@@ -33,7 +55,9 @@ namespace App.Mappings
              .ForMember(dest => dest.EducatorName, opt => opt.MapFrom(src => src.Educator.FullName));
             CreateMap<CourseDTO, Course>()
              .ForMember(dest => dest.Id, opt => opt.Ignore());
+>>>>>>> 42de4bc14a3044038e7dc8528f59dcb1f419d231
 
         }
     }
 }
+

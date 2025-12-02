@@ -1,16 +1,11 @@
-using App.Data;
-
-namespace App.Domain.Models
+namespace App.DTOs
 {
-     public class Chapter
+    public class ChapterDTO
     {
         public int Id { get; set; }
         public string ChapterId { get; set; } = null!;
         public int ChapterOrder { get; set; }
         public string ChapterTitle { get; set; } = null!;
         public int CourseId { get; set; }
-        public Course Course { get; set; } = null!;
-
-        public ICollection<Lecture> ChapterContent { get; set; } = new List<Lecture>();
     }
 }
