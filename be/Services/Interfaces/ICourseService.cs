@@ -10,5 +10,9 @@ namespace App.Services.Interfaces
         Task<CourseDTO> UpdateAsync(int id, CourseDTO dto);
         Task<bool> DeleteAsync(int id);
         Task<CourseDetailDTO?> CourseDetailAsync(int id);
+        Task<IEnumerable<UserDTO>> GetStudentsByCourseIdAsync(int courseId);
+        Task<IEnumerable<StudentCourseProgressDTO>> GetStudentProgressByCourseIdAsync(int courseId);
+        Task RevokeStudentAccessAsync(int courseId, string studentId);
+        Task<IEnumerable<CourseDTO>> SearchAsync(CourseFilterDTO filter);
     }
 }
