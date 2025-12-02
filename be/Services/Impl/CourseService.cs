@@ -192,5 +192,11 @@ namespace App.Services.Implementations
             await _repository.RemoveCourseProgressForStudentAsync(studentId, courseId);
         }
 
+        public async Task<IEnumerable<CourseDTO>> SearchAsync(CourseFilterDTO filter)
+        {
+            var courses = await _repository.SearchAsync(filter);
+            return _mapper.Map<IEnumerable<CourseDTO>>(courses);
+        }
+
     }
 }

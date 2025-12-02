@@ -1,5 +1,6 @@
 using App.Data;
 using App.Domain.Models;
+using App.DTOs;
 using App.Repositories.Interfaces;
 using Microsoft.EntityFrameworkCore;
 using System.Linq;
@@ -122,6 +123,66 @@ namespace App.Repositories.Implementations
 
             _context.CourseProgresses.RemoveRange(progresses);
             await _context.SaveChangesAsync();
+        }
+
+        public async Task<IEnumerable<Course>> SearchAsync(CourseFilterDTO filter)
+        {
+            var query = _context.Courses
+                .Include(c => c.Category)
+                .Include(c => c.Educator)
+                .AsQueryable();
+
+            if (!string.IsNullOrWhiteSpace(filter.Keyword))
+            {
+                var keyword = filter.Keyword.Trim().ToLower();
+                query = query.Where(c =>
+                    c.CourseTitle.ToLower().Contains(keyword) ||
+                    c.CourseDescription.ToLower().Contains(keyword));
+            }
+
+            if (filter.CategoryId.HasValue)
+            {
+                query = query.Where(c => c.CategoryId == filter.CategoryId.Value);
+            }
+
+            if (filter.MinPrice.HasValue)
+            {
+                query = query.Where(c => c.CoursePrice >= filter.MinPrice.Value);
+            }
+
+            if (filter.MaxPrice.HasValue)
+            {
+                query = query.Where(c => c.CoursePrice <= filter.MaxPrice.Value);
+            }
+
+            if (filter.IsPublished.HasValue)
+            {
+                query = query.Where(c => c.IsPublished == filter.IsPublished.Value);
+            }
+
+            if (!string.IsNullOrWhiteSpace(filter.SortBy))
+            {
+                switch (filter.SortBy.ToLower())
+                {
+                    case "price":
+                        query = filter.SortDesc
+                            ? query.OrderByDescending(c => c.CoursePrice)
+                            : query.OrderBy(c => c.CoursePrice);
+                        break;
+                    case "title":
+                    default:
+                        query = filter.SortDesc
+                            ? query.OrderByDescending(c => c.CourseTitle)
+                            : query.OrderBy(c => c.CourseTitle);
+                        break;
+                }
+            }
+            else
+            {
+                query = query.OrderBy(c => c.CourseTitle);
+            }
+
+            return await query.ToListAsync();
         }
     }
 }

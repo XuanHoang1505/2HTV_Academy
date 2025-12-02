@@ -1,5 +1,6 @@
 using App.Data;
 using App.Domain.Models;
+using App.DTOs;
 
 namespace App.Repositories.Interfaces
 {
@@ -16,5 +17,6 @@ namespace App.Repositories.Interfaces
         Task<bool> IsStudentEnrolledAsync(string studentId, int courseId);
         Task<bool> RemoveStudentFromCourseAsync(string studentId, int courseId);
         Task RemoveCourseProgressForStudentAsync(string studentId, int courseId);
+        Task<IEnumerable<Course>> SearchAsync(CourseFilterDTO filter);
     }
 }

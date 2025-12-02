@@ -88,5 +88,31 @@ namespace App.Controllers
             await _courseService.RevokeStudentAccessAsync(courseId, studentId);
             return NoContent();
         }
+
+        // Tìm kiếm / lọc khóa học
+        [HttpGet("search")]
+        public async Task<IActionResult> SearchCourses(
+            [FromQuery] string? keyword,
+            [FromQuery] int? categoryId,
+            [FromQuery] decimal? minPrice,
+            [FromQuery] decimal? maxPrice,
+            [FromQuery] bool? isPublished,
+            [FromQuery] string? sortBy,
+            [FromQuery] bool sortDesc = false)
+        {
+            var filter = new CourseFilterDTO
+            {
+                Keyword = keyword,
+                CategoryId = categoryId,
+                MinPrice = minPrice,
+                MaxPrice = maxPrice,
+                IsPublished = isPublished,
+                SortBy = sortBy,
+                SortDesc = sortDesc
+            };
+
+            var courses = await _courseService.SearchAsync(filter);
+            return Ok(courses);
+        }
     }
 }
