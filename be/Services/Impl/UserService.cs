@@ -7,6 +7,7 @@ using App.Repositories.Interfaces;
 using App.Services.Interfaces;
 using App.Utils.Exceptions;
 using AutoMapper;
+using footballnew.Services;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
@@ -22,6 +23,8 @@ namespace App.Services.Implementations
         private readonly JwtTokenProvider _jwtTokenProvider;
         private readonly OtpService _otpService;
 
+        private readonly CloudinaryService _cloudinaryService;
+
         public UserService(
             IUserRepository userRepository,
             ISendMailService sendMailService,
@@ -29,7 +32,8 @@ namespace App.Services.Implementations
             UserManager<ApplicationUser> userManager,
             JwtTokenProvider jwtTokenProvider,
             IMapper mapper,
-            OtpService otpService
+            OtpService otpService,
+            CloudinaryService cloudinaryService
             )
         {
             _userRepository = userRepository;
@@ -46,6 +50,10 @@ namespace App.Services.Implementations
             var user = _mapper.Map<ApplicationUser>(userDto);
             var defaultPassword = GenerateRandomPassword(8);
 
+            if (userDto.ImageFile != null && userDto.ImageFile.Length > 0)
+            {
+                user.ImageUrl = await _cloudinaryService.UploadImageAsync(userDto.ImageFile, "user_avatar");
+            }
             var result = await _userRepository.CreateUserAsync(user, defaultPassword);
 
             if (result == null)
@@ -71,6 +79,17 @@ namespace App.Services.Implementations
             // Update thông tin user
             user.UserName = userDto.Email;
             user.Email = userDto.Email;
+            if (userDto.ImageFile != null && userDto.ImageFile.Length > 0)
+            {
+                if (!string.IsNullOrEmpty(user.ImageUrl))
+                {
+                    var oldPublicId = CloudinaryService.ExtractPublicId(user.ImageUrl);
+                    await _cloudinaryService.DeleteImageAsync(oldPublicId);
+                }
+                user.ImageUrl = await _cloudinaryService.UploadImageAsync(userDto.ImageFile, "user_avatar");
+            }
+
+
             _mapper.Map(userDto, user);
 
             await _userRepository.UpdateUserAsync(user);
@@ -103,6 +122,11 @@ namespace App.Services.Implementations
             var user = await _userRepository.GetUserByIdAsync(userId);
             if (user == null)
                 throw new AppException(ErrorCode.UserNotFound, "Người dùng không tồn tại!");
+            if (!string.IsNullOrEmpty(user.ImageUrl))
+            {
+                var oldPublicId = CloudinaryService.ExtractPublicId(user.ImageUrl);
+                await _cloudinaryService.DeleteImageAsync(oldPublicId);
+            }
 
             return await _userRepository.DeleteUserAsync(user);
         }
@@ -244,7 +268,7 @@ namespace App.Services.Implementations
                 return false;
 
             if (user.EmailConfirmed)
-                return true; 
+                return true;
 
             user.EmailConfirmed = true;
             var result = await _userManager.UpdateAsync(user);
@@ -392,6 +416,20 @@ namespace App.Services.Implementations
                     "</html>";
 
             await _emailService.SendEmailAsync(user.Email, emailSubject, emailBody);
+        }
+
+        public async Task<UserDTO> GetUserByIdAsync(string userId)
+        {
+            var user = await _userRepository.GetUserByIdAsync(userId);
+            if (user == null)
+                throw new AppException(ErrorCode.UserNotFound, "Người dùng không tồn tại!");
+            return _mapper.Map<UserDTO>(user);
+        }
+
+        public async Task<IEnumerable<UserDTO>> GetAllUsersAsync()
+        {
+            var users = await _userRepository.GetAllUsersAsync();
+            return _mapper.Map<IEnumerable<UserDTO>>(users);
         }
     }
 }

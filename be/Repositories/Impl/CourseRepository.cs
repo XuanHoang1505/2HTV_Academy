@@ -16,13 +16,13 @@ namespace App.Repositories.Implementations
 
         public async Task<Course?> GetByIdAsync(int id)
         {
-            return await _context.Courses.Include(c=>c.Category).Include(u=>u.Educator)
+            return await _context.Courses.Include(c => c.Category).Include(u => u.Educator)
                 .FirstOrDefaultAsync(c => c.Id == id);
         }
 
         public async Task<IEnumerable<Course>> GetAllAsync()
         {
-            return await _context.Courses.Include(c=>c.Category).Include(u=>u.Educator)
+            return await _context.Courses.Include(c => c.Category).Include(u => u.Educator)
                 .ToListAsync();
         }
 
@@ -35,7 +35,7 @@ namespace App.Repositories.Implementations
 
         public async Task UpdateAsync(Course course)
         {
-             _context.Courses.Update(course);
+            _context.Courses.Update(course);
             await _context.SaveChangesAsync();
         }
 
@@ -47,6 +47,19 @@ namespace App.Repositories.Implementations
                 _context.Courses.Remove(course);
                 await _context.SaveChangesAsync();
             }
+        }
+
+        public async Task<Course?> CourseDetailAsync(int id)
+        {
+            var course = await _context.Courses
+                .Include(c => c.Educator)
+                .Include(c => c.Category)
+                .Include(c => c.CourseContent)
+                .Include(c => c.CourseRatings)
+                .Include(c => c.PurchaseItems)
+                .FirstOrDefaultAsync(c => c.Id == id);
+
+            return course;
         }
     }
 }

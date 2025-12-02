@@ -8,5 +8,7 @@ namespace App.DTOs
         public string? UserName { get; set; }
         public string? Email { get; set; }
         public string Role { get; set; }
+
+        public IFormFile? ImageFile { get; set; }
     }
 }

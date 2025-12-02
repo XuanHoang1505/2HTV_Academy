@@ -9,5 +9,6 @@ namespace App.Repositories.Interfaces
         Task<Course> AddAsync(Course course);
         Task UpdateAsync(Course course);
         Task DeleteAsync(int id);
+        Task<Course?> CourseDetailAsync(int id);
     }
 }

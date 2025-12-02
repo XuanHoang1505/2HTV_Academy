@@ -4,6 +4,7 @@ using App.Domain.Models;
 using App.Repositories.Interfaces;
 using App.Services.Interfaces;
 using App.Utils.Exceptions;
+using footballnew.Services;
 
 namespace App.Services.Implementations
 {
@@ -11,11 +12,14 @@ namespace App.Services.Implementations
     {
         private readonly ICourseRepository _repository;
         private readonly IMapper _mapper;
+        private readonly CloudinaryService _cloudinaryService;
 
-        public CourseService(ICourseRepository repository, IMapper mapper)
+
+        public CourseService(ICourseRepository repository, IMapper mapper, CloudinaryService cloudinaryService)
         {
             _repository = repository;
             _mapper = mapper;
+            _cloudinaryService = cloudinaryService;
         }
 
         public async Task<CourseDTO> GetByIdAsync(int id)
@@ -27,7 +31,6 @@ namespace App.Services.Implementations
             return _mapper.Map<CourseDTO>(course);
         }
 
-
         public async Task<IEnumerable<CourseDTO>> GetAllAsync()
         {
             var courses = await _repository.GetAllAsync();
@@ -38,33 +41,61 @@ namespace App.Services.Implementations
         {
             var entity = _mapper.Map<Course>(dto);
 
-            var created = await _repository.AddAsync(entity);
-            var dtoResult = _mapper.Map<CourseDTO>(created);
+            if (dto.CourseThumbnailFile != null && dto.CourseThumbnailFile.Length > 0)
+            {
+                entity.CourseThumbnail = await _cloudinaryService.UploadImageAsync(dto.CourseThumbnailFile, "course_thumbnail");
+            }
 
-            return dtoResult;
+            var created = await _repository.AddAsync(entity);
+            return _mapper.Map<CourseDTO>(created);
         }
 
         public async Task<CourseDTO> UpdateAsync(int id, CourseDTO dto)
         {
             var existing = await _repository.GetByIdAsync(id);
             if (existing == null)
-                throw new AppException(ErrorCode.CourseNotFound, $"Không tìm thấy danh mục với ID = {id}");
+                throw new AppException(ErrorCode.CourseNotFound, $"Không tìm thấy khóa học với ID = {id}");
+
+            if (dto.CourseThumbnailFile != null && dto.CourseThumbnailFile.Length > 0)
+            {
+                if (!string.IsNullOrEmpty(existing.CourseThumbnail))
+                {
+                    var oldPublicId = CloudinaryService.ExtractPublicId(existing.CourseThumbnail);
+                    await _cloudinaryService.DeleteImageAsync(oldPublicId);
+                }
+                existing.CourseThumbnail = await _cloudinaryService.UploadImageAsync(dto.CourseThumbnailFile, "course_thumbnail");
+            }
+
 
             _mapper.Map(dto, existing);
             await _repository.UpdateAsync(existing);
 
-            var dtoResult = _mapper.Map<CourseDTO>(existing);
-            return dtoResult;
+            return _mapper.Map<CourseDTO>(existing);
         }
 
         public async Task<bool> DeleteAsync(int id)
         {
             var existing = await _repository.GetByIdAsync(id);
             if (existing == null)
-                throw new AppException(ErrorCode.CourseNotFound, $"Không tìm thấy danh mục với ID = {id}");
+                throw new AppException(ErrorCode.CourseNotFound, $"Không tìm thấy khóa học với ID = {id}");
+
+            if (!string.IsNullOrEmpty(existing.CourseThumbnail))
+            {
+                var publicId = CloudinaryService.ExtractPublicId(existing.CourseThumbnail);
+                await _cloudinaryService.DeleteImageAsync(publicId);
+            }
 
             await _repository.DeleteAsync(id);
             return true;
+        }
+
+        public async Task<CourseDetailDTO?> CourseDetailAsync(int id)
+        {
+            var course = await _repository.CourseDetailAsync(id);
+            if (course == null)
+                throw new AppException(ErrorCode.CourseNotFound, $"Không tìm thấy khóa học với ID = {id}");
+
+            return _mapper.Map<CourseDetailDTO>(course);
         }
 
     }

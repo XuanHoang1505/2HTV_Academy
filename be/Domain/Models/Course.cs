@@ -2,7 +2,7 @@ using App.Data;
 
 namespace App.Domain.Models
 {
- public class Course
+    public class Course
     {
         public int Id { get; set; }
         public string CourseTitle { get; set; } = null!;
@@ -22,6 +22,6 @@ namespace App.Domain.Models
         public ICollection<ApplicationUser> EnrolledStudents { get; set; } = new List<ApplicationUser>();
         public ICollection<Chapter> CourseContent { get; set; } = new List<Chapter>();
         public ICollection<CourseRating> CourseRatings { get; set; } = new List<CourseRating>();
-        public ICollection<Purchase> Purchases { get; set; } = new List<Purchase>();
+        public ICollection<PurchaseItem> PurchaseItems { get; set; } = new List<PurchaseItem>();
     }
 }

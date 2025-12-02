@@ -57,6 +57,10 @@ namespace App.Mappings
              .ForMember(dest => dest.Id, opt => opt.Ignore());
 >>>>>>> 42de4bc14a3044038e7dc8528f59dcb1f419d231
 
+            CreateMap<Purchase, PurchaseDTO>().ReverseMap();
+            CreateMap<PurchaseItem, PurchaseItemDTO>().ReverseMap();
+
+
         }
     }
 }

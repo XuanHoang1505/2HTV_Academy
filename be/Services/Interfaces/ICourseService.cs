@@ -9,5 +9,6 @@ namespace App.Services.Interfaces
         Task<CourseDTO> CreateAsync(CourseDTO dto);
         Task<CourseDTO> UpdateAsync(int id, CourseDTO dto);
         Task<bool> DeleteAsync(int id);
+        Task<CourseDetailDTO?> CourseDetailAsync(int id);
     }
 }
