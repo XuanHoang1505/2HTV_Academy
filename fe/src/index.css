@@ -8,6 +8,10 @@
   box-sizing: border-box;
 }
 
+html {
+  scroll-behavior: smooth;
+}
+
 body {
   font-family: "Inter", sans-serif;
   font-optical-sizing: auto;
@@ -17,4 +21,87 @@ body {
 .container {
   width: 95%;
   margin: auto;
+}
+
+.custom-button-antd {
+  height: 44px;
+  background-color: #01579b;
+  border-color: #01579b;
+  border-radius: 8px;
+  font-size: 16px;
+  font-weight: 600;
+  transition: all 0.3s ease;
+}
+
+.custom-button-antd:hover {
+  background-color: #003d6b !important;
+  border-color: #003d6b !important;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px #003d6b;
+}
+
+.custom-button-antd:active {
+  transform: translateY(0);
+}
+
+.link-menu {
+  position: relative;
+  display: inline-block;
+  transition: all 0.3s ease;
+  color: #666;
+}
+
+.link-menu::after {
+  content: "";
+  position: absolute;
+  bottom: -2px;
+  left: 0;
+  width: 0;
+  height: 2px;
+  background-color: #01579b;
+  transition: width 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.link-menu:hover::after {
+  width: 100%;
+}
+
+.link-menu.active {
+  color: #01579b;
+}
+
+.link-menu.active::after {
+  width: 100%;
+}
+
+/* customize pagination antd */
+.ant-pagination-item {
+  border-color: #01579b !important;
+}
+
+.ant-pagination-item a {
+  color: #01579b !important;
+}
+
+.ant-pagination-item-active {
+  border-color: #01579b !important;
+  background-color: #01579b !important;
+}
+
+.ant-pagination-item-active a {
+  color: #fff !important;
+}
+
+/* customize tooltip sort antd */
+.ant-tooltip .ant-tooltip-inner {
+  background-color: #01579b;
+  color: white;
+}
+
+.ant-tooltip .ant-tooltip-arrow-content {
+  background-color: #01579b;
+}
+
+.ant-tooltip .ant-tooltip-arrow::before {
+  background: #01579b;
 }
