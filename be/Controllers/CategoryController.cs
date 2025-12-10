@@ -1,11 +1,13 @@
 using App.Services.Interfaces;
 using Microsoft.AspNetCore.Mvc;
-using App.DTOs; 
+using App.DTOs;
+using Microsoft.AspNetCore.Authorization;
 
 namespace App.Controllers
 {
     [ApiController]
     [Route("api/categories")]
+    [Authorize(Roles = "Admin")]
     public class CategoryController : ControllerBase
     {
         private readonly ICategoryService _categoryService;
@@ -13,7 +15,7 @@ namespace App.Controllers
         public CategoryController(ICategoryService categoryService)
         {
             _categoryService = categoryService;
-        }   
+        }
 
         [HttpGet]
         public async Task<IActionResult> GetAllCategories()
