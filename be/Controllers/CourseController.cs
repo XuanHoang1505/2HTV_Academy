@@ -1,11 +1,13 @@
 using App.DTOs;
 using App.Services.Interfaces;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace App.Controllers
 {
     [ApiController]
     [Route("api/courses")]
+    [Authorize(Roles = "Admin")]
     public class CourseController : ControllerBase
     {
         private readonly ICourseService _courseService;

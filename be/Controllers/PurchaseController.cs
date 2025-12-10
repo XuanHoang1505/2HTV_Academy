@@ -1,49 +1,53 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-
-[ApiController]
-[Route("api/purchases")]
-public class PurchaseController : ControllerBase
+namespace App.Controllers
 {
-    private readonly IPurchaseService _purchaseService;
-
-    public PurchaseController(IPurchaseService purchaseService)
+    [ApiController]
+    [Route("api/purchases")]
+    [Authorize(Roles = "Admin")]
+    public class PurchaseController : ControllerBase
     {
-        _purchaseService = purchaseService;
-    }
+        private readonly IPurchaseService _purchaseService;
 
-    [HttpGet]
-    public async Task<IActionResult> GetAllPurchases()
-    {
-        var purchases = await _purchaseService.GetAllPurchasesAsync();
-        return Ok(purchases);
-    }
+        public PurchaseController(IPurchaseService purchaseService)
+        {
+            _purchaseService = purchaseService;
+        }
 
-    [HttpGet("{purchaseId}")]
-    public async Task<IActionResult> GetPurchaseItems(int purchaseId)
-    {
-        var items = await _purchaseService.GetPurchaseItemByPurchaseIdAsync(purchaseId);
-        return Ok(items);
-    }
+        [HttpGet]
+        public async Task<IActionResult> GetAllPurchases()
+        {
+            var purchases = await _purchaseService.GetAllPurchasesAsync();
+            return Ok(purchases);
+        }
 
-    [HttpPut("{id}")]
-    public async Task<IActionResult> UpdatePurchase(int id, PurchaseDTO dto)
-    {
-        var updatedPurchase = await _purchaseService.UpdatePurchaseAsync(id, dto);
-        return Ok(updatedPurchase);
-    }
+        [HttpGet("{purchaseId}")]
+        public async Task<IActionResult> GetPurchaseItems(int purchaseId)
+        {
+            var items = await _purchaseService.GetPurchaseItemByPurchaseIdAsync(purchaseId);
+            return Ok(items);
+        }
 
-    [HttpDelete("{id}")]
-    public async Task<IActionResult> DeletePurchase(int id)
-    {
-        var result = await _purchaseService.DeletePurchaseAsync(id);
-        return Ok(result);
-    }
+        [HttpPut("{id}")]
+        public async Task<IActionResult> UpdatePurchase(int id, PurchaseDTO dto)
+        {
+            var updatedPurchase = await _purchaseService.UpdatePurchaseAsync(id, dto);
+            return Ok(updatedPurchase);
+        }
 
-    [HttpGet("purchaseUser")]
-    public async Task<IActionResult> GetPurchasesByUserId()
-    {
-        var userId = User.FindFirst("userId")?.Value;
-        var purchases = await _purchaseService.GetPurchasesByUserIdAsync(userId);
-        return Ok(purchases);
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> DeletePurchase(int id)
+        {
+            var result = await _purchaseService.DeletePurchaseAsync(id);
+            return Ok(result);
+        }
+
+        [HttpGet("purchaseUser")]
+        public async Task<IActionResult> GetPurchasesByUserId()
+        {
+            var userId = User.FindFirst("userId")?.Value;
+            var purchases = await _purchaseService.GetPurchasesByUserIdAsync(userId);
+            return Ok(purchases);
+        }
     }
 }

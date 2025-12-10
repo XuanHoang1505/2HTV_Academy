@@ -43,25 +43,33 @@ namespace App.Services.Implementations
             _jwtTokenProvider = jwtTokenProvider;
             _mapper = mapper;
             _otpService = otpService;
+            _cloudinaryService = cloudinaryService;
         }
 
         public async Task<UserDTO> CreateUserAsync(UserDTO userDto)
         {
+            var userExits = await _userRepository.IsEmailExistsAsync(userDto.Email);
+            if (userExits)
+                throw new AppException(ErrorCode.EmailAlreadyExists, "Email đã tồn tại");
+
             var user = _mapper.Map<ApplicationUser>(userDto);
+            user.UserName = userDto.Email;
+            user.EmailConfirmed = true;
             var defaultPassword = GenerateRandomPassword(8);
 
             if (userDto.ImageFile != null && userDto.ImageFile.Length > 0)
             {
                 user.ImageUrl = await _cloudinaryService.UploadImageAsync(userDto.ImageFile, "user_avatar");
             }
+
             var result = await _userRepository.CreateUserAsync(user, defaultPassword);
 
             if (result == null)
                 throw new AppException(ErrorCode.InternalServerError, "Tạo người dùng thất bại!");
+            await _userManager.AddToRoleAsync(result, Role.Admin.ToString());
 
             await SendEmail(userDto, defaultPassword);
             return _mapper.Map<UserDTO>(result);
-
         }
 
         public async Task<UserDTO> UpdateUserAsync(string userId, UserDTO userDto)
