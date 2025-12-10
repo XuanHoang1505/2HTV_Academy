@@ -1,3 +1,5 @@
+using App.Domain.Enums;
+
 public class PurchaseDTO
 {
     public int Id { get; set; }

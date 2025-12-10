@@ -1,16 +1,21 @@
+using App.Domain.Enums;
 using App.Domain.Models;
+using App.DTOs;
+using App.Repositories.Interfaces;
 using App.Utils.Exceptions;
 using AutoMapper;
 
 public class PurchaseService : IPurchaseService
 {
     private readonly IPurchaseRepository _purchaseRepository;
+    private readonly ICourseRepository _courseRepository;
     private readonly IMapper _mapper;
 
-    public PurchaseService(IPurchaseRepository purchaseRepository, IMapper mapper)
+    public PurchaseService(IPurchaseRepository purchaseRepository, IMapper mapper, ICourseRepository courseRepository)
     {
         _purchaseRepository = purchaseRepository;
         _mapper = mapper;
+        _courseRepository = courseRepository;
     }
 
     public async Task<IEnumerable<PurchaseDTO>> GetAllPurchasesAsync()
@@ -23,6 +28,60 @@ public class PurchaseService : IPurchaseService
     {
         var purchaseItems = await _purchaseRepository.GetPurchaseItemByPurchaseIdAsync(purchaseId);
         return _mapper.Map<IEnumerable<PurchaseItemDTO>>(purchaseItems);
+    }
+
+    public async Task<PurchaseDTO> GetPurchaseByIdAsync(int purchaseId)
+    {
+        var purchase = await _purchaseRepository.GetByIdAsync(purchaseId);
+        if (purchase == null)
+        {
+            throw new AppException(ErrorCode.PurchaseNotFound, $"Không tìm thấy đơn mua với ID = {purchaseId}");
+        }
+        return _mapper.Map<PurchaseDTO>(purchase);
+    }
+
+    public async Task<PurchaseDTO> CreatePurchaseAsync(CreatePurchaseDTO dto)
+    {
+        // Validate courses exist
+        var courses = new List<Course>();
+        foreach (var courseId in dto.CourseIds)
+        {
+            var course = await _courseRepository.GetByIdAsync(courseId);
+            if (course == null)
+            {
+                throw new AppException(ErrorCode.CourseNotFound, $"Không tìm thấy khóa học với ID = {courseId}");
+            }
+            courses.Add(course);
+        }
+
+        // Tính tổng tiền
+        decimal totalAmount = courses.Sum(c => c.CoursePrice);
+
+        // Tạo Purchase
+        var purchase = new Purchase
+        {
+            UserId = dto.UserId,
+            Amount = totalAmount,
+            Status = PurchaseStatus.Pending,
+            CreatedAt = DateTime.Now,
+            PurchaseItems = new List<PurchaseItem>()
+        };
+
+        foreach (var course in courses)
+        {
+            purchase.PurchaseItems.Add(new PurchaseItem
+            {
+                CourseId = course.Id,
+                Price = course.CoursePrice
+            });
+        }
+
+        var createdPurchase = await _purchaseRepository.CreateAsync(purchase);
+
+        // Lấy lại purchase với đầy đủ thông tin
+        var result = await _purchaseRepository.GetByIdAsync(createdPurchase.Id);
+
+        return _mapper.Map<PurchaseDTO>(result);
     }
 
     public async Task<PurchaseDTO> UpdatePurchaseAsync(int id, PurchaseDTO dto)
@@ -53,4 +112,25 @@ public class PurchaseService : IPurchaseService
         var purchases = await _purchaseRepository.GetAllPurchaseByUserIdAsync(userId);
         return _mapper.Map<IEnumerable<PurchaseDTO>>(purchases);
     }
+
+     public async Task<PurchaseDTO> UpdatePurchaseStatusAsync(int id, UpdatePurchaseStatusDTO dto)
+        {
+            var purchase = await _purchaseRepository.GetByIdAsync(id);
+            if (purchase == null)
+            {
+                throw new AppException(ErrorCode.PurchaseNotFound, $"Không tìm thấy đơn mua với ID = {id}");
+            }
+
+            purchase.Status = dto.Status;
+            
+            if (dto.Status == PurchaseStatus.Completed)
+            {
+                purchase.CreatedAt = DateTime.Now;
+            }
+
+            await _purchaseRepository.UpdatePurchaseAsync(purchase);
+            
+            return _mapper.Map<PurchaseDTO>(purchase);
+        }
+
 }

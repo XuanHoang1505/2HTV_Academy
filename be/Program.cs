@@ -109,6 +109,7 @@ builder.Services.AddScoped<ICartService, CartService>();
 builder.Services.AddScoped<IChapterService, ChapterService>();
 builder.Services.AddScoped<ILectureService, LectureService>();
 builder.Services.AddScoped<IMyCourseService, MyCourseService>();
+builder.Services.AddScoped<IPurchaseService, PurchaseService>();
 builder.Services.AddScoped<CloudinaryService>();
 builder.Services.AddScoped<IPurchaseService, PurchaseService>();
 

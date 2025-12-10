@@ -1,4 +1,4 @@
-using Microsoft.AspNetCore.Authorization;
+using App.DTOs;
 using Microsoft.AspNetCore.Mvc;
 namespace App.Controllers
 {
@@ -27,6 +27,7 @@ namespace App.Controllers
             var items = await _purchaseService.GetPurchaseItemByPurchaseIdAsync(purchaseId);
             return Ok(items);
         }
+
 
         [HttpPut("{id}")]
         public async Task<IActionResult> UpdatePurchase(int id, PurchaseDTO dto)
