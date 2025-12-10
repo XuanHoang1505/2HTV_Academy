@@ -20,6 +20,7 @@ namespace App.Data
         public DbSet<PurchaseItem> PurchaseItems { get; set; }
         public DbSet<Cart> Carts { get; set; }
         public DbSet<CartItem> CartItems { get; set; }
+        public DbSet<Review> Reviews { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -140,6 +141,20 @@ namespace App.Data
                 .WithMany()
                 .HasForeignKey(ci => ci.CourseId)
                 .OnDelete(DeleteBehavior.Restrict);
+
+            // --- Review - USer
+            modelBuilder.Entity<Review>()
+                .HasOne(r => r.User)
+                .WithMany(u => u.Reviews)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            // --- Review – Course (1-n)
+            modelBuilder.Entity<Review>()
+                .HasOne(r => r.Course)
+                .WithMany(c => c.Reviews)
+                .HasForeignKey(r => r.CourseId)
+                .OnDelete(DeleteBehavior.Cascade);
+
         }
     }
 }

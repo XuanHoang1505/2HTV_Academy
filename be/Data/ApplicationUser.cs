@@ -19,6 +19,7 @@ namespace App.Data
         public ICollection<Course> EducatorCourses { get; set; } = new List<Course>();
         public ICollection<Purchase> Purchases { get; set; } = new List<Purchase>();
         public ICollection<CourseProgress> CourseProgresses { get; set; } = new List<CourseProgress>();
+        public ICollection<Review> Reviews { get; set; } = new List<Review>();
 
     }
 }

@@ -75,6 +75,12 @@ namespace App.Utils.Exceptions
         AlreadyDisliked = 9002,
         VoteNotFound = 9003,
 
-        PurchaseNotFound = 9004
+        PurchaseNotFound = 9004,
+
+        AlreadyPurchase = 9005,
+        AlreadyReview = 9006,
+        NotFound = 404,
+        BadRequest = 400,
+        Unauthorized = 401,
     }
 }

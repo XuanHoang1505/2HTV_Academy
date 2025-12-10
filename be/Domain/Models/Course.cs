@@ -23,5 +23,6 @@ namespace App.Domain.Models
         public ICollection<Chapter> CourseContent { get; set; } = new List<Chapter>();
         public ICollection<CourseRating> CourseRatings { get; set; } = new List<CourseRating>();
         public ICollection<PurchaseItem> PurchaseItems { get; set; } = new List<PurchaseItem>();
+        public ICollection<Review> Reviews {get; set;} = new List<Review>();
     }
 }
