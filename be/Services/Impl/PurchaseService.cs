@@ -2,6 +2,7 @@ using App.Domain.Enums;
 using App.Domain.Models;
 using App.DTOs;
 using App.Repositories.Interfaces;
+using App.Services.Interfaces;
 using App.Utils.Exceptions;
 using AutoMapper;
 

@@ -15,13 +15,12 @@ namespace App.Domain.Models
         // Quan hệ
         public string EducatorId { get; set; } = null!;
         public ApplicationUser Educator { get; set; } = null!;
-
         public int CategoryId { get; set; }
         public Category Category { get; set; } = null!;
-
-        public ICollection<ApplicationUser> EnrolledStudents { get; set; } = new List<ApplicationUser>();
+        public ICollection<Enrollment> Enrollments { get; set; } = new List<Enrollment>();
         public ICollection<Chapter> CourseContent { get; set; } = new List<Chapter>();
         public ICollection<CourseRating> CourseRatings { get; set; } = new List<CourseRating>();
         public ICollection<PurchaseItem> PurchaseItems { get; set; } = new List<PurchaseItem>();
+        public ICollection<Review> Reviews {get; set;} = new List<Review>();
     }
 }
