@@ -65,13 +65,13 @@ namespace App.Controllers
             return Ok(course);
         }
 
-        // Lấy tất cả sinh viên đã đăng ký một khóa học
-        [HttpGet("{id}/students")]
-        public async Task<IActionResult> GetStudentsByCourseId(int id)
-        {
-            var students = await _courseService.GetStudentsByCourseIdAsync(id);
-            return Ok(students);
-        }
+        // // Lấy tất cả sinh viên đã đăng ký một khóa học
+        // [HttpGet("{id}/students")]
+        // public async Task<IActionResult> GetStudentsByCourseId(int id)
+        // {
+        //     var students = await _courseService.GetStudentsByCourseIdAsync(id);
+        //     return Ok(students);
+        // }
 
         // Tiến độ học tập của từng học viên trong khóa
         [HttpGet("{id}/students/progress")]
@@ -81,13 +81,13 @@ namespace App.Controllers
             return Ok(progress);
         }
 
-        // Thu hồi quyền truy cập khóa học của một học viên
-        [HttpDelete("{courseId}/students/{studentId}")]
-        public async Task<IActionResult> RevokeStudentAccess(int courseId, string studentId)
-        {
-            await _courseService.RevokeStudentAccessAsync(courseId, studentId);
-            return NoContent();
-        }
+        // // Thu hồi quyền truy cập khóa học của một học viên
+        // [HttpDelete("{courseId}/students/{studentId}")]
+        // public async Task<IActionResult> RevokeStudentAccess(int courseId, string studentId)
+        // {
+        //     await _courseService.RevokeStudentAccessAsync(courseId, studentId);
+        //     return NoContent();
+        // }
 
         // Tìm kiếm / lọc khóa học
         [HttpGet("search")]

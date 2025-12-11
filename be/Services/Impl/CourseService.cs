@@ -98,17 +98,6 @@ namespace App.Services.Implementations
             return _mapper.Map<CourseDetailDTO>(course);
         }
 
-        public async Task<IEnumerable<UserDTO>> GetStudentsByCourseIdAsync(int courseId)
-        {
-            var existingCourse = await _repository.GetByIdAsync(courseId);
-            if (existingCourse == null)
-            {
-                throw new AppException(ErrorCode.CourseNotFound, $"Không tìm thấy khóa học với ID = {courseId}");
-            }
-
-            var students = await _repository.GetStudentsByCourseIdAsync(courseId);
-            return _mapper.Map<IEnumerable<UserDTO>>(students);
-        }
 
         public async Task<IEnumerable<StudentCourseProgressDTO>> GetStudentProgressByCourseIdAsync(int courseId)
         {
@@ -162,35 +151,7 @@ namespace App.Services.Implementations
             return result;
         }
 
-        public async Task RevokeStudentAccessAsync(int courseId, string studentId)
-        {
-            // Kiểm tra khóa học tồn tại
-            var course = await _repository.GetByIdAsync(courseId);
-            if (course == null)
-            {
-                throw new AppException(ErrorCode.CourseNotFound,
-                    $"Không tìm thấy khóa học với ID = {courseId}");
-            }
 
-            // Kiểm tra học viên có đang thuộc khóa này không
-            var enrolled = await _repository.IsStudentEnrolledAsync(studentId, courseId);
-            if (!enrolled)
-            {
-                throw new AppException(ErrorCode.ResourceNotFound,
-                    $"Học viên với ID = {studentId} không thuộc khóa học {courseId}");
-            }
-
-            // Gỡ học viên khỏi khóa
-            var removed = await _repository.RemoveStudentFromCourseAsync(studentId, courseId);
-            if (!removed)
-            {
-                throw new AppException(ErrorCode.InternalServerError,
-                    "Không thể thu hồi quyền truy cập khóa học do lỗi hệ thống.");
-            }
-
-            // Xóa tiến độ học nếu có
-            await _repository.RemoveCourseProgressForStudentAsync(studentId, courseId);
-        }
 
         public async Task<IEnumerable<CourseDTO>> SearchAsync(CourseFilterDTO filter)
         {

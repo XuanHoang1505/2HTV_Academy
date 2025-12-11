@@ -9,5 +9,6 @@ namespace App.Domain.Models
         public int CourseId { get; set; }
         public Course Course { get; set; }
         public decimal Price { get; set; }
+        
     }
 }

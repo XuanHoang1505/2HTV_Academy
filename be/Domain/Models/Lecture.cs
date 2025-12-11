@@ -11,7 +11,6 @@ namespace App.Domain.Models
         public string? LectureUrl { get; set; }
         public bool IsPreviewFree { get; set; }
         public int LectureOrder { get; set; }
-
         public int ChapterId { get; set; }
         public Chapter Chapter { get; set; } = null!;
     }

@@ -9,7 +9,6 @@ namespace App.Domain.Models
         public int CourseId { get; set; }
         public bool Completed { get; set; }
         public string LectureCompleted { get; set; } = null!; 
-
         public ApplicationUser User { get; set; } = null!;
         public Course Course { get; set; } = null!;
     }

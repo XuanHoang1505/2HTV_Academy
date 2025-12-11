@@ -15,15 +15,18 @@ namespace App.Controllers
     {
         private readonly IConfiguration _config;
         private readonly IPurchaseService _purchaseService;
+        private readonly IEnrollmentService _enrollmentService;
         private readonly ILogger<PaymentController> _logger;
 
         public PaymentController(
             IConfiguration config,
             IPurchaseService purchaseService,
+            IEnrollmentService enrollmentService,
             ILogger<PaymentController> logger)
         {
             _config = config;
             _purchaseService = purchaseService;
+            _enrollmentService = enrollmentService;
             _logger = logger;
         }
 
@@ -159,6 +162,18 @@ namespace App.Controllers
 
                     await _purchaseService.UpdatePurchaseStatusAsync(purchaseId, updateDto);
 
+                    // TẠO ENROLLMENT TỰ ĐỘNG CHO TẤT CẢ KHÓA HỌC
+                    try
+                    {
+                        var enrollments = await _enrollmentService.CreateEnrollmentsFromPurchaseAsync(purchaseId);
+                        _logger.LogInformation($"Created {enrollments.Count()} enrollments for Purchase {purchaseId}");
+                    }
+                    catch (Exception enrollEx)
+                    {
+                        _logger.LogError(enrollEx, $"Failed to create enrollments for Purchase {purchaseId}");
+                        // Không throw exception để không ảnh hưởng đến flow thanh toán
+                    }
+
                     _logger.LogInformation($"Payment successful for Purchase {purchaseId}");
 
                     return Ok(new
@@ -257,6 +272,17 @@ namespace App.Controllers
                     };
 
                     await _purchaseService.UpdatePurchaseStatusAsync(purchaseId, updateDto);
+
+                    // TẠO ENROLLMENT TỰ ĐỘNG (IPN callback) CHO TẤT CẢ KHÓA HỌC
+                    try
+                    {
+                        var enrollments = await _enrollmentService.CreateEnrollmentsFromPurchaseAsync(purchaseId);
+                        _logger.LogInformation($"IPN: Created {enrollments.Count()} enrollments for Purchase {purchaseId}");
+                    }
+                    catch (Exception enrollEx)
+                    {
+                        _logger.LogError(enrollEx, $"IPN: Failed to create enrollments for Purchase {purchaseId}");
+                    }
 
                     _logger.LogInformation($"IPN: Payment confirmed for Purchase {purchaseId}");
 

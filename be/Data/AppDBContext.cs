@@ -21,6 +21,7 @@ namespace App.Data
         public DbSet<Cart> Carts { get; set; }
         public DbSet<CartItem> CartItems { get; set; }
         public DbSet<Review> Reviews { get; set; }
+        public DbSet<Enrollment> Enrollments { get; set;}
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -50,15 +51,6 @@ namespace App.Data
                 .HasForeignKey(c => c.EducatorId)
                 .OnDelete(DeleteBehavior.Restrict);
 
-            // --- Quan hệ Course - EnrolledStudents (n-n)
-            modelBuilder.Entity<Course>()
-                .HasMany(c => c.EnrolledStudents)
-                .WithMany(u => u.EnrolledCourses)
-                .UsingEntity<Dictionary<string, object>>(
-                    "CourseEnrollment",
-                    j => j.HasOne<ApplicationUser>().WithMany().HasForeignKey("UserId").OnDelete(DeleteBehavior.Cascade),
-                    j => j.HasOne<Course>().WithMany().HasForeignKey("CourseId").OnDelete(DeleteBehavior.Cascade),
-                    j => { j.HasKey("CourseId", "UserId"); j.ToTable("CourseEnrollments"); });
 
             // --- Quan hệ Chapter - Course (1-n)
             modelBuilder.Entity<Chapter>()
@@ -155,6 +147,20 @@ namespace App.Data
                 .HasForeignKey(r => r.CourseId)
                 .OnDelete(DeleteBehavior.Cascade);
 
+
+            // --- Enrollment – User (1-n)
+            modelBuilder.Entity<Enrollment>()
+                .HasOne(e => e.User)
+                .WithMany(u => u.Enrollments)
+                .HasForeignKey(e => e.UserId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            // --- Enrollment – Course (1-n)
+            modelBuilder.Entity<Enrollment>()
+                .HasOne(e => e.Course)
+                .WithMany(c => c.Enrollments)
+                .HasForeignKey(e => e.CourseId)
+                .OnDelete(DeleteBehavior.Cascade);
         }
     }
 }

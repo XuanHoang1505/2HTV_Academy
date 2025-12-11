@@ -14,8 +14,7 @@ namespace App.Data
         public string? RefreshToken { get; set; }
         public DateTime? RefreshTokenExpiryTime { get; set; }
         public Cart Cart { get; set; } = null!;
-
-        public ICollection<Course> EnrolledCourses { get; set; } = new List<Course>();
+        public ICollection<Enrollment> Enrollments { get; set; } = new List<Enrollment>();
         public ICollection<Course> EducatorCourses { get; set; } = new List<Course>();
         public ICollection<Purchase> Purchases { get; set; } = new List<Purchase>();
         public ICollection<CourseProgress> CourseProgresses { get; set; } = new List<CourseProgress>();
