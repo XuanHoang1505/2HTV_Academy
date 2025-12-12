@@ -47,9 +47,7 @@ namespace App.Controllers
             }
         }
 
-        /// <summary>
-        /// Lấy danh sách enrollments đang active của user hiện tại
-        /// </summary>
+        // Lấy danh sách enrollments đang active của user hiện tại
         [HttpGet("my-active-enrollments")]
         public async Task<IActionResult> GetMyActiveEnrollments()
         {
@@ -71,9 +69,7 @@ namespace App.Controllers
             }
         }
 
-        /// <summary>
-        /// Kiểm tra user đã enroll khóa học chưa
-        /// </summary>
+        // Kiểm tra user đã enroll khóa học chưa
         [HttpGet("check-enrollment/{courseId}")]
         public async Task<IActionResult> CheckEnrollment(int courseId)
         {
@@ -102,9 +98,7 @@ namespace App.Controllers
             }
         }
 
-        /// <summary>
-        /// Lấy chi tiết enrollment theo ID
-        /// </summary>
+        // Lấy chi tiết enrollment theo ID
         [HttpGet("{id}")]
         public async Task<IActionResult> GetEnrollmentById(int id)
         {
@@ -134,9 +128,7 @@ namespace App.Controllers
             }
         }
 
-        /// <summary>
-        /// Cập nhật tiến độ học tập
-        /// </summary>
+        // Cập nhật tiến độ học tập
         [HttpPut("{id}/progress")]
         public async Task<IActionResult> UpdateProgress(int id, [FromBody] UpdateEnrollmentProgressDTO dto)
         {
@@ -288,9 +280,8 @@ namespace App.Controllers
             }
         }
 
-        /// <summary>
-        /// Xóa enrollment (soft delete) - Admin only
-        /// </summary>
+
+        // Xóa enrollment (soft delete) - Admin only
         [HttpDelete("{id}")]
         [Authorize(Roles = "Admin")]
         public async Task<IActionResult> DeleteEnrollment(int id)
@@ -312,9 +303,8 @@ namespace App.Controllers
             }
         }
 
-        /// <summary>
-        /// Tạo enrollment thủ công (Admin only)
-        /// </summary>
+
+        // Tạo enrollment thủ công (Admin only)
         [HttpPost("manual-create")]
         [Authorize(Roles = "Admin")]
         public async Task<IActionResult> CreateManualEnrollment([FromBody] CreateEnrollmentDTO dto)

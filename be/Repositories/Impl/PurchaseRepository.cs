@@ -18,7 +18,10 @@ public class PurchaseRepository : IPurchaseRepository
 
     public async Task<Purchase?> GetByIdAsync(int id)
     {
-        return await _context.Purchases.FindAsync(id);
+        return await _context.Purchases
+            .Include(p => p.PurchaseItems)
+            .ThenInclude(pi => pi.Course) 
+            .FirstOrDefaultAsync(p => p.Id == id);
     }
 
     public async Task<IEnumerable<PurchaseItem>> GetPurchaseItemByPurchaseIdAsync(int purchaseId)
