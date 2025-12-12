@@ -32,7 +32,10 @@ namespace App.Mappings
                 .ForMember(dest => dest.Chapters,
                     opt => opt.MapFrom(src => src.CourseContent));
 
-            CreateMap<ApplicationUser, UserDTO>().ReverseMap();
+            CreateMap<ApplicationUser, UserDTO>();
+            CreateMap<UserDTO, ApplicationUser>()
+                .ForMember(dest => dest.Id, opt => opt.Ignore());
+
 
             CreateMap<ApplicationUser, RegisterDTO>().ReverseMap();
 
@@ -49,13 +52,22 @@ namespace App.Mappings
              .ForMember(dest => dest.Id, opt => opt.Ignore());
 
 
-            CreateMap<Course, CourseDTO>()
-             .ForMember(dest => dest.EducatorName, opt => opt.MapFrom(src => src.Educator.FullName));
             CreateMap<CourseDTO, Course>()
-             .ForMember(dest => dest.Id, opt => opt.Ignore());
+           .ForMember(dest => dest.Id, opt => opt.Ignore())
+           .ForMember(dest => dest.CourseThumbnail, opt => opt.Ignore());
+
+            CreateMap<Course, CourseDTO>()
+             .ForMember(dest => dest.EducatorName, opt => opt.MapFrom(src => src.Educator.FullName))
+             .ForMember(dest => dest.CourseThumbnailFile, opt => opt.Ignore())
+             .ForMember(dest => dest.CourseThumbnail, opt => opt.MapFrom(src => src.CourseThumbnail));
+
+            CreateMap<Course, CourseDetailDTO>().ReverseMap();
 
 
-            CreateMap<Purchase, PurchaseDTO>().ReverseMap();
+            CreateMap<Purchase, PurchaseDTO>();
+            CreateMap<PurchaseDTO, Purchase>()
+            .ForMember(dest => dest.Id, opt => opt.Ignore());
+
             CreateMap<PurchaseItem, PurchaseItemDTO>().ReverseMap();
 
         

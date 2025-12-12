@@ -13,6 +13,6 @@ public class CourseDetailDTO
     public string EducatorName { get; set; } = null!;
     public string CategoryName { get; set; } = null!;
 
-    public List<ChapterDTO> CourseContent { get; set; } = new List<ChapterDTO>();
+    public List<ChapterDTO> CourseChapter { get; set; } = new List<ChapterDTO>();
     public List<CourseRatingDTO> CourseRatings { get; set; } = new List<CourseRatingDTO>();
 }

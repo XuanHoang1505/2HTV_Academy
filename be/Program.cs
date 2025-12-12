@@ -112,6 +112,7 @@ builder.Services.AddScoped<ILectureService, LectureService>();
 builder.Services.AddScoped<IEnrollmentService, EnrollmentService>();
 builder.Services.AddScoped<IPurchaseService, PurchaseService>();
 builder.Services.AddScoped<CloudinaryService>();
+builder.Services.AddScoped<IPurchaseService, PurchaseService>();
 
 
 // Đăng ký dịch vụ JWT
