@@ -21,16 +21,13 @@ const Footer = () => {
           {/* About */}
           <div>
             <div className="flex items-center space-x-2 mb-4">
-              <div className="bg-primary p-2 rounded-lg">
-                <CodeIcon className="text-white text-2xl" />
-              </div>
-              <span className="text-xl text-primary font-bold">
+              <span className="text-2xl text-primary font-bold">
                 2HTV Academy
               </span>
             </div>
             <p className="text-gray-600 text-sm leading-relaxed">
-              Nền tảng học lập trình trực tuyến hàng đầu Việt Nam. Giúp bạn
-              chinh phục con đường trở thành lập trình viên chuyên nghiệp.
+              Nền tảng học tập trực tuyến hàng đầu Việt Nam. Giúp bạn chinh phục
+              con đường trở thành lập trình viên chuyên nghiệp.
             </p>
           </div>
 
@@ -164,7 +161,7 @@ const Footer = () => {
         {/* Copyright */}
         <div className="border-t-2 border-primary border-opacity-20 mt-8 pt-8 text-center">
           <p className="text-gray-600 text-sm">
-            © 2025 CodeLearn. Tất cả quyền được bảo lưu.
+            © 2025 2HTV Academy. Tất cả quyền được bảo lưu.
           </p>
         </div>
       </div>
