@@ -1,4 +1,4 @@
-import axios from "../../customs/axios.custom";
+import axios from "../../customs/axios.customize";
 
 const loginService = async (email, password) => {
   const URL_BACKEND = "/auth/login";

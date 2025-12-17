@@ -1,4 +1,4 @@
-import axios from "../../customs/axios.custom";
+import axios from "../../customs/axios.customize";
 
 const getAccountService = async () => {
   const URL_BACKEND = "/shared/auth/account";
