@@ -7,6 +7,7 @@ import { App, ConfigProvider } from "antd";
 import { AuthWrapper } from "./contexts/auth.context.jsx";
 import viVN from "antd/locale/vi_VN";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
+import { CartWrapper } from "./contexts/cart.context.jsx";
 
 const muiTheme = createTheme({
   palette: {
@@ -24,9 +25,11 @@ createRoot(document.getElementById("root")).render(
     >
       <ThemeProvider theme={muiTheme}>
         <AuthWrapper>
-          <App>
-            <RouterProvider router={router} />
-          </App>
+          <CartWrapper>
+            <App>
+              <RouterProvider router={router} />
+            </App>
+          </CartWrapper>
         </AuthWrapper>
       </ThemeProvider>
     </ConfigProvider>
