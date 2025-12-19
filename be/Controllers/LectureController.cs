@@ -20,29 +20,63 @@ namespace App.Controllers
             var lectures = await _lectureService.GetAllAsync();
             if (lectures == null)
             {
-                return NotFound(new { message = "Lecture not found" });
+                return NotFound(new 
+                { 
+                    success = false,
+                    data = (object?)null,
+                    message = "Lecture not found" 
+                });
             }
-            return Ok(lectures);
+            return Ok(new
+            {
+                success = true,
+                data = lectures,
+                message = "Lấy danh sách lecture thành công"
+            });
         }
 
         [HttpGet("{id}")]
         public async Task<IActionResult> GetLectureByID(int id)
         {
             var lecture = await _lectureService.GetByIdAsync(id);
-            return Ok(lecture);
+            if (lecture == null)
+            {
+                return NotFound(new
+                {
+                    success = false,
+                    data = (object?)null,
+                    message = "Lecture not found"
+                });
+            }
+            return Ok(new
+            {
+                success = true,
+                data = lecture,
+                message = "Lấy thông tin lecture thành công"
+            });
         }
 
         [HttpPost]
         public async Task<IActionResult> CreateLecture([FromBody] LectureDTO dto)
         {
             if (!ModelState.IsValid)
-                return BadRequest(ModelState);
+                return BadRequest(new
+                {
+                    success = false,
+                    data = (object?)null,
+                    message = "Dữ liệu không hợp lệ"
+                });
 
             var created = await _lectureService.CreateAsync(dto);
             return CreatedAtAction(
                 nameof(GetLectureByID),
                 new { id = created.Id },
-                created
+                new
+                {
+                    success = true,
+                    data = created,
+                    message = "Tạo lecture thành công"
+                }
             );
         }
 
@@ -52,11 +86,21 @@ namespace App.Controllers
             try
             {
                 var updatedLecture = await _lectureService.UpdateAsync(id, dto);
-                return Ok(updatedLecture);
+                return Ok(new
+                {
+                    success = true,
+                    data = updatedLecture,
+                    message = "Cập nhật lecture thành công"
+                });
             }
             catch (AppException ex) // nếu bạn dùng AppException để báo lỗi
             {
-                return BadRequest(new { message = ex.Message, code = ex.ErrorCode });
+                return BadRequest(new 
+                { 
+                    success = false,
+                    data = (object?)null,
+                    message = ex.Message
+                });
             }
         }
 
@@ -66,11 +110,21 @@ namespace App.Controllers
             try
             {
                 await _lectureService.DeleteAsync(id);
-                return NoContent(); // 204 No Content là chuẩn cho delete thành công
+                return Ok(new
+                {
+                    success = true,
+                    data = (object?)null,
+                    message = "Xóa lecture thành công"
+                });
             }
-            catch (AppException ex) // nếu chapter không tồn tại hoặc lỗi business
+            catch (AppException ex) // nếu lecture không tồn tại hoặc lỗi business
             {
-                return NotFound(new { message = ex.Message, code = ex.ErrorCode });
+                return NotFound(new 
+                { 
+                    success = false,
+                    data = (object?)null,
+                    message = ex.Message
+                });
             }
         }
     } 
