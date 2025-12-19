@@ -9,9 +9,9 @@ const loginService = async (email, password) => {
   return response;
 };
 
-const registerService = async (email, fullName, password) => {
+const registerService = async (email, fullName, password, confirmPassword) => {
   const URL_BACKEND = "/auth/register";
-  const dataRegister = { email, fullName, password };
+  const dataRegister = { email, fullName, password, confirmPassword };
 
   const response = await axios.post(URL_BACKEND, dataRegister);
 
