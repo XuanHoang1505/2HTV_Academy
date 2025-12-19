@@ -16,7 +16,8 @@ const RegisterPage = () => {
       const res = await registerService(
         values.email.trim(),
         values.fullName.trim(),
-        values.password
+        values.password,
+        values.confirmPassword
       );
 
       if (res.success) {
