@@ -1,4 +1,3 @@
-using System.Security.Claims;
 using App.DTOs;
 using App.Services.Interfaces;
 using Microsoft.AspNetCore.Authorization;
@@ -18,7 +17,7 @@ namespace App.Controllers
             _cartService = cartService;
         }
 
-        public string? GetUserId()
+        private string? GetUserId()
         {
             return User.FindFirst("userId")?.Value;
         }
@@ -28,10 +27,16 @@ namespace App.Controllers
         {
             var userId = GetUserId();
             if (string.IsNullOrEmpty(userId))
-                return Unauthorized();
+                return Unauthorized(new { success = false, message = "Unauthorized" });
 
-            var cartDto = await _cartService.GetCartByUserIdAsync(userId);
-            return Ok(cartDto);
+            var cart = await _cartService.GetCartByUserIdAsync(userId);
+
+            return Ok(new
+            {
+                success = true,
+                message = "Lấy giỏ hàng thành công",
+                data = cart
+            });
         }
 
         [HttpGet("summary")]
@@ -39,10 +44,16 @@ namespace App.Controllers
         {
             var userId = GetUserId();
             if (string.IsNullOrEmpty(userId))
-                return Unauthorized();
+                return Unauthorized(new { success = false, message = "Unauthorized" });
 
             var summary = await _cartService.GetCartSummaryAsync(userId);
-            return Ok(summary);
+
+            return Ok(new
+            {
+                success = true,
+                message = "Lấy tổng giỏ hàng thành công",
+                data = summary
+            });
         }
 
         [HttpPost("add")]
@@ -50,10 +61,15 @@ namespace App.Controllers
         {
             var userId = GetUserId();
             if (string.IsNullOrEmpty(userId))
-                return Unauthorized();
+                return Unauthorized(new { success = false, message = "Unauthorized" });
 
             await _cartService.AddCourseToCartAsync(userId, request.CourseId);
-            return Ok(new { message = "Đã thêm khóa học vào giỏ hàng thành công" });
+
+            return Ok(new
+            {
+                success = true,
+                message = "Đã thêm khóa học vào giỏ hàng"
+            });
         }
 
         [HttpDelete("remove/{courseId}")]
@@ -61,10 +77,15 @@ namespace App.Controllers
         {
             var userId = GetUserId();
             if (string.IsNullOrEmpty(userId))
-                return Unauthorized();
+                return Unauthorized(new { success = false, message = "Unauthorized" });
 
             await _cartService.RemoveCourseFromCartAsync(userId, courseId);
-            return Ok(new { message = "Đã xóa khóa học khỏi giỏ hàng" });
+
+            return Ok(new
+            {
+                success = true,
+                message = "Đã xóa khóa học khỏi giỏ hàng"
+            });
         }
 
         [HttpDelete("clear")]
@@ -72,10 +93,15 @@ namespace App.Controllers
         {
             var userId = GetUserId();
             if (string.IsNullOrEmpty(userId))
-                return Unauthorized();
+                return Unauthorized(new { success = false, message = "Unauthorized" });
 
             await _cartService.ClearCartAsync(userId);
-            return Ok(new { message = "Đã xóa toàn bộ giỏ hàng" });
+
+            return Ok(new
+            {
+                success = true,
+                message = "Đã xóa toàn bộ giỏ hàng"
+            });
         }
 
         [HttpGet("check/{courseId}")]
@@ -83,10 +109,16 @@ namespace App.Controllers
         {
             var userId = GetUserId();
             if (string.IsNullOrEmpty(userId))
-                return Unauthorized();
+                return Unauthorized(new { success = false, message = "Unauthorized" });
 
             var isInCart = await _cartService.IsCourseInCartAsync(userId, courseId);
-            return Ok(new { isInCart });
+
+            return Ok(new
+            {
+                success = true,
+                message = "Kiểm tra khóa học trong giỏ hàng",
+                data = new { isInCart }
+            });
         }
     }
 }
