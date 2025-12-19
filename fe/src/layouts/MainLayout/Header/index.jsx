@@ -1,4 +1,3 @@
-import CodeIcon from "@mui/icons-material/Code";
 import Badge from "@mui/material/Badge";
 import IconButton from "@mui/material/IconButton";
 import Tooltip from "@mui/material/Tooltip";
@@ -85,10 +84,9 @@ const Header = () => {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-20">
           <Link to={"/"} className="flex items-center space-x-2">
-            <div className="bg-primary p-2 rounded-lg">
-              <CodeIcon className="text-white text-2xl" />
-            </div>
-            <span className="text-xl font-bold text-primary">2HTV Academy</span>
+            <span className="text-2xl font-bold text-primary">
+              2HTV Academy
+            </span>
           </Link>
 
           <nav className="hidden md:flex items-center space-x-8">
@@ -297,7 +295,7 @@ const Header = () => {
                     </Button>
                   </Link>
                   <Divider type="vertical" className="border-2 h-8" />
-                  <Link to={"/dang-ky"}>
+                  <Link to={"/dang-ky-tai-khoan"}>
                     <Button variant="outlined">Đăng ký</Button>
                   </Link>
                 </div>

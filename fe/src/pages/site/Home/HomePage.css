@@ -1,0 +1,114 @@
+.introduce-homepage {
+  position: relative;
+  overflow: hidden;
+}
+
+.introduce-homepage__wave {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 60px;
+  background: url(../../../assets/wave.png);
+  background-size: 800px 60px;
+}
+
+@media (min-width: 768px) {
+  .introduce-homepage__wave {
+    height: 80px;
+    background-size: 900px 80px;
+  }
+}
+
+@media (min-width: 1024px) {
+  .introduce-homepage__wave {
+    height: 100px;
+    background-size: 1000px 100px;
+  }
+}
+
+.introduce-homepage__wave--1 {
+  animation: animate 30s linear infinite;
+  z-index: 1000;
+  opacity: 1;
+  animation-delay: 0s;
+  bottom: 0;
+}
+
+.introduce-homepage__wave--2 {
+  animation: animate2 10s linear infinite;
+  z-index: 999;
+  opacity: 0.5;
+  animation-delay: -5s;
+  bottom: 5px;
+}
+
+@media (min-width: 768px) {
+  .introduce-homepage__wave--2 {
+    bottom: 8px;
+  }
+}
+
+@media (min-width: 1024px) {
+  .introduce-homepage__wave--2 {
+    bottom: 10px;
+  }
+}
+
+.introduce-homepage__wave--3 {
+  animation: animate 30s linear infinite;
+  z-index: 998;
+  opacity: 0.2;
+  animation-delay: -2s;
+  bottom: 8px;
+}
+
+@media (min-width: 768px) {
+  .introduce-homepage__wave--3 {
+    bottom: 12px;
+  }
+}
+
+@media (min-width: 1024px) {
+  .introduce-homepage__wave--3 {
+    bottom: 15px;
+  }
+}
+
+.introduce-homepage__wave--4 {
+  animation: animate2 5s linear infinite;
+  z-index: 997;
+  opacity: 0.7;
+  animation-delay: -5s;
+  bottom: 10px;
+}
+
+@media (min-width: 768px) {
+  .introduce-homepage__wave--4 {
+    bottom: 15px;
+  }
+}
+
+@media (min-width: 1024px) {
+  .introduce-homepage__wave--4 {
+    bottom: 20px;
+  }
+}
+
+@keyframes animate {
+  0% {
+    background-position-x: 0;
+  }
+  100% {
+    background-position-x: 1000px;
+  }
+}
+
+@keyframes animate2 {
+  0% {
+    background-position-x: 0;
+  }
+  100% {
+    background-position-x: -1000px;
+  }
+}

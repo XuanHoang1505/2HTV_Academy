@@ -1,11 +1,11 @@
 import axios from "../../customs/axios.customize";
 
-const getAccountService = async () => {
-  const URL_BACKEND = "/shared/auth/account";
+const getAllCategoryPublic = async () => {
+  const URL_BACKEND = "/categories";
 
   const response = await axios.get(URL_BACKEND);
 
   return response;
 };
 
-export { getAccountService };
+export { getAllCategoryPublic };
