@@ -17,9 +17,11 @@ const LoginPage = () => {
       setLoading(true);
 
       const res = await loginService(
-        values.email.trim(),
+        values.username.trim(),
         values.password.trim()
       );
+
+      console.log(res);
 
       if (res.success) {
         notification.success({
@@ -103,16 +105,15 @@ const LoginPage = () => {
         >
           <Form.Item
             label={
-              <span style={{ color: "#1E293B", fontWeight: "500" }}>Email</span>
+              <span style={{ color: "#1E293B", fontWeight: "500" }}>
+                Username
+              </span>
             }
-            name="email"
-            rules={[
-              { required: true, message: "Vui lòng điền email!" },
-              { type: "email", message: "Vui lòng nhập đúng định dạng email!" },
-            ]}
+            name="username"
+            rules={[{ required: true, message: "Vui lòng điền username!" }]}
           >
             <Input
-              placeholder="Nhập email"
+              placeholder="Nhập username"
               disabled={loading}
               className="rounded-[8px] px-[10px] py-[12px] text-sm border border-gray-300 hover:border-primary focus:border-primary"
             />
