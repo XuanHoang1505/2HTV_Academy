@@ -110,7 +110,7 @@ namespace App.Controllers
 
         // POST /api/auth/verify-otp
         [HttpPost("verify-otp")]
-        public async Task<IActionResult> VerifyOtp([FromForm] VerifyOtpDTO dto)
+        public async Task<IActionResult> VerifyOtp([FromBody] VerifyOtpDTO dto)
         {
             var isValid = _otpService.ValidateOtp(dto.Email, dto.Otp);
 
@@ -217,7 +217,7 @@ namespace App.Controllers
         {
             try
             {
-                await _otpService.SendOtp(dto.Identifier);
+                await _otpService.SendOtp(dto.Email);
 
                 return Ok(new
                 {
