@@ -11,6 +11,7 @@ namespace App.Controllers
     public class UserController : ControllerBase
     {
         private readonly IUserService _userService;
+
         public UserController(IUserService userService)
         {
             _userService = userService;
@@ -33,33 +34,34 @@ namespace App.Controllers
         public async Task<IActionResult> GetUserById(string id)
         {
             var user = await _userService.GetUserByIdAsync(id);
+
+            if (user == null)
+            {
+                return NotFound(new
+                {
+                    success = false,
+                    message = $"Không tìm thấy user với id {id}"
+                });
+            }
+
             return Ok(new
             {
                 success = true,
-                message = "Lấy user thành công ",
                 data = user
-            }
-             );
+            });
         }
 
         [HttpPost]
         public async Task<IActionResult> CreateUser(UserDTO dto)
         {
             var user = await _userService.CreateUserAsync(dto);
-            if (user == null)
-                return NotFound(new
-                {
-                    success = false,
-                    message = "Tạo user không thành công"
-                });
 
             return Ok(new
             {
                 success = true,
-                message = "Tạo user thành công ",
-                data = user
-            }
-       );
+                data = user,
+                message = "Tạo user thành công"
+            });
         }
 
         [HttpPut("{id}")]
@@ -68,19 +70,21 @@ namespace App.Controllers
             var user = await _userService.UpdateUserAsync(id, dto);
 
             if (user == null)
+            {
                 return NotFound(new
                 {
                     success = false,
-                    message = "Cập nhật không thành công"
+                    message = $"Không tìm thấy user với id {id}"
                 });
+            }
 
             return Ok(new
             {
                 success = true,
-                message = "Sửa user thành công ",
-                data = user
-            }
-             );
+
+                data = user,
+                message = "Cập nhật user thành công"
+            });
         }
 
         [HttpDelete("{id}")]
@@ -145,6 +149,5 @@ namespace App.Controllers
             }
               );
         }
-
     }
 }

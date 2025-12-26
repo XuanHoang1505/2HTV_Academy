@@ -1,26 +1,26 @@
 import axios from "../../customs/axios.customize";
 
-const loginService = async (email, password) => {
+const loginService = async (userName, password) => {
   const URL_BACKEND = "/auth/login";
-  const dataLogin = { email, password };
+  const dataLogin = { userName, password };
 
   const response = await axios.post(URL_BACKEND, dataLogin);
 
   return response;
 };
 
-const registerService = async (email, fullName, password) => {
+const registerService = async (email, fullName, password, confirmPassword) => {
   const URL_BACKEND = "/auth/register";
-  const dataRegister = { email, fullName, password };
+  const dataRegister = { email, fullName, password, confirmPassword };
 
   const response = await axios.post(URL_BACKEND, dataRegister);
 
   return response;
 };
 
-const verifyEmailService = async (verificationCode) => {
-  const URL_BACKEND = "/auth/verify-email";
-  const dataSend = { verificationCode };
+const verifyEmailService = async (otp, email) => {
+  const URL_BACKEND = "/auth/verify-otp";
+  const dataSend = { otp, email };
 
   const response = await axios.post(URL_BACKEND, dataSend);
 
@@ -28,7 +28,7 @@ const verifyEmailService = async (verificationCode) => {
 };
 
 const resendVerificationCodeService = async (email) => {
-  const URL_BACKEND = "/auth/resend-verification";
+  const URL_BACKEND = "/auth/resend-otp";
   const dataResend = { email };
 
   const response = await axios.post(URL_BACKEND, dataResend);

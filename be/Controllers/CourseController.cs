@@ -1,6 +1,7 @@
 using App.Domain.Models;
 using App.DTOs;
 using App.Services.Interfaces;
+using App.Utils.Exceptions;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -187,25 +188,45 @@ namespace App.Controllers
             [FromQuery] string? sortBy,
             [FromQuery] bool sortDesc = false)
         {
-            var filter = new CourseFilterDTO
+            try
             {
-                Keyword = keyword,
-                CategoryId = categoryId,
-                MinPrice = minPrice,
-                MaxPrice = maxPrice,
-                IsPublished = isPublished,
-                SortBy = sortBy,
-                SortDesc = sortDesc
-            };
+                var filter = new CourseFilterDTO
+                {
+                    Keyword = keyword,
+                    CategoryId = categoryId,
+                    MinPrice = minPrice,
+                    MaxPrice = maxPrice,
+                    IsPublished = isPublished,
+                    SortBy = sortBy,
+                    SortDesc = sortDesc
+                };
 
-            var courses = await _courseService.SearchAsync(filter);
-            return Ok(new
-            {
-                success = true,
-                message = "Lấy các khóa học tìm kiếm thành công ",
-                data = courses
+                var courses = await _courseService.SearchAsync(filter);
+                return Ok(new
+                {
+                    success = true,
+                    data = courses,
+                    message = "Tìm kiếm khóa học thành công"
+                });
             }
-            );
+            catch (AppException ex)
+            {
+                return BadRequest(new
+                {
+                    success = false,
+                    data = (object?)null,
+                    message = ex.Message
+                });
+            }
+            catch (Exception)
+            {
+                return BadRequest(new
+                {
+                    success = false,
+                    data = (object?)null,
+                    message = "Đã xảy ra lỗi khi tìm kiếm khóa học"
+                });
+            }
         }
 
         [HttpGet("slug/{slug}")]
