@@ -7,7 +7,6 @@ namespace App.Controllers
 {
     [ApiController]
     [Route("api/categories")]
-    [Authorize(Roles = "Admin")]
     public class CategoryController : ControllerBase
     {
         private readonly ICategoryService _categoryService;
@@ -18,38 +17,107 @@ namespace App.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetAllCategories()
+        public async Task<IActionResult> GetAllCategories([FromQuery] int? page, [FromQuery] int? limit)
         {
-            var categories = await _categoryService.GetAllAsync();
-            return Ok(categories);
+            var categories = await _categoryService.GetAllAsync(page, limit);
+            return Ok(new
+            {
+                success = true,
+                message = "Lấy danh sách danh mục thành công",
+                data = categories
+            }
+            );
         }
 
         [HttpGet("{id}")]
         public async Task<IActionResult> GetByIdCategory(int id)
         {
             var category = await _categoryService.GetByIdAsync(id);
-            return Ok(category);
+            return Ok(new
+            {
+                success = true,
+                message = "Lấy danh mục thành công ",
+                data = category
+            }
+            );
         }
 
         [HttpPost]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> CreateCategory(CategoryDTO dto)
         {
             var category = await _categoryService.CreateAsync(dto);
-            return Ok(category);
+
+            if (category == null)
+                return NotFound(new
+                {
+                    success = false,
+                    message = "Tạo danh mục không thành công"
+                });
+
+            return Ok(new
+            {
+                success = true,
+                message = "Tạo danh mục thành công ",
+                data = category
+            }
+               );
         }
 
         [HttpPut("{id}")]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> UpdateCategory(int id, CategoryDTO dto)
         {
             var category = await _categoryService.UpdateAsync(id, dto);
-            return Ok(category);
+
+            if (category == null)
+                return NotFound(new
+                {
+                    success = false,
+                    message = "Cập nhật không thành công"
+                });
+
+            return Ok(new
+            {
+                success = true,
+                message = "Sửa danh mục thành công ",
+                data = category
+            }
+               );
         }
 
         [HttpDelete("{id}")]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> DeleteCategory(int id)
         {
             var category = await _categoryService.DeleteAsync(id);
-            return Ok(category);
+            if (!category)
+                return NotFound(new
+                {
+                    success = false,
+                    message = "Xóa thất bại"
+                });
+
+            return Ok(new
+            {
+                success = true,
+                message = "Xóa danh mục thành công ",
+                data = category
+            }
+        );
+        }
+
+        [HttpGet("slug/{slug}")]
+        public async Task<IActionResult> GetCategoryBySlug(string slug)
+        {
+            var category = await _categoryService.GetBySlugAsync(slug);
+            return Ok(new
+            {
+                success = true,
+                message = "Lấy danh mục thành công ",
+                data = category
+            }
+           );
         }
     }
 }

@@ -1,76 +1,106 @@
-    using AutoMapper;
-    using App.DTOs;
-    using App.Domain.Models;
-    using App.Repositories.Interfaces;
-    using App.Services.Interfaces;
-    using App.Utils.Exceptions;
+using AutoMapper;
+using App.DTOs;
+using App.Domain.Models;
+using App.Repositories.Interfaces;
+using App.Services.Interfaces;
+using App.Utils.Exceptions;
+using X.PagedList;
 
-    namespace App.Services.Implementations
+namespace App.Services.Implementations
+{
+    public class CategoryService : ICategoryService
     {
-        public class CategoryService : ICategoryService
+        private readonly ICategoryRepository _repository;
+        private readonly IMapper _mapper;
+
+        public CategoryService(ICategoryRepository repository, IMapper mapper)
         {
-            private readonly ICategoryRepository _repository;
-            private readonly IMapper _mapper;
+            _repository = repository;
+            _mapper = mapper;
+        }
 
-            public CategoryService(ICategoryRepository repository, IMapper mapper)
+        public async Task<CategoryDTO> GetByIdAsync(int id)
+        {
+            var category = await _repository.GetByIdAsync(id);
+            if (category == null)
+                throw new AppException(ErrorCode.CategoryNotFound, $"Không tìm thấy danh mục với ID = {id}");
+
+            return _mapper.Map<CategoryDTO>(category);
+        }
+
+
+        public async Task<object> GetAllAsync(int? page, int? limit)
+        {
+            if (!page.HasValue || !limit.HasValue)
             {
-                _repository = repository;
-                _mapper = mapper;
+                var allCategories = await _repository.AllCategoriesAsync();
+                var totalCategories = allCategories.Count();
+
+                return new
+                {
+                    data = _mapper.Map<IEnumerable<CategoryDTO>>(allCategories),
+                    total = totalCategories
+                };
             }
 
-            public async Task<CategoryDTO> GetByIdAsync(int id)
+            var categories = await _repository.GetAllAsync(page.Value, limit.Value);
+
+            return new
             {
-                var category = await _repository.GetByIdAsync(id);
-                if (category == null)
-                    throw new AppException(ErrorCode.CategoryNotFound, $"Không tìm thấy danh mục với ID = {id}");
+                data = _mapper.Map<IEnumerable<CategoryDTO>>(categories),
+                total = categories.TotalItemCount,
+                totalPages = categories.PageCount,
+                currentPage = categories.PageNumber,
+                limit = categories.PageSize
+            };
+        }
 
-                return _mapper.Map<CategoryDTO>(category);
-            }
 
+        public async Task<CategoryDTO> CreateAsync(CategoryDTO dto)
+        {
+            var slugExists = await _repository.ExistsBySlugAsync(dto.Slug);
+            if (slugExists)
+                throw new AppException(
+                    ErrorCode.SlugAlreadyExists,
+                    $"Slug '{dto.Slug}' đã tồn tại"
+                );
 
-            public async Task<IEnumerable<CategoryDTO>> GetAllAsync()
-            {
-                var categories = await _repository.GetAllAsync();
-                return _mapper.Map<IEnumerable<CategoryDTO>>(categories);
-            }
+            var entity = _mapper.Map<Category>(dto);
 
-            public async Task<CategoryDTO> CreateAsync(CategoryDTO dto)
-            {
-                var existing = await _repository.GetByIdAsync(dto.Id);
-                if (existing != null)
-                    throw new AppException(ErrorCode.CategorySlugAlreadyExists, "danh mục đã tồn tại.");
+            var created = await _repository.AddAsync(entity);
+            var dtoResult = _mapper.Map<CategoryDTO>(created);
 
-                var entity = _mapper.Map<Category>(dto);
+            return dtoResult;
+        }
 
-                var created = await _repository.AddAsync(entity);
-                var dtoResult = _mapper.Map<CategoryDTO>(created);
+        public async Task<CategoryDTO> UpdateAsync(int id, CategoryDTO dto)
+        {
+            var existing = await _repository.GetByIdAsync(id);
+            if (existing == null)
+                throw new AppException(ErrorCode.CategoryNotFound, $"Không tìm thấy danh mục với ID = {id}");
 
-                return dtoResult;
-            }
+            _mapper.Map(dto, existing);
+            await _repository.UpdateAsync(existing);
 
-            public async Task<CategoryDTO> UpdateAsync(int id, CategoryDTO dto)
-            {
-                var existing = await _repository.GetByIdAsync(id);
-                if (existing == null)
-                    throw new AppException(ErrorCode.CategoryNotFound, $"Không tìm thấy danh mục với ID = {id}");
+            var dtoResult = _mapper.Map<CategoryDTO>(existing);
 
-                _mapper.Map(dto, existing);
-                await _repository.UpdateAsync(existing);
+            return dtoResult;
+        }
 
-                var dtoResult = _mapper.Map<CategoryDTO>(existing);
+        public async Task<bool> DeleteAsync(int id)
+        {
+            var existing = await _repository.GetByIdAsync(id);
+            if (existing == null)
+                throw new AppException(ErrorCode.CategoryNotFound, $"Không tìm thấy danh mục với ID = {id}");
 
-                return dtoResult;
-            }
+            await _repository.DeleteAsync(id);
+            return true;
+        }
 
-            public async Task<bool> DeleteAsync(int id)
-            {
-                var existing = await _repository.GetByIdAsync(id);
-                if (existing == null)
-                    throw new AppException(ErrorCode.CategoryNotFound, $"Không tìm thấy danh mục với ID = {id}");
-
-                await _repository.DeleteAsync(id);
-                return true;
-            }
-
+        public async Task<CategoryDTO?> GetBySlugAsync(string slug)
+        {
+            var category = await _repository.GetBySlugAsync(slug);
+            return _mapper.Map<CategoryDTO>(category);
         }
     }
+}

@@ -5,6 +5,8 @@ using App.Services.Interfaces;
 using AutoMapper;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using X.PagedList;
+using X.PagedList.EF;
 
 namespace App.Repositories.Implementations
 {
@@ -34,7 +36,7 @@ namespace App.Repositories.Implementations
             _context = context;
         }
 
-        public async Task<IEnumerable<ApplicationUser>> GetAllUsersAsync()
+        public async Task<IEnumerable<ApplicationUser>> AllUsersAsync()
         {
             var users = await _userManager.Users.ToListAsync();
             return users;
@@ -103,6 +105,35 @@ namespace App.Repositories.Implementations
                 // user.RefreshTokenExpiryTime = expiry;
                 await _userManager.UpdateAsync(user);
             }
+        }
+
+        public async Task<bool> LockUserAsync(string userId)
+        {
+            var user = await _userManager.FindByIdAsync(userId);
+            if (user == null)
+                return false;
+
+            user.IsLocked = true;
+            var result = await _userManager.UpdateAsync(user);
+
+            return result.Succeeded;
+        }
+
+        public async Task<bool> UnLockUserAsync(string userId)
+        {
+            var user = await _userManager.FindByIdAsync(userId);
+            if (user == null)
+                return false;
+
+            user.IsLocked = false;
+            var result = await _userManager.UpdateAsync(user);
+
+            return result.Succeeded;
+        }
+
+        public async Task<IPagedList<ApplicationUser>> GetAllUsersPagedAsync(int page, int limit)
+        {
+            return await _userManager.Users.ToPagedListAsync(page, limit);
         }
     }
 }

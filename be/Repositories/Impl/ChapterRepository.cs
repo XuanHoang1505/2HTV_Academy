@@ -49,8 +49,8 @@ namespace App.Repositories.Implementations
 
         public async Task UpdateAsync(Chapter chapter)
         {
-             _context.Chapters.Update(chapter);
+            _context.Chapters.Update(chapter);
             await _context.SaveChangesAsync();
         }
-        }
     }
+}

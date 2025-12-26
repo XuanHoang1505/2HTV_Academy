@@ -53,6 +53,7 @@ namespace App.Utils.Exceptions
         CourseAlreadyInCart = 6008,
         CourseNotFound = 6009,
         EmptyCart = 6010,
+        SlugAlreadyExists = 6011,
 
         CategorySlugAlreadyExists = 6002,
         ParentCategoryNotFound = 6003,
