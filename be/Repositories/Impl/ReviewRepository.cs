@@ -3,6 +3,8 @@ using App.Domain.Models;
 using App.Enums;
 using App.Repositories.Interfaces;
 using Microsoft.EntityFrameworkCore;
+using X.PagedList;
+using X.PagedList.EF;
 
 namespace App.Repositories.Implementations
 {
@@ -36,7 +38,7 @@ namespace App.Repositories.Implementations
                 .FirstOrDefaultAsync(r => r.Id == id);
         }
 
-        public async Task<IEnumerable<Review>> GetAllAsync()
+        public async Task<IEnumerable<Review>> AllAsync()
         {
             return await _context.Reviews
                 .Include(r => r.User)
@@ -134,6 +136,13 @@ namespace App.Repositories.Implementations
             return distribution;
         }
 
-
+        public async Task<IPagedList<Review>> GetAllAsync(int page, int limit)
+        {
+            return await _context.Reviews
+               .Include(r => r.User)
+               .Include(r => r.Course)
+               .OrderByDescending(r => r.CreatedAt)
+               .ToPagedListAsync(page, limit);
+        }
     }
 }

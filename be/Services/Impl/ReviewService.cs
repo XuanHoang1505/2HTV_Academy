@@ -89,10 +89,27 @@ namespace App.Services
             return _mapper.Map<ReviewDTO>(review);
         }
 
-        public async Task<IEnumerable<ReviewDTO>> GetAllReviewsAsync()
+        public async Task<PagedResult<ReviewDTO>> GetAllReviewsAsync(int? page, int? limit)
         {
-            var reviews = await _reviewRepository.GetAllAsync();
-            return _mapper.Map<IEnumerable<ReviewDTO>>(reviews);
+            if (!page.HasValue || !limit.HasValue)
+            {
+                var allReviews = await _reviewRepository.AllAsync();
+                return new PagedResult<ReviewDTO>
+                {
+                    Data = _mapper.Map<IEnumerable<ReviewDTO>>(allReviews),
+                    Total = allReviews.Count()
+                };
+            }
+            var pagedReviews = await _reviewRepository.GetAllAsync(page.Value, limit.Value);
+            return new PagedResult<ReviewDTO>
+            {
+                Data = _mapper.Map<IEnumerable<ReviewDTO>>(pagedReviews),
+                Total = pagedReviews.TotalItemCount,
+                TotalPages = pagedReviews.PageCount,
+                CurrentPage = pagedReviews.PageNumber,
+                Limit = pagedReviews.PageSize
+            };
+
         }
 
         public async Task<IEnumerable<ReviewDTO>> GetReviewsByCourseIdAsync(int courseId)

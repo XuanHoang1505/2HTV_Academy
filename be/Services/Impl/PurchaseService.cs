@@ -5,6 +5,7 @@ using App.Repositories.Interfaces;
 using App.Services.Interfaces;
 using App.Utils.Exceptions;
 using AutoMapper;
+using Azure;
 
 public class PurchaseService : IPurchaseService
 {
@@ -19,10 +20,28 @@ public class PurchaseService : IPurchaseService
         _courseRepository = courseRepository;
     }
 
-    public async Task<IEnumerable<PurchaseDTO>> GetAllPurchasesAsync()
+    public async Task<PagedResult<PurchaseDTO>> GetAllPurchasesAsync(int? page, int? limit)
     {
-        var purchases = await _purchaseRepository.GetAllPurchasesAsync();
-        return _mapper.Map<IEnumerable<PurchaseDTO>>(purchases);
+
+        if (!page.HasValue || !limit.HasValue)
+        {
+            var allPurchases = await _purchaseRepository.AllPurchasesAsync();
+
+            return new PagedResult<PurchaseDTO>
+            {
+                Data = _mapper.Map<IEnumerable<PurchaseDTO>>(allPurchases),
+                Total = allPurchases.Count()
+            };
+        }
+        var purchases = await _purchaseRepository.GetPagedPurchasesAsync(page.Value, limit.Value);
+        return new PagedResult<PurchaseDTO>
+        {
+            Data = _mapper.Map<IEnumerable<PurchaseDTO>>(purchases),
+            Total = purchases.TotalItemCount,
+            TotalPages = purchases.PageCount,
+            CurrentPage = purchases.PageNumber,
+            Limit = purchases.PageSize
+        };
     }
 
     public async Task<IEnumerable<PurchaseItemDTO>> GetPurchaseItemByPurchaseIdAsync(int purchaseId)
