@@ -18,7 +18,7 @@
                 _mapper = mapper;
             }
 
-            public async Task<CategoryDTO> GetByIdAsync(int id)
+            public async Task<CategoryDTO?> GetByIdAsync(int id)
             {
                 var category = await _repository.GetByIdAsync(id);
                 if (category == null)
