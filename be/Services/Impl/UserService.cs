@@ -434,10 +434,40 @@ namespace App.Services.Implementations
             return _mapper.Map<UserDTO>(user);
         }
 
-        public async Task<IEnumerable<UserDTO>> GetAllUsersAsync()
+        public async Task<Object> GetAllUsersAsync(int? page, int? limit)
         {
-            var users = await _userRepository.GetAllUsersAsync();
-            return _mapper.Map<IEnumerable<UserDTO>>(users);
+            if (page.HasValue && limit.HasValue)
+            {
+                var pagedUsers = await _userRepository.GetAllUsersPagedAsync(page.Value, limit.Value);
+
+                return new
+                {
+                    data = _mapper.Map<IEnumerable<UserDTO>>(pagedUsers),
+                    total = pagedUsers.TotalItemCount,
+                    totalPages = pagedUsers.PageCount,
+                    currentPage = pagedUsers.PageNumber,
+                    limit = pagedUsers.PageSize
+                };
+            }
+            else
+            {
+                var users = await _userRepository.AllUsersAsync();
+                return new
+                {
+                    data = _mapper.Map<IEnumerable<UserDTO>>(users),
+                    total = users.Count()
+                };
+            }
+        }
+
+        public async Task<bool> LockUserAsync(string userId)
+        {
+            return await _userRepository.LockUserAsync(userId);
+        }
+
+        public async Task<bool> UnLockUserAsync(string userId)
+        {
+            return await _userRepository.UnLockUserAsync(userId);
         }
     }
 }

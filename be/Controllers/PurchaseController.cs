@@ -1,6 +1,7 @@
 using App.DTOs;
 using App.Services.Interfaces;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Authorization;
 namespace App.Controllers
 {
     [ApiController]
