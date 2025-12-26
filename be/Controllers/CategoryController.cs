@@ -19,14 +19,22 @@ namespace App.Controllers
         [HttpGet]
         public async Task<IActionResult> GetAllCategories([FromQuery] int? page, [FromQuery] int? limit)
         {
-            var categories = await _categoryService.GetAllAsync(page, limit);
+            var result = await _categoryService.GetAllAsync(page, limit);
+
             return Ok(new
             {
                 success = true,
                 message = "Lấy danh sách danh mục thành công",
-                data = categories
-            }
-            );
+                data = result.Data,
+                pagination = new
+                {
+                    total = result.Total,
+                    totalPages = page.HasValue ? result.TotalPages : null,
+                    currentPage = page.HasValue ? result.CurrentPage : null,
+                    limit = page.HasValue ? result.Limit : null
+                }
+            });
+
         }
 
         [HttpGet("{id}")]

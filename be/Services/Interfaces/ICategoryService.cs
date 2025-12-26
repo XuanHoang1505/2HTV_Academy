@@ -6,7 +6,7 @@ namespace App.Services.Interfaces
     {
         Task<CategoryDTO?> GetByIdAsync(int id);
         Task<CategoryDTO?> GetBySlugAsync(string slug);
-        Task<Object> GetAllAsync(int? page, int? limit);
+        Task<PagedResult<CategoryDTO>> GetAllAsync(int? page, int? limit);
         Task<CategoryDTO> CreateAsync(CategoryDTO dto);
         Task<CategoryDTO> UpdateAsync(int id, CategoryDTO dto);
         Task<bool> DeleteAsync(int id);
