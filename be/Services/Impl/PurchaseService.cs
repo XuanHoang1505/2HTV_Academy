@@ -114,24 +114,24 @@ public class PurchaseService : IPurchaseService
         return _mapper.Map<IEnumerable<PurchaseDTO>>(purchases);
     }
 
-     public async Task<PurchaseDTO> UpdatePurchaseStatusAsync(int id, UpdatePurchaseStatusDTO dto)
+    public async Task<PurchaseDTO> UpdatePurchaseStatusAsync(int id, UpdatePurchaseStatusDTO dto)
+    {
+        var purchase = await _purchaseRepository.GetByIdAsync(id);
+        if (purchase == null)
         {
-            var purchase = await _purchaseRepository.GetByIdAsync(id);
-            if (purchase == null)
-            {
-                throw new AppException(ErrorCode.PurchaseNotFound, $"Không tìm thấy đơn mua với ID = {id}");
-            }
-
-            purchase.Status = dto.Status;
-            
-            if (dto.Status == PurchaseStatus.Completed)
-            {
-                purchase.CreatedAt = DateTime.Now;
-            }
-
-            await _purchaseRepository.UpdatePurchaseAsync(purchase);
-            
-            return _mapper.Map<PurchaseDTO>(purchase);
+            throw new AppException(ErrorCode.PurchaseNotFound, $"Không tìm thấy đơn mua với ID = {id}");
         }
+
+        purchase.Status = dto.Status;
+
+        if (dto.Status == PurchaseStatus.Completed)
+        {
+            purchase.CreatedAt = DateTime.Now;
+        }
+
+        await _purchaseRepository.UpdatePurchaseAsync(purchase);
+
+        return _mapper.Map<PurchaseDTO>(purchase);
+    }
 
 }

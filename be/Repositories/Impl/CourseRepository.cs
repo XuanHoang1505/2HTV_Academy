@@ -4,6 +4,8 @@ using App.DTOs;
 using App.Repositories.Interfaces;
 using Microsoft.EntityFrameworkCore;
 using System.Linq;
+using X.PagedList;
+using X.PagedList.EF;
 
 namespace App.Repositories.Implementations
 {
@@ -22,11 +24,12 @@ namespace App.Repositories.Implementations
                 .FirstOrDefaultAsync(c => c.Id == id);
         }
 
-        public async Task<IEnumerable<Course>> GetAllAsync()
+        public async Task<IPagedList<Course>> GetAllAsync(int page, int limit)
         {
-            return await _context.Courses.Include(c => c.Category).Include(u => u.Educator)
-                .ToListAsync();
+            return await _context.Courses.Include(c => c.Category).Include(u => u.Educator).ToPagedListAsync(page, limit);
+
         }
+
 
         public async Task<Course> AddAsync(Course course)
         {
@@ -145,6 +148,67 @@ namespace App.Repositories.Implementations
             }
 
             return await query.ToListAsync();
+        }
+
+        public async Task<Course?> GetBySlugAsync(string slug)
+        {
+            return await _context.Courses.Include(c => c.Category)
+                .FirstOrDefaultAsync(c => c.Slug == slug);
+        }
+
+        public async Task<IEnumerable<Course>> GetCoursesBestSellerAsync()
+        {
+            return await _context.Courses
+                     .Include(c => c.Category)
+                     .Where(c => c.Status.Equals("published") && c.IsPublished == true)
+                     .OrderByDescending(c => c.TotalStudents)
+                     .Take(4)
+                     .ToListAsync();
+        }
+
+        public async Task<IEnumerable<Course>> GetCoursesNewestAsync()
+        {
+            return await _context.Courses
+                       .Include(c => c.Category)
+                       .Where(c => c.Status.Equals("published") && c.IsPublished == true)
+                       .OrderByDescending(c => c.CreatedAt)
+                       .Take(4)
+                       .ToListAsync();
+        }
+
+        public async Task<IEnumerable<Course>> GetCoursesRatingAsync()
+        {
+            return await _context.Courses
+                       .Include(c => c.Category)
+                       .Where(c => c.Status.Equals("published") && c.IsPublished == true)
+                       .OrderByDescending(c => c.AverageRating)
+                       .Take(4)
+                       .ToListAsync();
+        }
+
+        public async Task<bool> ExistsBySlugAsync(string slug)
+        {
+            return await _context.Courses
+                .AnyAsync(c => c.Slug == slug);
+        }
+
+        public async Task<IPagedList<Course>> GetAllPublishAsync(int page, int limit)
+        {
+            return await _context.Courses.Include(c => c.Category).Include(u => u.Educator)
+                 .Where(c => c.Status.Equals("published") && c.IsPublished == true).ToPagedListAsync(page, limit);
+        }
+
+        public async Task<IEnumerable<Course>> AllCoursesPublishAsync()
+        {
+            return await _context.Courses.Include(c => c.Category).Include(u => u.Educator)
+                 .Where(c => c.Status.Equals("published") && c.IsPublished == true)
+                 .ToListAsync();
+        }
+
+        public async Task<IEnumerable<Course>> AllCoursesAsync()
+        {
+            return await _context.Courses.Include(c => c.Category).Include(u => u.Educator)
+                .ToListAsync();
         }
     }
 }

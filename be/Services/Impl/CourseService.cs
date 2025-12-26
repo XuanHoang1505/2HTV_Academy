@@ -5,6 +5,7 @@ using App.Repositories.Interfaces;
 using App.Services.Interfaces;
 using App.Utils.Exceptions;
 using App.Services;
+using App.Domain.Enums;
 
 namespace App.Services.Implementations
 {
@@ -31,19 +32,35 @@ namespace App.Services.Implementations
             return _mapper.Map<CourseDTO>(course);
         }
 
-        public async Task<IEnumerable<CourseDTO>> GetAllAsync()
-        {
-            var courses = await _repository.GetAllAsync();
-            return _mapper.Map<IEnumerable<CourseDTO>>(courses);
-        }
 
         public async Task<CourseDTO> CreateAsync(CourseDTO dto)
         {
+            var slugExists = await _repository.ExistsBySlugAsync(dto.Slug);
+            if (slugExists)
+                throw new AppException(
+                    ErrorCode.SlugAlreadyExists,
+                    $"Slug '{dto.Slug}' đã tồn tại"
+                );
+
             var entity = _mapper.Map<Course>(dto);
 
             if (dto.CourseThumbnailFile != null && dto.CourseThumbnailFile.Length > 0)
             {
-                entity.CourseThumbnail = await _cloudinaryService.UploadImageAsync(dto.CourseThumbnailFile, "course_thumbnail");
+                entity.CourseThumbnail = await _cloudinaryService
+                    .UploadImageAsync(dto.CourseThumbnailFile, "course_thumbnail");
+            }
+
+            if (dto.Status.Equals("published"))
+            {
+                entity.Status = CourseStatus.published;
+                entity.IsPublished = true;
+                entity.PublishedAt = DateTime.UtcNow;
+            }
+            else
+            {
+                entity.Status = CourseStatus.draft;
+                entity.IsPublished = false;
+                entity.PublishedAt = null;
             }
 
             var created = await _repository.AddAsync(entity);
@@ -54,7 +71,10 @@ namespace App.Services.Implementations
         {
             var existing = await _repository.GetByIdAsync(id);
             if (existing == null)
-                throw new AppException(ErrorCode.CourseNotFound, $"Không tìm thấy khóa học với ID = {id}");
+                throw new AppException(
+                    ErrorCode.CourseNotFound,
+                    $"Không tìm thấy khóa học với ID = {id}"
+                );
 
             if (dto.CourseThumbnailFile != null && dto.CourseThumbnailFile.Length > 0)
             {
@@ -63,15 +83,28 @@ namespace App.Services.Implementations
                     var oldPublicId = CloudinaryService.ExtractPublicId(existing.CourseThumbnail);
                     await _cloudinaryService.DeleteImageAsync(oldPublicId);
                 }
-                existing.CourseThumbnail = await _cloudinaryService.UploadImageAsync(dto.CourseThumbnailFile, "course_thumbnail");
+
+                existing.CourseThumbnail = await _cloudinaryService
+                    .UploadImageAsync(dto.CourseThumbnailFile, "course_thumbnail");
             }
 
-
             _mapper.Map(dto, existing);
+
+            if (dto.Status.Equals("published"))
+            {
+                existing.Status = CourseStatus.published;
+                existing.IsPublished = true;
+                if (existing.PublishedAt == null)
+                {
+                    existing.PublishedAt = DateTime.UtcNow;
+                }
+            }
+
             await _repository.UpdateAsync(existing);
 
             return _mapper.Map<CourseDTO>(existing);
         }
+
 
         public async Task<bool> DeleteAsync(int id)
         {
@@ -159,5 +192,80 @@ namespace App.Services.Implementations
             return _mapper.Map<IEnumerable<CourseDTO>>(courses);
         }
 
+        public async Task<CourseDTO?> GetBySlugAsync(string slug)
+        {
+            var course = await _repository.GetBySlugAsync(slug);
+            return _mapper.Map<CourseDTO>(course);
+        }
+
+        public async Task<IEnumerable<CourseDTO>> GetCoursesBestSellerAsync()
+        {
+            var courses = await _repository.GetCoursesBestSellerAsync();
+            return _mapper.Map<IEnumerable<CourseDTO>>(courses);
+        }
+
+        public async Task<IEnumerable<CourseDTO>> GetCoursesNewestAsync()
+        {
+            var courses = await _repository.GetCoursesNewestAsync();
+            return _mapper.Map<IEnumerable<CourseDTO>>(courses);
+        }
+
+        public async Task<IEnumerable<CourseDTO>> GetCoursesRatingAsync()
+        {
+            var courses = await _repository.GetCoursesRatingAsync();
+            return _mapper.Map<IEnumerable<CourseDTO>>(courses);
+        }
+
+        public async Task<object> GetAllCoursesPublishAsync(int? page, int? limit)
+        {
+            if (!page.HasValue || !limit.HasValue)
+            {
+                var allCorsesPublish = await _repository.AllCoursesPublishAsync();
+                var totalCourses = allCorsesPublish.Count();
+
+                return new
+                {
+                    data = _mapper.Map<IEnumerable<CourseDTO>>(allCorsesPublish),
+                    total = totalCourses
+                };
+            }
+
+            var courses = await _repository.GetAllPublishAsync(page.Value, limit.Value);
+
+            return new
+            {
+                data = _mapper.Map<IEnumerable<CourseDTO>>(courses),
+                total = courses.TotalItemCount,
+                totalPages = courses.PageCount,
+                currentPage = courses.PageNumber,
+                limit = courses.PageSize
+            };
+        }
+
+        public async Task<object> GetAllCourses(int? page, int? limit)
+        {
+            if (!page.HasValue || !limit.HasValue)
+            {
+                var allCorses = await _repository.AllCoursesAsync();
+                var totalCourses = allCorses.Count();
+
+                return new
+                {
+                    data = _mapper.Map<IEnumerable<CourseDTO>>(allCorses),
+                    total = totalCourses
+                };
+            }
+
+            var courses = await _repository.GetAllAsync(page.Value, limit.Value);
+
+            return new
+            {
+                data = _mapper.Map<IEnumerable<CourseDTO>>(courses),
+                total = courses.TotalItemCount,
+                totalPages = courses.PageCount,
+                currentPage = courses.PageNumber,
+                limit = courses.PageSize
+            };
+        }
     }
 }

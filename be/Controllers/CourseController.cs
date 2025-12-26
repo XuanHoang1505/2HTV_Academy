@@ -1,5 +1,7 @@
+using App.Domain.Models;
 using App.DTOs;
 using App.Services.Interfaces;
+using App.Utils.Exceptions;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -7,7 +9,7 @@ namespace App.Controllers
 {
     [ApiController]
     [Route("api/courses")]
-    [Authorize(Roles = "Admin")]
+
     public class CourseController : ControllerBase
     {
         private readonly ICourseService _courseService;
@@ -22,49 +24,127 @@ namespace App.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetAllCourse()
+        public async Task<IActionResult> GetAllCourses(int? page, int? limit)
         {
-            var courses = await _courseService.GetAllAsync();
-            return Ok(courses);
+            var courses = await _courseService.GetAllCourses(page, limit);
+            return Ok(new
+            {
+                success = true,
+                message = "Lấy danh sách khóa học thành công ",
+                data = courses
+            }
+           );
+        }
+
+        [HttpGet("courses-published")]
+        public async Task<IActionResult> GetAllCoursesPublish(int? page, int? limit)
+        {
+            var courses = await _courseService.GetAllCoursesPublishAsync(page, limit);
+            return Ok(new
+            {
+                success = true,
+                message = "Lấy danh sách khóa học thành công ",
+                data = courses
+            }
+           );
         }
 
         [HttpGet("{id}")]
         public async Task<IActionResult> GetByIdCourse(int id)
         {
             var course = await _courseService.GetByIdAsync(id);
-            return Ok(course);
+            return Ok(new
+            {
+                success = true,
+                message = "Lấy khóa học thành công ",
+                data = course
+            }
+            );
         }
 
+
+
         [HttpPost]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> CreateCourse(CourseDTO dto)
         {
             var userId = GetUserId();
             dto.EducatorId = userId;
             var course = await _courseService.CreateAsync(dto);
-            return Ok(course);
+
+            if (course == null)
+                return NotFound(new
+                {
+                    success = false,
+                    message = "Tạo không thành công"
+                });
+
+            return Ok(new
+            {
+                success = true,
+                message = "Tạo khóa học thành công ",
+                data = course
+            }
+                 );
         }
 
         [HttpPut("{id}")]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> UpdateCourse(int id, CourseDTO dto)
         {
             var userId = GetUserId();
             dto.EducatorId = userId;
             var course = await _courseService.UpdateAsync(id, dto);
-            return Ok(course);
+
+            if (course == null)
+                return NotFound(new
+                {
+                    success = false,
+                    message = "Cập nhật không thành công"
+                });
+
+            return Ok(new
+            {
+                success = true,
+                message = "Sửa khóa học thành công ",
+                data = course
+            }
+                );
         }
 
         [HttpDelete("{id}")]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> DeleteCourse(int id)
         {
             var course = await _courseService.DeleteAsync(id);
-            return Ok(course);
+
+            if (!course)
+                return NotFound(new
+                {
+                    success = false,
+                    message = "Xóa thất bại"
+                });
+
+            return Ok(new
+            {
+                success = true,
+                message = "Xóa khóa học thành công ",
+                data = course
+            }
+                );
         }
 
         [HttpGet("detail/{id}")]
         public async Task<IActionResult> CourseDetail(int id)
         {
             var course = await _courseService.CourseDetailAsync(id);
-            return Ok(course);
+            return Ok(new
+            {
+                success = true,
+                message = "Lấy  chi tiết khóa học thành công ",
+                data = course
+            }
+            );
         }
 
         // // Lấy tất cả sinh viên đã đăng ký một khóa học
@@ -80,7 +160,13 @@ namespace App.Controllers
         public async Task<IActionResult> GetStudentProgressByCourseId(int id)
         {
             var progress = await _courseService.GetStudentProgressByCourseIdAsync(id);
-            return Ok(progress);
+            return Ok(new
+            {
+                success = true,
+                message = "Lấy tiến trình khóa học thành công ",
+                data = progress
+            }
+            );
         }
 
         // // Thu hồi quyền truy cập khóa học của một học viên
@@ -102,19 +188,97 @@ namespace App.Controllers
             [FromQuery] string? sortBy,
             [FromQuery] bool sortDesc = false)
         {
-            var filter = new CourseFilterDTO
+            try
             {
-                Keyword = keyword,
-                CategoryId = categoryId,
-                MinPrice = minPrice,
-                MaxPrice = maxPrice,
-                IsPublished = isPublished,
-                SortBy = sortBy,
-                SortDesc = sortDesc
-            };
+                var filter = new CourseFilterDTO
+                {
+                    Keyword = keyword,
+                    CategoryId = categoryId,
+                    MinPrice = minPrice,
+                    MaxPrice = maxPrice,
+                    IsPublished = isPublished,
+                    SortBy = sortBy,
+                    SortDesc = sortDesc
+                };
 
-            var courses = await _courseService.SearchAsync(filter);
-            return Ok(courses);
+                var courses = await _courseService.SearchAsync(filter);
+                return Ok(new
+                {
+                    success = true,
+                    data = courses,
+                    message = "Tìm kiếm khóa học thành công"
+                });
+            }
+            catch (AppException ex)
+            {
+                return BadRequest(new
+                {
+                    success = false,
+                    data = (object?)null,
+                    message = ex.Message
+                });
+            }
+            catch (Exception)
+            {
+                return BadRequest(new
+                {
+                    success = false,
+                    data = (object?)null,
+                    message = "Đã xảy ra lỗi khi tìm kiếm khóa học"
+                });
+            }
+        }
+
+        [HttpGet("slug/{slug}")]
+        public async Task<IActionResult> GetCourseBySlug(string slug)
+        {
+            var course = await _courseService.GetBySlugAsync(slug);
+            return Ok(new
+            {
+                success = true,
+                message = "Lấy khóa học thành công ",
+                data = course
+            }
+            );
+        }
+
+        [HttpGet("best-sellers")]
+        public async Task<IActionResult> GetCoursesBestSeller()
+        {
+            var courses = await _courseService.GetCoursesBestSellerAsync();
+            return Ok(new
+            {
+                success = true,
+                message = "Lấy các khóa học bán chạy thành công ",
+                data = courses
+            }
+           );
+        }
+
+        [HttpGet("newest")]
+        public async Task<IActionResult> GetCoursesNewest()
+        {
+            var courses = await _courseService.GetCoursesNewestAsync();
+            return Ok(new
+            {
+                success = true,
+                message = "Lấy các khóa học mới nhất thành công ",
+                data = courses
+            }
+          );
+        }
+
+        [HttpGet("rating")]
+        public async Task<IActionResult> GetCoursesRating()
+        {
+            var courses = await _courseService.GetCoursesRatingAsync();
+            return Ok(new
+            {
+                success = true,
+                message = "Lấy cáo khóa học được đánh giá cao thành công ",
+                data = courses
+            }
+            );
         }
     }
 }

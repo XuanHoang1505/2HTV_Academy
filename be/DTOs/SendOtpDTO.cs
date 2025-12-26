@@ -2,7 +2,7 @@ namespace App.DTOs
 {
     public class SendOtpDTO
     {
-        public string Identifier { get; set; }
+        public string Email { get; set; }
         public string? Type { get; set; }
     }
 }

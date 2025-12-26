@@ -8,8 +8,10 @@ namespace App.Services.Interfaces
         Task<UserDTO> CreateUserAsync(UserDTO userDto);
         Task<UserDTO> UpdateUserAsync(string userId, UserDTO userDto);
         Task<bool> DeleteUserAsync(string userId);
+        Task<bool> LockUserAsync(string userId);
+        Task<bool> UnLockUserAsync(string userId);
         Task<UserDTO> GetUserByIdAsync(string userId);
-        Task<IEnumerable<UserDTO>> GetAllUsersAsync();
+        Task<Object> GetAllUsersAsync(int? page, int? limit);
         Task<bool> RegisterUserAsync(RegisterDTO registerDTO);
         Task<LoginResponse> LoginAsync(string userName, string password);
         Task<bool> ResetPasswordAsync(string email, string newPassword);

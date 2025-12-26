@@ -167,6 +167,10 @@ namespace be.Migrations
                         .IsRequired()
                         .HasColumnType("longtext");
 
+                    b.Property<string>("Slug")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
                     b.HasKey("Id");
 
                     b.ToTable("Categories");
@@ -179,10 +183,6 @@ namespace be.Migrations
                         .HasColumnType("int");
 
                     MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<string>("ChapterId")
-                        .IsRequired()
-                        .HasColumnType("longtext");
 
                     b.Property<int>("ChapterOrder")
                         .HasColumnType("int");
@@ -209,6 +209,9 @@ namespace be.Migrations
 
                     MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("Id"));
 
+                    b.Property<int>("AverageRating")
+                        .HasColumnType("int");
+
                     b.Property<int>("CategoryId")
                         .HasColumnType("int");
 
@@ -226,6 +229,9 @@ namespace be.Migrations
                         .IsRequired()
                         .HasColumnType("longtext");
 
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime(6)");
+
                     b.Property<int>("Discount")
                         .HasColumnType("int");
 
@@ -235,6 +241,37 @@ namespace be.Migrations
 
                     b.Property<bool>("IsPublished")
                         .HasColumnType("tinyint(1)");
+
+                    b.Property<int>("Language")
+                        .HasColumnType("int");
+
+                    b.Property<int>("Level")
+                        .HasColumnType("int");
+
+                    b.Property<string>("PreviewVideo")
+                        .HasColumnType("longtext");
+
+                    b.Property<DateTime?>("PublishedAt")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<string>("Slug")
+                        .IsRequired()
+                        .HasColumnType("longtext");
+
+                    b.Property<int>("Status")
+                        .HasColumnType("int");
+
+                    b.Property<int>("TotalDuration")
+                        .HasColumnType("int");
+
+                    b.Property<int>("TotalLectures")
+                        .HasColumnType("int");
+
+                    b.Property<int>("TotalReviews")
+                        .HasColumnType("int");
+
+                    b.Property<int>("TotalStudents")
+                        .HasColumnType("int");
 
                     b.HasKey("Id");
 

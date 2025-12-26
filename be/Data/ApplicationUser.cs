@@ -9,7 +9,7 @@ namespace App.Data
     {
         [Required, StringLength(100)]
         public string FullName { get; set; } = null!;
-        public string? ImageUrl { get; set; } 
+        public string? ImageUrl { get; set; }
         public bool IsLocked { get; set; } = false;
         public string? RefreshToken { get; set; }
         public DateTime? RefreshTokenExpiryTime { get; set; }

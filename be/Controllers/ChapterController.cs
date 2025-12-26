@@ -20,27 +20,61 @@ namespace App.Controllers
             var chapters = await _chapterService.GetAllAsync();
             if (chapters == null)
             {
-                return NotFound(new { message = "Chapter not found" });
+                return NotFound(new 
+                { 
+                    success = false,
+                    data = (object?)null,
+                    message = "Chapter not found" 
+                });
             }
-            return Ok(chapters);
+            return Ok(new
+            {
+                success = true,
+                data = chapters,
+                message = "Lấy danh sách chapter thành công"
+            });
         }
         [HttpGet("{id}")]
         public async Task<IActionResult> GetChapterByID(int id)
         {
             var chapter = await _chapterService.GetByIdAsync(id);
-            return Ok(chapter);
+            if (chapter == null)
+            {
+                return NotFound(new
+                {
+                    success = false,
+                    data = (object?)null,
+                    message = "Chapter not found"
+                });
+            }
+            return Ok(new
+            {
+                success = true,
+                data = chapter,
+                message = "Lấy thông tin chapter thành công"
+            });
         }
         [HttpPost]
         public async Task<IActionResult> CreateChapter([FromBody] ChapterDTO dto)
         {
             if (!ModelState.IsValid)
-                return BadRequest(ModelState);
+                return BadRequest(new
+                {
+                    success = false,
+                    data = (object?)null,
+                    message = "Dữ liệu không hợp lệ"
+                });
 
             var created = await _chapterService.CreateAsync(dto);
             return CreatedAtAction(
                 nameof(GetChapterByID),
                 new { id = created.Id },
-                created
+                new
+                {
+                    success = true,
+                    data = created,
+                    message = "Tạo chapter thành công"
+                }
             );
         }
 
@@ -50,11 +84,21 @@ namespace App.Controllers
             try
             {
                 var updatedChapter = await _chapterService.UpdateAsync(id, dto);
-                return Ok(updatedChapter);
+                return Ok(new
+                {
+                    success = true,
+                    data = updatedChapter,
+                    message = "Cập nhật chapter thành công"
+                });
             }
             catch (AppException ex) // nếu bạn dùng AppException để báo lỗi
             {
-                return BadRequest(new { message = ex.Message, code = ex.ErrorCode });
+                return BadRequest(new 
+                { 
+                    success = false,
+                    data = (object?)null,
+                    message = ex.Message
+                });
             }
         }
 
@@ -64,11 +108,21 @@ namespace App.Controllers
             try
             {
                 await _chapterService.DeleteAsync(id);
-                return NoContent(); // 204 No Content là chuẩn cho delete thành công
+                return Ok(new
+                {
+                    success = true,
+                    data = (object?)null,
+                    message = "Xóa chapter thành công"
+                });
             }
             catch (AppException ex) // nếu chapter không tồn tại hoặc lỗi business
             {
-                return NotFound(new { message = ex.Message, code = ex.ErrorCode });
+                return NotFound(new 
+                { 
+                    success = false,
+                    data = (object?)null,
+                    message = ex.Message
+                });
             }
         }
         
