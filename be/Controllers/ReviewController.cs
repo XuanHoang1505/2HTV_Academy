@@ -63,12 +63,23 @@ namespace App.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetAllReviews()
+        public async Task<IActionResult> GetAllReviews(int? page, int? limit)
         {
             try
             {
-                var reviews = await _reviewService.GetAllReviewsAsync();
-                return Ok(new { success = true, data = reviews });
+                var reviews = await _reviewService.GetAllReviewsAsync(page, limit);
+                return Ok(new
+                {
+                    success = true,
+                    data = reviews.Data,
+                    pagination = new
+                    {
+                        currentPage = reviews.CurrentPage,
+                        totalPages = page.HasValue ? reviews.TotalPages : null,
+                        totalItems = page.HasValue ? reviews.CurrentPage : null,
+                        limit = page.HasValue ? reviews.Limit : null
+                    }
+                });
             }
             catch (Exception ex)
             {
@@ -174,7 +185,7 @@ namespace App.Controllers
             }
         }
 
-        [Authorize(Roles = "Admin")] 
+        [Authorize(Roles = "Admin")]
         [HttpPatch("{id}/hide")]
         public async Task<IActionResult> HideReview(int id)
         {

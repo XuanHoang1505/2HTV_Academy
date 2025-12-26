@@ -1,6 +1,7 @@
 using App.Domain.Models;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using X.PagedList;
 namespace App.Repositories.Interfaces
 {
     public interface IReviewRepository
@@ -8,7 +9,8 @@ namespace App.Repositories.Interfaces
         Task<Review> CreateAsync(Review review);
         Task<Review> GetByIdAsync(int id);
         Task<Review> GetByIdWithDetailsAsync(int id);
-        Task<IEnumerable<Review>> GetAllAsync();
+        Task<IEnumerable<Review>> AllAsync();
+        Task<IPagedList<Review>> GetAllAsync(int page, int limit);
         Task<IEnumerable<Review>> GetByCourseIdAsync(int courseId);
         Task<IEnumerable<Review>> GetByUserIdAsync(string userId);
         Task<Review> UpdateAsync(Review review);

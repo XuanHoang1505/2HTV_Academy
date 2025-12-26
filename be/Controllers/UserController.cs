@@ -24,7 +24,14 @@ namespace App.Controllers
             {
                 success = true,
                 message = "Lấy danh sách users thành công ",
-                data = users
+                data = users.Data,
+                pagination = new
+                {
+                    total = users.Total,
+                    totalPages = page.HasValue ? users.TotalPages : null,
+                    currentPage = page.HasValue ? users.CurrentPage : null,
+                    limit = page.HasValue ? users.Limit : null
+                }
             }
             );
         }

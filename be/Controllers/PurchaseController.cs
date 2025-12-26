@@ -18,15 +18,22 @@ namespace App.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetAllPurchases()
+        public async Task<IActionResult> GetAllPurchases(int? page, int? limit)
         {
-            var purchases = await _purchaseService.GetAllPurchasesAsync();
+            var purchases = await _purchaseService.GetAllPurchasesAsync(page, limit);
 
             return Ok(new
             {
                 success = true,
                 message = "Lấy danh sách đơn mua thành công",
-                data = purchases
+                data = purchases.Data,
+                pagination = new
+                {
+                    total = purchases.Total,
+                    totalPages = page.HasValue ? purchases.TotalPages : null,
+                    currentPage = page.HasValue ? purchases.CurrentPage : null,
+                    limit = page.HasValue ? purchases.Limit : null
+                }
             });
         }
 

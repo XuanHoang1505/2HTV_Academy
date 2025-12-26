@@ -22,7 +22,7 @@ namespace App.Services.Implementations
             var existing = await _lecture.GetByTitleAsync(dto.LectureTitle);
             if (existing != null)
                 throw new AppException(ErrorCode.CategorySlugAlreadyExists, $"Slug '{dto.LectureTitle}' đã tồn tại.");
-            
+
             var entity = _mapper.Map<Lecture>(dto);
 
             var created = await _lecture.AddAsync(entity);
@@ -41,10 +41,28 @@ namespace App.Services.Implementations
             return true;
         }
 
-        public async Task<IEnumerable<LectureDTO>> GetAllAsync()
+        public async Task<PagedResult<LectureDTO>> GetAllAsync(int? page, int? limit)
         {
-            var lectures = await _lecture.GetAllAsync();
-            return _mapper.Map<IEnumerable<LectureDTO>>(lectures);
+            if (!page.HasValue || !limit.HasValue)
+            {
+                var allLectures = await _lecture.AllLecturesAsync();
+
+                return new PagedResult<LectureDTO>
+                {
+                    Data = _mapper.Map<IEnumerable<LectureDTO>>(allLectures),
+                    Total = allLectures.Count()
+                };
+            }
+
+            var lectures = await _lecture.GetAllAsync(page.Value, limit.Value);
+            return new PagedResult<LectureDTO>
+            {
+                Data = _mapper.Map<IEnumerable<LectureDTO>>(lectures),
+                Total = lectures.TotalItemCount,
+                TotalPages = lectures.PageCount,
+                CurrentPage = lectures.PageNumber,
+                Limit = lectures.PageSize
+            };
         }
 
         public async Task<LectureDTO?> GetByIdAsync(int id)

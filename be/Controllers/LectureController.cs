@@ -15,23 +15,30 @@ namespace App.Controllers
             _lectureService = lectureService;
         }
         [HttpGet]
-        public async Task<IActionResult> GetAllLectures()
+        public async Task<IActionResult> GetAllLectures(int? page, int? limit)
         {
-            var lectures = await _lectureService.GetAllAsync();
+            var lectures = await _lectureService.GetAllAsync(page, limit);
             if (lectures == null)
             {
-                return NotFound(new 
-                { 
+                return NotFound(new
+                {
                     success = false,
                     data = (object?)null,
-                    message = "Lecture not found" 
+                    message = "Lecture not found"
                 });
             }
             return Ok(new
             {
                 success = true,
-                data = lectures,
-                message = "Lấy danh sách lecture thành công"
+                message = "Lấy danh sách lecture thành công",
+                data = lectures.Data,
+                pagination = new
+                {
+                    total = lectures.Total,
+                    totalPages = page.HasValue ? lectures.TotalPages : null,
+                    currentPage = page.HasValue ? lectures.CurrentPage : null,
+                    limit = page.HasValue ? lectures.Limit : null
+                }
             });
         }
 
@@ -95,8 +102,8 @@ namespace App.Controllers
             }
             catch (AppException ex) // nếu bạn dùng AppException để báo lỗi
             {
-                return BadRequest(new 
-                { 
+                return BadRequest(new
+                {
                     success = false,
                     data = (object?)null,
                     message = ex.Message
@@ -119,14 +126,14 @@ namespace App.Controllers
             }
             catch (AppException ex) // nếu lecture không tồn tại hoặc lỗi business
             {
-                return NotFound(new 
-                { 
+                return NotFound(new
+                {
                     success = false,
                     data = (object?)null,
                     message = ex.Message
                 });
             }
         }
-    } 
-    
+    }
+
 }
