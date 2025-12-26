@@ -29,29 +29,28 @@ namespace App.Services.Implementations
         }
 
 
-        public async Task<object> GetAllAsync(int? page, int? limit)
+        public async Task<PagedResult<CategoryDTO>> GetAllAsync(int? page, int? limit)
         {
             if (!page.HasValue || !limit.HasValue)
             {
                 var allCategories = await _repository.AllCategoriesAsync();
-                var totalCategories = allCategories.Count();
 
-                return new
+                return new PagedResult<CategoryDTO>
                 {
-                    data = _mapper.Map<IEnumerable<CategoryDTO>>(allCategories),
-                    total = totalCategories
+                    Data = _mapper.Map<IEnumerable<CategoryDTO>>(allCategories),
+                    Total = allCategories.Count()
                 };
             }
 
             var categories = await _repository.GetAllAsync(page.Value, limit.Value);
 
-            return new
+            return new PagedResult<CategoryDTO>
             {
-                data = _mapper.Map<IEnumerable<CategoryDTO>>(categories),
-                total = categories.TotalItemCount,
-                totalPages = categories.PageCount,
-                currentPage = categories.PageNumber,
-                limit = categories.PageSize
+                Data = _mapper.Map<IEnumerable<CategoryDTO>>(categories),
+                Total = categories.TotalItemCount,
+                TotalPages = categories.PageCount,
+                CurrentPage = categories.PageNumber,
+                Limit = categories.PageSize
             };
         }
 

@@ -7,7 +7,6 @@ namespace App.Controllers
 {
     [ApiController]
     [Route("api/users")]
-    [Authorize(Roles = "Admin")]
     public class UserController : ControllerBase
     {
         private readonly IUserService _userService;
@@ -52,6 +51,7 @@ namespace App.Controllers
         }
 
         [HttpPost]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> CreateUser(UserDTO dto)
         {
             var user = await _userService.CreateUserAsync(dto);
@@ -88,6 +88,7 @@ namespace App.Controllers
         }
 
         [HttpDelete("{id}")]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> DeleteUser(string id)
         {
             var user = await _userService.DeleteUserAsync(id);

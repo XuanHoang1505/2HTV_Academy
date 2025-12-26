@@ -247,5 +247,35 @@ namespace App.Controllers
                 message = "Đăng xuất thành công."
             });
         }
+
+        [HttpGet("me")]
+        public async Task<IActionResult> GetMe()
+        {
+            var userId = User.FindFirst("userId")?.Value;
+            if (string.IsNullOrEmpty(userId))
+            {
+                return BadRequest(new
+                {
+                    success = false,
+                    message = "Không tìm thấy thông tin người dùng."
+                });
+            }
+
+            var user = await _userService.GetUserByIdAsync(userId);
+            if (user == null)
+            {
+                return NotFound(new
+                {
+                    success = false,
+                    message = "Không tìm thấy người dùng."
+                });
+            }
+
+            return Ok(new
+            {
+                success = true,
+                data = user
+            });
+        }
     }
 }
