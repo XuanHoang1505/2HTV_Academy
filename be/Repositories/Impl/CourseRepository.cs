@@ -60,7 +60,6 @@ namespace App.Repositories.Implementations
                 .Include(c => c.Educator)
                 .Include(c => c.Category)
                 .Include(c => c.CourseContent)
-                .Include(c => c.CourseRatings)
                 .Include(c => c.PurchaseItems)
                 .FirstOrDefaultAsync(c => c.Id == id);
 

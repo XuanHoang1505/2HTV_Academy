@@ -34,7 +34,6 @@ namespace App.Controllers
                     limit = page.HasValue ? result.Limit : null
                 }
             });
-
         }
 
         [HttpGet("{id}")]

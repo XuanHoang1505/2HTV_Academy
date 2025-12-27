@@ -67,17 +67,17 @@ namespace App.Data
                 .OnDelete(DeleteBehavior.Cascade);
 
             // --- Quan hệ CourseRating - Course/User
-            modelBuilder.Entity<CourseRating>()
-                .HasOne(cr => cr.Course)
-                .WithMany(c => c.CourseRatings)
-                .HasForeignKey(cr => cr.CourseId)
-                .OnDelete(DeleteBehavior.Cascade);
+            // modelBuilder.Entity<CourseRating>()
+            //     .HasOne(cr => cr.Course)
+            //     .WithMany(c => c.CourseRatings)
+            //     .HasForeignKey(cr => cr.CourseId)
+            //     .OnDelete(DeleteBehavior.Cascade);
 
-            modelBuilder.Entity<CourseRating>()
-                .HasOne(cr => cr.User)
-                .WithMany()
-                .HasForeignKey(cr => cr.UserId)
-                .OnDelete(DeleteBehavior.Cascade);
+            // modelBuilder.Entity<CourseRating>()
+            //     .HasOne(cr => cr.User)
+            //     .WithMany()
+            //     .HasForeignKey(cr => cr.UserId)
+            //     .OnDelete(DeleteBehavior.Cascade);
 
             // --- Quan hệ Purchase - User
             modelBuilder.Entity<Purchase>()

@@ -132,59 +132,57 @@ namespace App.Services.Implementations
         }
 
 
-        public async Task<IEnumerable<StudentCourseProgressDTO>> GetStudentProgressByCourseIdAsync(int courseId)
-        {
-            var course = await _repository.CourseDetailAsync(courseId);
-            if (course == null)
-            {
-                throw new AppException(ErrorCode.CourseNotFound, $"Không tìm thấy khóa học với ID = {courseId}");
-            }
+        // public async Task<IEnumerable<StudentCourseProgressDTO>> GetStudentProgressByCourseIdAsync(int courseId)
+        // {
+        //     var course = await _repository.CourseDetailAsync(courseId);
+        //     if (course == null)
+        //     {
+        //         throw new AppException(ErrorCode.CourseNotFound, $"Không tìm thấy khóa học với ID = {courseId}");
+        //     }
 
-            // Tổng số bài giảng trong khóa
-            var totalLectures = course.CourseContent
-                .SelectMany(ch => ch.ChapterContent)
-                .Count();
+        //     // Tổng số bài giảng trong khóa
+        //     var totalLectures = course.CourseContent
+        //         .SelectMany(ch => ch.ChapterContent)
+        //         .Count();
 
-            if (totalLectures == 0)
-            {
-                // Nếu chưa có lecture, trả về danh sách rỗng
-                return Enumerable.Empty<StudentCourseProgressDTO>();
-            }
+        //     if (totalLectures == 0)
+        //     {
+        //         // Nếu chưa có lecture, trả về danh sách rỗng
+        //         return Enumerable.Empty<StudentCourseProgressDTO>();
+        //     }
 
-            var progresses = await _repository.GetCourseProgressByCourseIdAsync(courseId);
+        //     var progresses = await _repository.GetCourseProgressByCourseIdAsync(courseId);
 
-            var result = progresses.Select(cp =>
-            {
-                var completedLectureCount = 0;
-                if (!string.IsNullOrWhiteSpace(cp.LectureCompleted))
-                {
-                    completedLectureCount = cp.LectureCompleted
-                        .Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries)
-                        .Length;
-                }
+        //     var result = progresses.Select(cp =>
+        //     {
+        //         var completedLectureCount = 0;
+        //         if (!string.IsNullOrWhiteSpace(cp.LectureCompleted))
+        //         {
+        //             completedLectureCount = cp.LectureCompleted
+        //                 .Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries)
+        //                 .Length;
+        //         }
 
-                var percent = totalLectures == 0
-                    ? 0
-                    : (double)completedLectureCount / totalLectures * 100.0;
+        //         var percent = totalLectures == 0
+        //             ? 0
+        //             : (double)completedLectureCount / totalLectures * 100.0;
 
-                return new StudentCourseProgressDTO
-                {
-                    UserId = cp.UserId,
-                    FullName = cp.User.FullName,
-                    Email = cp.User.Email,
-                    CourseId = cp.CourseId,
-                    Completed = cp.Completed,
-                    TotalLectures = totalLectures,
-                    CompletedLectures = completedLectureCount,
-                    ProgressPercent = Math.Round(percent, 2),
-                    LectureCompletedRaw = cp.LectureCompleted
-                };
-            });
+        //         return new StudentCourseProgressDTO
+        //         {
+        //             UserId = cp.UserId,
+        //             FullName = cp.User.FullName,
+        //             Email = cp.User.Email,
+        //             CourseId = cp.CourseId,
+        //             Completed = cp.Completed,
+        //             TotalLectures = totalLectures,
+        //             CompletedLectures = completedLectureCount,
+        //             ProgressPercent = Math.Round(percent, 2),
+        //             LectureCompletedRaw = cp.LectureCompleted
+        //         };
+        //     });
 
-            return result;
-        }
-
-
+        //     return result;
+        // }
 
         public async Task<IEnumerable<CourseDTO>> SearchAsync(CourseFilterDTO filter)
         {
@@ -266,6 +264,11 @@ namespace App.Services.Implementations
                 currentPage = courses.PageNumber,
                 limit = courses.PageSize
             };
+        }
+
+        public Task<IEnumerable<StudentCourseProgressDTO>> GetStudentProgressByCourseIdAsync(int courseId)
+        {
+            throw new NotImplementedException();
         }
     }
 }

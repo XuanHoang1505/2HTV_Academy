@@ -4,6 +4,7 @@ using App.Domain.Models;
 using App.Repositories.Interfaces;
 using App.Services.Interfaces;
 using App.Utils.Exceptions;
+using X.PagedList;
 
 namespace App.Services.Implementations
 {
@@ -41,10 +42,28 @@ namespace App.Services.Implementations
             return true;
         }
 
-        public async Task<IEnumerable<ChapterDTO>> GetAllAsync()
+        public async Task<PagedResult<ChapterDTO>> GetAllAsync(int? page, int? limit)
         {
-            var chapters = await _chapter.GetAllAsync();
-            return _mapper.Map<IEnumerable<ChapterDTO>>(chapters);
+            if (!page.HasValue || !limit.HasValue)
+            {
+                var allChapters = await _chapter.GetAllAsync();
+
+                return new PagedResult<ChapterDTO>
+                {
+                    Data = _mapper.Map<IEnumerable<ChapterDTO>>(allChapters),
+                    Total = allChapters.Count()
+                };
+            }
+
+            var chapters = await _chapter.GetAllAsync(page.Value, limit.Value);
+            return new PagedResult<ChapterDTO>
+            {
+                Data = _mapper.Map<IEnumerable<ChapterDTO>>(chapters),
+                Total = chapters.TotalItemCount,
+                TotalPages = chapters.PageCount,
+                CurrentPage = chapters.PageNumber,
+                Limit = chapters.PageSize
+            };
         }
 
         public async Task<ChapterDTO?> GetByIdAsync(int id)

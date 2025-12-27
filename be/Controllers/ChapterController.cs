@@ -15,23 +15,29 @@ namespace App.Controllers
             _chapterService = chapterService;
         }
         [HttpGet]
-        public async Task<IActionResult> GetAllChapters()
+        public async Task<IActionResult> GetAllChapters([FromQuery] int? page, [FromQuery] int? limit)
         {
-            var chapters = await _chapterService.GetAllAsync();
-            if (chapters == null)
+            var result = await _chapterService.GetAllAsync(page, limit);
+            if (result == null)
             {
-                return NotFound(new 
-                { 
+                return NotFound(new
+                {
                     success = false,
-                    data = (object?)null,
-                    message = "Chapter not found" 
+                    message = "Chapter not found"
                 });
             }
             return Ok(new
             {
                 success = true,
-                data = chapters,
-                message = "Lấy danh sách chapter thành công"
+                message = "Lấy danh sách chapter thành công",
+                data = result.Data,
+                pagination = new
+                {
+                    total = result.Total,
+                    totalPages = page.HasValue ? result.TotalPages : null,
+                    currentPage = page.HasValue ? result.CurrentPage : null,
+                    limit = page.HasValue ? result.Limit : null
+                }
             });
         }
         [HttpGet("{id}")]
@@ -93,8 +99,8 @@ namespace App.Controllers
             }
             catch (AppException ex) // nếu bạn dùng AppException để báo lỗi
             {
-                return BadRequest(new 
-                { 
+                return BadRequest(new
+                {
                     success = false,
                     data = (object?)null,
                     message = ex.Message
@@ -117,15 +123,15 @@ namespace App.Controllers
             }
             catch (AppException ex) // nếu chapter không tồn tại hoặc lỗi business
             {
-                return NotFound(new 
-                { 
+                return NotFound(new
+                {
                     success = false,
                     data = (object?)null,
                     message = ex.Message
                 });
             }
         }
-        
+
     }
 }
 
