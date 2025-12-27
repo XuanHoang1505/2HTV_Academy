@@ -48,6 +48,19 @@ namespace App.Repositories.Implementations
                 .ThenBy(x => x.Month)
                 .ToListAsync();
 
+            // Số lượng học viên theo tháng
+            result.MonthlyStudents = await _context.Enrollments
+                .GroupBy(e => new { e.EnrolledAt.Year, e.EnrolledAt.Month })
+                .Select(g => new MonthlyStudentDTO
+                {
+                    Year = g.Key.Year,
+                    Month = g.Key.Month,
+                    StudentCount = g.Count()
+                })
+                .OrderBy(x => x.Year)
+                .ThenBy(x => x.Month)
+                .ToListAsync();
+
             // Thống kê khóa học
             var stats = await _context.Courses
                 .Select(c => new CourseStatsDTO
