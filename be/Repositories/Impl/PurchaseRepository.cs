@@ -1,6 +1,8 @@
 using App.Data;
 using App.Domain.Models;
 using Microsoft.EntityFrameworkCore;
+using X.PagedList;
+using X.PagedList.EF;
 
 public class PurchaseRepository : IPurchaseRepository
 {
@@ -11,7 +13,7 @@ public class PurchaseRepository : IPurchaseRepository
         _context = context;
     }
 
-    public async Task<IEnumerable<Purchase>> GetAllPurchasesAsync()
+    public async Task<IEnumerable<Purchase>> AllPurchasesAsync()
     {
         return await _context.Purchases.ToListAsync();
     }
@@ -20,7 +22,7 @@ public class PurchaseRepository : IPurchaseRepository
     {
         return await _context.Purchases
             .Include(p => p.PurchaseItems)
-            .ThenInclude(pi => pi.Course) 
+            .ThenInclude(pi => pi.Course)
             .FirstOrDefaultAsync(p => p.Id == id);
     }
 
@@ -62,5 +64,10 @@ public class PurchaseRepository : IPurchaseRepository
         return await _context.Purchases
             .Where(p => p.UserId == userId)
             .ToListAsync();
+    }
+
+    public async Task<IPagedList<Purchase>> GetPagedPurchasesAsync(int page, int limit)
+    {
+        return await _context.Purchases.ToPagedListAsync(page, limit);
     }
 }

@@ -438,28 +438,28 @@ namespace App.Services.Implementations
             return userDto;
         }
 
-        public async Task<Object> GetAllUsersAsync(int? page, int? limit)
+        public async Task<PagedResult<UserDTO>> GetAllUsersAsync(int? page, int? limit)
         {
             if (page.HasValue && limit.HasValue)
             {
                 var pagedUsers = await _userRepository.GetAllUsersPagedAsync(page.Value, limit.Value);
 
-                return new
+                return new PagedResult<UserDTO>
                 {
-                    data = _mapper.Map<IEnumerable<UserDTO>>(pagedUsers),
-                    total = pagedUsers.TotalItemCount,
-                    totalPages = pagedUsers.PageCount,
-                    currentPage = pagedUsers.PageNumber,
-                    limit = pagedUsers.PageSize
+                    Data = _mapper.Map<IEnumerable<UserDTO>>(pagedUsers),
+                    Total = pagedUsers.TotalItemCount,
+                    TotalPages = pagedUsers.PageCount,
+                    CurrentPage = pagedUsers.PageNumber,
+                    Limit = pagedUsers.PageSize
                 };
             }
             else
             {
                 var users = await _userRepository.AllUsersAsync();
-                return new
+                return new PagedResult<UserDTO>
                 {
-                    data = _mapper.Map<IEnumerable<UserDTO>>(users),
-                    total = users.Count()
+                    Data = _mapper.Map<IEnumerable<UserDTO>>(users),
+                    Total = users.Count()
                 };
             }
         }

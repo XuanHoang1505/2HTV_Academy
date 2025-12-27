@@ -1,10 +1,11 @@
 using App.DTOs;
+using Microsoft.AspNetCore.Mvc.RazorPages;
 
 namespace App.Services.Interfaces
 {
     public interface IPurchaseService
     {
-        Task<IEnumerable<PurchaseDTO>> GetAllPurchasesAsync();
+        Task<PagedResult<PurchaseDTO>> GetAllPurchasesAsync(int? page, int? limit);
         Task<IEnumerable<PurchaseItemDTO>> GetPurchaseItemByPurchaseIdAsync(int purchaseId);
         Task<PurchaseDTO> GetPurchaseByIdAsync(int purchaseId);
         Task<PurchaseDTO> CreatePurchaseAsync(CreatePurchaseDTO dto);

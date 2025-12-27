@@ -8,7 +8,7 @@ namespace App.Services.Interfaces
     {
         Task<ReviewDTO> CreateReviewAsync(CreateReviewDTO dto);
         Task<ReviewDTO> GetReviewByIdAsync(int id);
-        Task<IEnumerable<ReviewDTO>> GetAllReviewsAsync();
+        Task<PagedResult<ReviewDTO>> GetAllReviewsAsync(int? page, int? limit);
         Task<IEnumerable<ReviewDTO>> GetReviewsByCourseIdAsync(int courseId);
         Task<IEnumerable<ReviewDTO>> GetReviewsByUserIdAsync(string userId);
         Task<ReviewDTO> UpdateReviewAsync(int id, UpdateReviewDTO dto, string userId);
