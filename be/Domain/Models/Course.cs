@@ -10,8 +10,11 @@ namespace App.Domain.Models
         public string CourseTitle { get; set; } = null!;
         public string Slug { get; set; } = null!;
         public string CourseDescription { get; set; } = null!;
+        public string? ShortDescription { get; set; }
         public string? CourseThumbnail { get; set; }
         public string? PreviewVideo { get; set; }
+        public string EducatorId { get; set; } = null!;
+        public int CategoryId { get; set; }
         public Level Level { set; get; } = Level.beginner;
         public Language Language { set; get; } = Language.vi;
         public decimal CoursePrice { get; set; }
@@ -29,18 +32,12 @@ namespace App.Domain.Models
         public CourseStatus Status { set; get; } = CourseStatus.draft;
         public bool IsPublished { get; set; } = false;
         public DateTime? PublishedAt { get; set; }
-
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
-
         // Quan hệ
-        public string EducatorId
-        { get; set; } = null!;
         public ApplicationUser Educator { get; set; } = null!;
-        public int CategoryId { get; set; }
         public Category Category { get; set; } = null!;
         public ICollection<Enrollment> Enrollments { get; set; } = new List<Enrollment>();
         public ICollection<Chapter> CourseContent { get; set; } = new List<Chapter>();
-        public ICollection<CourseRating> CourseRatings { get; set; } = new List<CourseRating>();
         public ICollection<PurchaseItem> PurchaseItems { get; set; } = new List<PurchaseItem>();
         public ICollection<Review> Reviews { get; set; } = new List<Review>();
     }

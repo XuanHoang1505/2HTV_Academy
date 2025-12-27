@@ -5,7 +5,6 @@ namespace App.Domain.Models
      public class Lecture
     {
         public int Id { get; set; }
-        public string LectureId { get; set; } = null!;
         public string LectureTitle { get; set; } = null!;
         public double LectureDuration { get; set; }
         public string? LectureUrl { get; set; }

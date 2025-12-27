@@ -2,6 +2,8 @@ using App.Data;
 using App.Domain.Models;
 using App.Repositories.Interfaces;
 using Microsoft.EntityFrameworkCore;
+using X.PagedList;
+using X.PagedList.EF;
 namespace App.Repositories.Implementations
 {
     public class ChapterRepository : IChapterRepository
@@ -29,10 +31,14 @@ namespace App.Repositories.Implementations
             }
         }
 
-        public async Task<IEnumerable<Chapter>> GetAllAsync()
+        public async Task<IPagedList<Chapter>> GetAllAsync(int page, int limit)
         {
             return await _context.Chapters
-                .ToListAsync();
+                .ToPagedListAsync(page, limit);
+        }
+        public async Task<IEnumerable<Chapter>> GetAllAsync()
+        {
+            return await _context.Chapters.ToListAsync();
         }
 
         public async Task<Chapter?> GetByIdAsync(int id)

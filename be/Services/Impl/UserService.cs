@@ -429,9 +429,13 @@ namespace App.Services.Implementations
         public async Task<UserDTO> GetUserByIdAsync(string userId)
         {
             var user = await _userRepository.GetUserByIdAsync(userId);
+            var role = await _userRepository.GetUserRoleAsync(user);
+            UserDTO userDto = _mapper.Map<UserDTO>(user);
+            userDto.Role = role;
+
             if (user == null)
                 throw new AppException(ErrorCode.UserNotFound, "Người dùng không tồn tại!");
-            return _mapper.Map<UserDTO>(user);
+            return userDto;
         }
 
         public async Task<Object> GetAllUsersAsync(int? page, int? limit)
