@@ -7,6 +7,7 @@ namespace App.DTOs
         public decimal TotalRevenue { get; set; }
 
         public List<MonthlyRevenueDTO> MonthlyRevenue { get; set; } = new();
+        public List<MonthlyStudentDTO> MonthlyStudents { get; set; } = new();
         public List<CourseStatsDTO> CourseStats { get; set; } = new();
         public List<CourseStatsDTO> TopCourses { get; set; } = new();
     }
