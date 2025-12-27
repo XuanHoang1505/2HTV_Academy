@@ -17,7 +17,7 @@ namespace App.Utils.Exceptions
         AccountNotVerified = 2006,
         IncorrectOldPassword = 2007,
         VipTypeNotFound = 2008,
-        VipNotFound = 2009,
+        EnrollmentNotFound = 2009,
         VipAlreadyExists = 2010,
         CommentNotFound = 2011,
 

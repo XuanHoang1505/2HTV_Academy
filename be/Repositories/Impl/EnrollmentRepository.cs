@@ -20,6 +20,13 @@ namespace App.Repositories.Implementations
             return await _context.Enrollments
                 .Include(e => e.User)
                 .Include(e => e.Course)
+                    .ThenInclude(c => c.Educator)
+                .Include(e => e.Course)
+                    .ThenInclude(c => c.Category)
+                .Include(e => e.Course)
+                    .ThenInclude(c => c.CourseContent)
+                        .ThenInclude(cc => cc.ChapterContent)
+                .Include(e => e.CourseProgresses)        
                 .FirstOrDefaultAsync(e => e.Id == id && !e.Deleted);
         }
 

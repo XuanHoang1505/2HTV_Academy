@@ -14,9 +14,27 @@ namespace App.Controllers
         {
             _chapterService = chapterService;
         }
+
         [HttpGet]
         public async Task<IActionResult> GetAllChapters([FromQuery] int? page, [FromQuery] int? limit)
         {
+            if (limit.HasValue && (limit <= 0 || limit > 100))
+            {
+                return BadRequest(new
+                {
+                    success = false,
+                    message = "Limit phải trong khoảng 1-100"
+                });
+            }
+
+            if (page.HasValue && page <= 0)
+            {
+                return BadRequest(new
+                {
+                    success = false,
+                    message = "Page phải là số dương"
+                });
+            }
             var result = await _chapterService.GetAllAsync(page, limit);
             if (result == null)
             {
@@ -40,6 +58,7 @@ namespace App.Controllers
                 }
             });
         }
+
         [HttpGet("{id}")]
         public async Task<IActionResult> GetChapterByID(int id)
         {

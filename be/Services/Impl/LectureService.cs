@@ -45,7 +45,7 @@ namespace App.Services.Implementations
         {
             if (!page.HasValue || !limit.HasValue)
             {
-                var allLectures = await _lecture.AllLecturesAsync();
+                var allLectures = await _lecture.AllAsync();
 
                 return new PagedResult<LectureDTO>
                 {
