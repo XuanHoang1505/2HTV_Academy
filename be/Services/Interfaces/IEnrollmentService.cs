@@ -2,7 +2,7 @@ using App.DTOs;
 
 namespace App.Services.Interfaces
 {
-     public interface IEnrollmentService
+    public interface IEnrollmentService
     {
         Task<EnrollmentResponseDTO> CreateEnrollmentAsync(CreateEnrollmentDTO dto);
         Task<IEnumerable<EnrollmentResponseDTO>> CreateEnrollmentsFromPurchaseAsync(int purchaseId);
@@ -19,5 +19,6 @@ namespace App.Services.Interfaces
         Task<bool> HasActiveAccessAsync(string userId, int courseId);
         Task<int> GetCourseEnrollmentCountAsync(int courseId);
         Task<IEnumerable<EnrollmentResponseDTO>> GetActiveEnrollmentsByUserAsync(string userId);
+        Task<int> TotalStudentsEnrolledAsync(int courseId);
     }
 }

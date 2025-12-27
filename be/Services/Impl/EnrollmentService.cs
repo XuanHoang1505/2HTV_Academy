@@ -55,6 +55,8 @@ namespace App.Services.Implementations
 
             _logger.LogInformation($"Created enrollment {created.Id} for user {dto.UserId} in course {dto.CourseId}");
 
+            await TotalStudentsEnrolledAsync(created.CourseId);
+
             return MapToResponseDTO(created, course.CourseTitle);
         }
 
@@ -79,19 +81,19 @@ namespace App.Services.Implementations
             }
 
             var enrollments = new List<EnrollmentResponseDTO>();
-            
+
             foreach (var item in purchase.PurchaseItems)
             {
                 try
                 {
                     var existingEnrollment = await _enrollmentRepo.GetByUserAndCourseAsync(
-                        purchase.UserId, 
+                        purchase.UserId,
                         item.CourseId);
-                        
+
                     if (existingEnrollment != null)
                     {
                         _logger.LogWarning($"Enrollment already exists for User {purchase.UserId} and Course {item.CourseId}");
-                        
+
                         var existingCourse = await _courseRepo.GetByIdAsync(item.CourseId);
                         enrollments.Add(MapToResponseDTO(existingEnrollment, existingCourse?.CourseTitle ?? ""));
                         continue;
@@ -120,7 +122,7 @@ namespace App.Services.Implementations
 
                     var created = await _enrollmentRepo.CreateAsync(enrollment);
                     enrollments.Add(MapToResponseDTO(created, courseInfo.CourseTitle));
-                    
+
                     _logger.LogInformation($"Created enrollment {created.Id} for course {item.CourseId} from Purchase {purchaseId}");
                 }
                 catch (Exception ex)
@@ -335,6 +337,22 @@ namespace App.Services.Implementations
                 CreatedAt = enrollment.CreatedAt,
                 UpdatedAt = enrollment.UpdatedAt
             };
+        }
+
+        public async Task<int> TotalStudentsEnrolledAsync(int courseId)
+        {
+            var course = await _courseRepo.GetByIdAsync(courseId);
+
+            if (course == null)
+            {
+                throw new InvalidOperationException("Khóa học không tồn tại");
+            }
+
+            course.TotalStudents = course.Enrollments?.Count(e => e.Status == EnrollmentStatus.Active) ?? 0;
+
+            await _courseRepo.UpdateAsync(course);
+
+            return course.TotalStudents;
         }
     }
 }

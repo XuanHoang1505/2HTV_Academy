@@ -21,6 +21,9 @@ namespace App.Repositories.Implementations
         public async Task<Course?> GetByIdAsync(int id)
         {
             return await _context.Courses.Include(c => c.Category).Include(u => u.Educator)
+                .Include(c => c.CourseContent).ThenInclude(cc => cc.ChapterContent)
+                .Include(c => c.Reviews)
+                .Include(c => c.Enrollments)
                 .FirstOrDefaultAsync(c => c.Id == id);
         }
 
