@@ -21,7 +21,7 @@ namespace App.Data
         public DbSet<Cart> Carts { get; set; }
         public DbSet<CartItem> CartItems { get; set; }
         public DbSet<Review> Reviews { get; set; }
-        public DbSet<Enrollment> Enrollments { get; set;}
+        public DbSet<Enrollment> Enrollments { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -66,19 +66,6 @@ namespace App.Data
                 .HasForeignKey(l => l.ChapterId)
                 .OnDelete(DeleteBehavior.Cascade);
 
-            // --- Quan hệ CourseRating - Course/User
-            // modelBuilder.Entity<CourseRating>()
-            //     .HasOne(cr => cr.Course)
-            //     .WithMany(c => c.CourseRatings)
-            //     .HasForeignKey(cr => cr.CourseId)
-            //     .OnDelete(DeleteBehavior.Cascade);
-
-            // modelBuilder.Entity<CourseRating>()
-            //     .HasOne(cr => cr.User)
-            //     .WithMany()
-            //     .HasForeignKey(cr => cr.UserId)
-            //     .OnDelete(DeleteBehavior.Cascade);
-
             // --- Quan hệ Purchase - User
             modelBuilder.Entity<Purchase>()
                 .HasOne(p => p.User)
@@ -100,18 +87,22 @@ namespace App.Data
                 .HasForeignKey(pi => pi.CourseId)
                 .OnDelete(DeleteBehavior.Restrict);
 
-            // --- Quan hệ CourseProgress - Course/User
             modelBuilder.Entity<CourseProgress>()
-                .HasOne(cp => cp.Course)
-                .WithMany()
-                .HasForeignKey(cp => cp.CourseId)
+                .HasOne(cp => cp.Enrollment)
+                .WithMany(e => e.CourseProgresses)
+                .HasForeignKey(cp => cp.EnrollmentId)
                 .OnDelete(DeleteBehavior.Cascade);
 
             modelBuilder.Entity<CourseProgress>()
-                .HasOne(cp => cp.User)
-                .WithMany(u => u.CourseProgresses)
-                .HasForeignKey(cp => cp.UserId)
-                .OnDelete(DeleteBehavior.Cascade);
+                .HasOne(cp => cp.Lecture)
+                .WithMany(l => l.CourseProgresses)
+                .HasForeignKey(cp => cp.LectureId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<CourseProgress>()
+                .HasIndex(cp => new { cp.EnrollmentId, cp.LectureId })
+                .IsUnique();
+
 
             // --- Cart – User (1–1)
             modelBuilder.Entity<Cart>()
@@ -160,7 +151,7 @@ namespace App.Data
                 .HasOne(e => e.Course)
                 .WithMany(c => c.Enrollments)
                 .HasForeignKey(e => e.CourseId)
-                .OnDelete(DeleteBehavior.Cascade);
+                .OnDelete(DeleteBehavior.Restrict);
         }
     }
 }

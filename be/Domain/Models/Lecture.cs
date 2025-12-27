@@ -12,5 +12,6 @@ namespace App.Domain.Models
         public int LectureOrder { get; set; }
         public int ChapterId { get; set; }
         public Chapter Chapter { get; set; } = null!;
+         public ICollection<CourseProgress> CourseProgresses { get; set; } = new List<CourseProgress>();
     }
 }

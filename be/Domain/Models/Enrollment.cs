@@ -17,5 +17,6 @@ namespace App.Domain.Models
         public DateTime UpdatedAt { get; set; }
         public ApplicationUser User { get; set; } = null!;
         public Course Course { get; set; } = null!;
+         public ICollection<CourseProgress> CourseProgresses { get; set; } = new List<CourseProgress>();
     }
 }

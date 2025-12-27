@@ -4,10 +4,10 @@ namespace App.Services.Interfaces
 {
     public interface ICourseService
     {
-        Task<CourseDTO?> GetByIdAsync(int id);
+        Task<CourseDetailDTO?> GetByIdAsync(int id);
         Task<Object> GetAllCoursesPublishAsync(int? page, int? limit);
         Task<Object> GetAllCourses(int? page, int? limit);
-        Task<CourseDTO?> GetBySlugAsync(string slug);
+        Task<CourseDetailDTO?> GetBySlugAsync(string slug);
         Task<CourseDTO> CreateAsync(CourseDTO dto);
         Task<CourseDTO> UpdateAsync(int id, CourseDTO dto);
         Task<bool> DeleteAsync(int id);

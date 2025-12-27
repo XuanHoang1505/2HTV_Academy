@@ -17,8 +17,8 @@ namespace App.Repositories.Interfaces
         Task UpdateAsync(Course course);
         Task DeleteAsync(int id);
         Task<Course?> CourseDetailAsync(int id);
-        Task<IEnumerable<CourseProgress>> GetCourseProgressByCourseIdAsync(int courseId);
-        Task RemoveCourseProgressForStudentAsync(string studentId, int courseId);
+        // Task<IEnumerable<CourseProgress>> GetCourseProgressByCourseIdAsync(int courseId);
+        // Task RemoveCourseProgressForStudentAsync(string studentId, int courseId);
         Task<IEnumerable<Course>> SearchAsync(CourseFilterDTO filter);
         Task<IEnumerable<Course>> GetCoursesBestSellerAsync();
         Task<IEnumerable<Course>> GetCoursesNewestAsync();
