@@ -209,11 +209,31 @@ namespace App.Services.Implementations
             return MapToResponseDTO(enrollment, enrollment.Course?.CourseTitle ?? "");
         }
 
-        public async Task<IEnumerable<EnrollmentResponseDTO>> GetUserEnrollmentsAsync(string userId)
+        public async Task<PagedResult<EnrollmentResponseDTO>> GetUserEnrollmentsAsync(string userId, int? page, int? limit)
         {
-            var enrollments = await _enrollmentRepo.GetByUserIdAsync(userId);
-            return enrollments.Select(e => MapToResponseDTO(e, e.Course?.CourseTitle ?? "")).ToList();
+            if (!page.HasValue || !limit.HasValue)
+            {
+                var allEnrollments = await _enrollmentRepo.GetByUserIdAsync(userId, 1, int.MaxValue);
+
+                return new PagedResult<EnrollmentResponseDTO>
+                {
+                    Data = allEnrollments.Select(e => MapToResponseDTO(e, e.Course?.CourseTitle ?? "")),
+                    Total = allEnrollments.Count
+                };
+            }
+
+            var enrollments = await _enrollmentRepo.GetByUserIdAsync(userId, page.Value, limit.Value);
+
+            return new PagedResult<EnrollmentResponseDTO>
+            {
+                Data = enrollments.Select(e => MapToResponseDTO(e, e.Course?.CourseTitle ?? "")),
+                Total = enrollments.TotalItemCount,
+                TotalPages = enrollments.PageCount,
+                CurrentPage = enrollments.PageNumber,
+                Limit = enrollments.PageSize
+            };
         }
+       
 
         public async Task<IEnumerable<EnrollmentDetailDTO>> GetCourseEnrollmentsAsync(int courseId)
         {

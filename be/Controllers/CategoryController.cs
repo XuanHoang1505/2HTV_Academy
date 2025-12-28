@@ -19,6 +19,24 @@ namespace App.Controllers
         [HttpGet]
         public async Task<IActionResult> GetAllCategories([FromQuery] int? page, [FromQuery] int? limit)
         {
+            if (limit.HasValue && (limit <= 0 || limit > 100))
+            {
+                return BadRequest(new
+                {
+                    success = false,
+                    message = "Limit phải trong khoảng 1-100"
+                });
+            }
+
+            if (page.HasValue && page <= 0)
+            {
+                return BadRequest(new
+                {
+                    success = false,
+                    message = "Page phải là số dương"
+                });
+            }
+            
             var result = await _categoryService.GetAllAsync(page, limit);
 
             return Ok(new

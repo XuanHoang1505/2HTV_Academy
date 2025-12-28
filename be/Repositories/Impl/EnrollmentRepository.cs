@@ -3,10 +3,12 @@ using App.Domain.Enums;
 using App.Domain.Models;
 using App.Repositories.Interfaces;
 using Microsoft.EntityFrameworkCore;
+using X.PagedList;
+using X.PagedList.EF;
 
 namespace App.Repositories.Implementations
 {
-     public class EnrollmentRepository : IEnrollmentRepository
+    public class EnrollmentRepository : IEnrollmentRepository
     {
         private readonly AppDBContext _context;
 
@@ -26,7 +28,7 @@ namespace App.Repositories.Implementations
                 .Include(e => e.Course)
                     .ThenInclude(c => c.CourseContent)
                         .ThenInclude(cc => cc.ChapterContent)
-                .Include(e => e.CourseProgresses)        
+                .Include(e => e.CourseProgresses)
                 .FirstOrDefaultAsync(e => e.Id == id && !e.Deleted);
         }
 
@@ -37,13 +39,13 @@ namespace App.Repositories.Implementations
                 .FirstOrDefaultAsync(e => e.UserId == userId && e.CourseId == courseId && !e.Deleted);
         }
 
-        public async Task<IEnumerable<Enrollment>> GetByUserIdAsync(string userId)
+        public async Task<IPagedList<Enrollment>> GetByUserIdAsync(string userId, int page, int limit)
         {
             return await _context.Enrollments
                 .Include(e => e.Course)
-                .Where(e => e.UserId == userId && !e.Deleted)
+                .Where(e => e.UserId == userId && !e.Deleted && e.Status == EnrollmentStatus.Active)
                 .OrderByDescending(e => e.EnrolledAt)
-                .ToListAsync();
+                .ToPagedListAsync(page, limit);
         }
 
         public async Task<IEnumerable<Enrollment>> GetByCourseIdAsync(int courseId)
@@ -59,20 +61,20 @@ namespace App.Repositories.Implementations
         {
             enrollment.CreatedAt = DateTime.UtcNow;
             enrollment.UpdatedAt = DateTime.UtcNow;
-            
+
             _context.Enrollments.Add(enrollment);
             await _context.SaveChangesAsync();
-            
+
             return enrollment;
         }
 
         public async Task<Enrollment> UpdateAsync(Enrollment enrollment)
         {
             enrollment.UpdatedAt = DateTime.UtcNow;
-            
+
             _context.Enrollments.Update(enrollment);
             await _context.SaveChangesAsync();
-            
+
             return enrollment;
         }
 
@@ -83,7 +85,7 @@ namespace App.Repositories.Implementations
 
             enrollment.Deleted = true;
             enrollment.UpdatedAt = DateTime.UtcNow;
-            
+
             await _context.SaveChangesAsync();
             return true;
         }
@@ -104,8 +106,8 @@ namespace App.Repositories.Implementations
         {
             return await _context.Enrollments
                 .Include(e => e.Course)
-                .Where(e => e.UserId == userId && 
-                           !e.Deleted && 
+                .Where(e => e.UserId == userId &&
+                           !e.Deleted &&
                            e.Status == EnrollmentStatus.Active &&
                            (e.ExpiresAt == null || e.ExpiresAt > DateTime.UtcNow))
                 .OrderByDescending(e => e.EnrolledAt)
