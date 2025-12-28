@@ -27,7 +27,7 @@ namespace App.Controllers
         }
 
         [HttpGet("my-enrollments")]
-        public async Task<IActionResult> GetMyEnrollments()
+        public async Task<IActionResult> GetMyEnrollments([FromQuery] int? page, [FromQuery] int? limit)
         {
             try
             {
@@ -37,8 +37,19 @@ namespace App.Controllers
                     return Unauthorized(new { success = false, message = "User không xác định" });
                 }
 
-                var enrollments = await _enrollmentService.GetUserEnrollmentsAsync(userId);
-                return Ok(new { success = true, data = enrollments });
+                var result = await _enrollmentService.GetUserEnrollmentsAsync(userId, page, limit);
+                return Ok(new 
+                { 
+                    success = true, 
+                    data = result.Data, 
+                    pagination = new
+                    {
+                        total = result.Total,
+                        totalPages = page.HasValue ? result.TotalPages : null,
+                        currentPage = page.HasValue ? result.CurrentPage : null,
+                        limit = page.HasValue ? result.Limit : null
+                    }
+                });
             }
             catch (Exception ex)
             {

@@ -8,7 +8,7 @@ namespace App.Services.Interfaces
         Task<IEnumerable<EnrollmentResponseDTO>> CreateEnrollmentsFromPurchaseAsync(int purchaseId);
         Task<EnrollmentDetailDTO?> GetEnrollmentByIdAsync(int id);
         Task<EnrollmentResponseDTO?> GetUserEnrollmentForCourseAsync(string userId, int courseId);
-        Task<IEnumerable<EnrollmentResponseDTO>> GetUserEnrollmentsAsync(string userId);
+        Task<PagedResult<EnrollmentResponseDTO>> GetUserEnrollmentsAsync(string userId, int? page, int? limit);
         Task<IEnumerable<EnrollmentDetailDTO>> GetCourseEnrollmentsAsync(int courseId);
         Task<EnrollmentResponseDTO> UpdateProgressAsync(int id, UpdateEnrollmentProgressDTO dto);
         Task<EnrollmentResponseDTO> UpdateStatusAsync(int id, UpdateEnrollmentStatusDTO dto);
