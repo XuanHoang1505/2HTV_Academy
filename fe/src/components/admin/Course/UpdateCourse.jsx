@@ -29,20 +29,19 @@ const UpdateCourse = ({ course, onCancel, onSuccess }) => {
   useEffect(() => {
     if (course) {
       form.setFieldsValue({
-        title: course.title,
+        title: course.courseTitle,
         slug: course.slug,
-        categoryId: course.categoryId?._id || course.categoryId,
+        categoryId: course.categoryId,
         shortDescription: course.shortDescription,
-        description: course.description,
+        description: course.courseDescription,
         previewVideo: course.previewVideo,
         level: course.level,
         language: course.language,
-        price: course.price,
+        price: course.coursePrice,
         discount: course.discount,
         status: course.status,
-        requirements: course.requirements?.join("\n") || "",
       });
-      setPreviewImage(course.thumbnail || null);
+      setPreviewImage(course.courseThumbnail || null);
     }
   }, [course, form]);
 
@@ -66,74 +65,30 @@ const UpdateCourse = ({ course, onCancel, onSuccess }) => {
 
       const formData = new FormData();
 
-      // Chỉ gửi những field được thay đổi
-      if (values.title && values.title !== course.title) {
-        formData.append("title", values.title.trim());
-      }
-      if (values.slug && values.slug !== course.slug) {
-        formData.append("slug", values.slug.trim());
-      }
-      if (
-        values.categoryId &&
-        values.categoryId !== course.categoryId?._id &&
-        values.categoryId !== course.categoryId
-      ) {
-        formData.append("categoryId", values.categoryId);
-      }
-      if (
-        values.shortDescription &&
-        values.shortDescription !== course.shortDescription
-      ) {
-        formData.append("shortDescription", values.shortDescription);
-      }
-      if (values.description && values.description !== course.description) {
-        formData.append("description", values.description);
-      }
+      formData.append("courseTitle", values.title.trim());
+      formData.append("slug", values.slug.trim());
+      formData.append("categoryId", values.categoryId);
+      formData.append("courseDescription", values.description);
+      formData.append("coursePrice", values.price);
+      formData.append("level", values.level);
+      formData.append("shortDescription", values.shortDescription);
+      formData.append("discount", values.discount);
+      formData.append("status", values.status);
+      formData.append("language", values.language);
+
       if (values.previewVideo && values.previewVideo !== course.previewVideo) {
         formData.append("previewVideo", values.previewVideo);
-      }
-      if (values.level && values.level !== course.level) {
-        formData.append("level", values.level);
-      }
-      if (values.language && values.language !== course.language) {
-        formData.append("language", values.language);
-      }
-      if (values.price !== undefined && values.price !== course.price) {
-        formData.append("price", values.price);
-      }
-      if (
-        values.discount !== undefined &&
-        values.discount !== course.discount
-      ) {
-        formData.append("discount", values.discount);
-      }
-      if (values.status && values.status !== course.status) {
-        formData.append("status", values.status);
-      }
-
-      // Xử lý requirements (convert từ string sang array)
-      const requirementsArray = values.requirements
-        ? values.requirements.split("\n").filter((req) => req.trim())
-        : [];
-      const oldRequirements = course.requirements || [];
-      if (
-        JSON.stringify(requirementsArray) !== JSON.stringify(oldRequirements)
-      ) {
-        formData.append("requirements", JSON.stringify(requirementsArray));
       }
 
       // Xử lý upload thumbnail
       if (values.thumbnail?.[0]?.originFileObj) {
-        formData.append("thumbnail", values.thumbnail[0].originFileObj);
+        formData.append(
+          "courseThumbnailFile",
+          values.thumbnail[0].originFileObj
+        );
       }
 
-      // Nếu không có dữ liệu thay đổi
-      if (formData.entries().length === 0) {
-        message.warning("Không có thay đổi nào để cập nhật");
-        return;
-      }
-
-      const res = await updateCourseByIdService(course._id, formData);
+      const res = await updateCourseByIdService(course.id, formData);
 
       if (res.success) {
         message.success("Cập nhật khóa học thành công");
@@ -146,12 +101,9 @@ const UpdateCourse = ({ course, onCancel, onSuccess }) => {
       }
     } catch (error) {
       console.log("Update Course Error:", error);
-
-      const errorMessage = error.message || "Không thể kết nối đến server";
-
       notification.error({
         message: "Cập nhật thất bại",
-        description: errorMessage,
+        description: error.message || "Không thể kết nối đến server",
         duration: 5,
       });
     } finally {
@@ -160,7 +112,7 @@ const UpdateCourse = ({ course, onCancel, onSuccess }) => {
   };
 
   const handleCancel = () => {
-    setPreviewImage(course.thumbnail || null);
+    setPreviewImage(course.courseThumbnail || null);
     form.resetFields();
     onCancel?.();
   };
@@ -193,7 +145,7 @@ const UpdateCourse = ({ course, onCancel, onSuccess }) => {
   };
 
   const categoryOptions = categories.map((cat) => ({
-    value: cat._id,
+    value: cat.id,
     label: cat.name,
   }));
 
@@ -257,7 +209,7 @@ const UpdateCourse = ({ course, onCancel, onSuccess }) => {
           <Form.Item
             name="title"
             label={
-              <span className="font-medium text-gray-700">Tên khóa học *</span>
+              <span className="font-medium text-gray-700">Tên khóa học </span>
             }
             rules={[
               { required: true, message: "Không được để trống tên khóa học" },
@@ -273,7 +225,7 @@ const UpdateCourse = ({ course, onCancel, onSuccess }) => {
 
           <Form.Item
             name="slug"
-            label={<span className="font-medium text-gray-700">Slug *</span>}
+            label={<span className="font-medium text-gray-700">Slug </span>}
             rules={[{ required: true, message: "Không được để trống slug" }]}
             className="mb-4"
           >
@@ -286,9 +238,7 @@ const UpdateCourse = ({ course, onCancel, onSuccess }) => {
 
           <Form.Item
             name="categoryId"
-            label={
-              <span className="font-medium text-gray-700">Danh mục *</span>
-            }
+            label={<span className="font-medium text-gray-700">Danh mục </span>}
             rules={[{ required: true, message: "Vui lòng chọn danh mục" }]}
             className="mb-4"
           >
@@ -318,9 +268,7 @@ const UpdateCourse = ({ course, onCancel, onSuccess }) => {
           <Form.Item
             name="description"
             label={
-              <span className="font-medium text-gray-700">
-                Mô tả chi tiết *
-              </span>
+              <span className="font-medium text-gray-700">Mô tả chi tiết</span>
             }
             rules={[
               {
@@ -356,9 +304,7 @@ const UpdateCourse = ({ course, onCancel, onSuccess }) => {
           <div className="grid grid-cols-3 gap-4">
             <Form.Item
               name="level"
-              label={
-                <span className="font-medium text-gray-700">Cấp độ *</span>
-              }
+              label={<span className="font-medium text-gray-700">Cấp độ </span>}
               rules={[{ required: true, message: "Vui lòng chọn cấp độ" }]}
               className="mb-4"
             >
@@ -413,9 +359,7 @@ const UpdateCourse = ({ course, onCancel, onSuccess }) => {
             <Form.Item
               name="price"
               label={
-                <span className="font-medium text-gray-700">
-                  Giá gốc (VNĐ) *
-                </span>
+                <span className="font-medium text-gray-700">Giá gốc (VNĐ)</span>
               }
               rules={[{ required: true, message: "Không được để trống giá" }]}
               className="mb-4"
@@ -444,22 +388,6 @@ const UpdateCourse = ({ course, onCancel, onSuccess }) => {
               />
             </Form.Item>
           </div>
-
-          <Form.Item
-            name="requirements"
-            label={
-              <span className="font-medium text-gray-700">
-                Yêu cầu (mỗi dòng là một yêu cầu)
-              </span>
-            }
-            className="mb-4"
-          >
-            <Input.TextArea
-              placeholder="Nhập các yêu cầu, mỗi dòng một yêu cầu"
-              disabled={loading}
-              rows={3}
-            />
-          </Form.Item>
 
           <Form.Item className="mb-0">
             <Space>

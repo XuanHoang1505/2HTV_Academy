@@ -74,7 +74,7 @@ const CurriculumCourse = ({ curriculum, fetchCourseDetail, courseId }) => {
               <AccordionSummary expandIcon={<ExpandMoreIcon />}>
                 <div className="flex justify-between w-full items-center pr-4">
                   <h3 className="font-medium text-primary text-lg">
-                    {section.order}. {section.title}
+                    {section.chapterOrder}. {section.chapterTitle}
                   </h3>
                   <div className="flex items-center gap-3">
                     <p className="text-sm text-gray-600">
@@ -94,10 +94,10 @@ const CurriculumCourse = ({ curriculum, fetchCourseDetail, courseId }) => {
                       </Button>
                       <Popconfirm
                         title="Xác nhận xóa?"
-                        description={`Bạn có chắc muốn xóa chương "${section.title}"?`}
+                        description={`Bạn có chắc muốn xóa chương "${section.chapterTitle}"?`}
                         onConfirm={(e) => {
                           e.stopPropagation();
-                          handleDeleteChapter(section._id);
+                          handleDeleteChapter(section.id);
                         }}
                         okText="Xóa"
                         cancelText="Hủy"
@@ -116,18 +116,18 @@ const CurriculumCourse = ({ curriculum, fetchCourseDetail, courseId }) => {
                   {section.lectures.length > 0 ? (
                     section.lectures.map((lecture) => (
                       <div
-                        key={lecture._id}
+                        key={lecture.id}
                         className="flex items-center justify-between py-2 px-3 hover:bg-gray-50 rounded transition-colors"
                       >
                         <div className="flex items-center gap-3">
                           <FaFileVideo className="text-primary" />
                           <span className="text-base">
-                            {lecture.order}. {lecture.title}
+                            {lecture.lectureOrder}. {lecture.lectureTitle}
                           </span>
                         </div>
                         <div className="flex items-center gap-8">
                           <span className="text-sm text-gray-600">
-                            {formatTime(lecture.videoDuration)}
+                            {formatTime(lecture.lectureDuration)}
                           </span>
                           <div className="flex items-center gap-2">
                             <Button
@@ -145,10 +145,10 @@ const CurriculumCourse = ({ curriculum, fetchCourseDetail, courseId }) => {
                             <Popconfirm
                               placement="topRight"
                               title="Xác nhận xóa?"
-                              description={`Bạn có chắc muốn xóa bài giảng "${lecture.title}"?`}
+                              description={`Bạn có chắc muốn xóa bài giảng "${lecture.lectureTitle}"?`}
                               onConfirm={(e) => {
                                 e.stopPropagation();
-                                handleDeleteLecture(lecture._id);
+                                handleDeleteLecture(lecture.id);
                               }}
                               okText="Xóa"
                               cancelText="Hủy"
@@ -176,7 +176,7 @@ const CurriculumCourse = ({ curriculum, fetchCourseDetail, courseId }) => {
                   <Button
                     type="dashed"
                     onClick={() => {
-                      setSelectedChapterId(section._id);
+                      setSelectedChapterId(section.id);
                       setIsModalCreateLectureOpen(true);
                     }}
                     className="mt-2"

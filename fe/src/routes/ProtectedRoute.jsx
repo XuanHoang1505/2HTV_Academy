@@ -5,6 +5,7 @@ import CircularProgress from "@mui/material/CircularProgress";
 
 const ProtectedRoute = ({ children, requiredRole }) => {
   const { user, appLoading } = useContext(AuthContext);
+  console.log("Check role", user.role);
 
   if (appLoading) {
     return (
@@ -14,7 +15,7 @@ const ProtectedRoute = ({ children, requiredRole }) => {
     );
   }
 
-  if (!user.id) {
+  if (!user.userId) {
     return <Navigate to="/dang-nhap" replace />;
   }
 

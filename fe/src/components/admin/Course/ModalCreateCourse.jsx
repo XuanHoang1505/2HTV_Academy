@@ -20,6 +20,7 @@ const ModalCreateCourse = (props) => {
   const { message, notification } = App.useApp();
   const [loading, setLoading] = useState(false);
   const [categories, setCategories] = useState([]);
+
   const [loadingCategories, setLoadingCategories] = useState(false);
 
   useEffect(() => {
@@ -47,25 +48,24 @@ const ModalCreateCourse = (props) => {
       setLoading(true);
 
       const formData = new FormData();
-      formData.append("title", values.title.trim());
+      formData.append("courseTitle", values.title.trim());
       formData.append("slug", values.slug.trim());
-      formData.append("description", values.description.trim());
+      formData.append("courseDescription", values.description.trim());
       formData.append("shortDescription", values.shortDescription || "");
       formData.append("categoryId", values.categoryId);
-      formData.append("instructorId", instructorId);
+      formData.append("educatorId", instructorId);
       formData.append("level", values.level || "beginner");
       formData.append("language", values.language || "vi");
-      formData.append("price", values.price || 0);
+      formData.append("coursePrice", values.price || 0);
       formData.append("discount", values.discount || 0);
       formData.append("previewVideo", values.previewVideo || "");
       formData.append("status", values.status || "draft");
-      formData.append(
-        "requirements",
-        JSON.stringify(values.requirements || [])
-      );
 
       if (values.thumbnail?.[0]?.originFileObj) {
-        formData.append("thumbnail", values.thumbnail[0].originFileObj);
+        formData.append(
+          "courseThumbnailFile",
+          values.thumbnail[0].originFileObj
+        );
       }
 
       const res = await createCourseService(formData);
@@ -105,7 +105,7 @@ const ModalCreateCourse = (props) => {
   };
 
   const categoryOptions = categories.map((cat) => ({
-    value: cat._id,
+    value: cat.id,
     label: cat.name,
   }));
 
@@ -147,9 +147,7 @@ const ModalCreateCourse = (props) => {
             <Form.Item
               name="title"
               label={
-                <span className="font-medium text-gray-700">
-                  Tên khóa học *
-                </span>
+                <span className="font-medium text-gray-700">Tên khóa học</span>
               }
               rules={[
                 { required: true, message: "Không được để trống tên khóa học" },
@@ -165,7 +163,7 @@ const ModalCreateCourse = (props) => {
 
             <Form.Item
               name="slug"
-              label={<span className="font-medium text-gray-700">Slug *</span>}
+              label={<span className="font-medium text-gray-700">Slug </span>}
               rules={[{ required: true, message: "Không được để trống slug" }]}
               className="mb-4"
             >
@@ -179,7 +177,7 @@ const ModalCreateCourse = (props) => {
             <Form.Item
               name="categoryId"
               label={
-                <span className="font-medium text-gray-700">Danh mục *</span>
+                <span className="font-medium text-gray-700">Danh mục </span>
               }
               rules={[{ required: true, message: "Vui lòng chọn danh mục" }]}
               className="mb-4"
@@ -211,7 +209,7 @@ const ModalCreateCourse = (props) => {
               name="description"
               label={
                 <span className="font-medium text-gray-700">
-                  Mô tả chi tiết *
+                  Mô tả chi tiết
                 </span>
               }
               rules={[
@@ -249,7 +247,7 @@ const ModalCreateCourse = (props) => {
               <Form.Item
                 name="level"
                 label={
-                  <span className="font-medium text-gray-700">Cấp độ *</span>
+                  <span className="font-medium text-gray-700">Cấp độ </span>
                 }
                 rules={[{ required: true, message: "Vui lòng chọn cấp độ" }]}
                 className="mb-4"
@@ -306,7 +304,7 @@ const ModalCreateCourse = (props) => {
                 name="price"
                 label={
                   <span className="font-medium text-gray-700">
-                    Giá gốc (VNĐ) *
+                    Giá gốc (VNĐ)
                   </span>
                 }
                 rules={[{ required: true, message: "Không được để trống giá" }]}
@@ -372,7 +370,7 @@ const ModalCreateCourse = (props) => {
                     return false;
                   }}
                   maxCount={1}
-                  accept="image/*"
+                  accept="image/"
                   disabled={loading}
                   className="avatar-uploader"
                 >

@@ -1,6 +1,9 @@
 import { Space, Table, Tag, Button, Popconfirm, message, Input } from "antd";
-import { DeleteOutlined, EditOutlined } from "@ant-design/icons";
-import { deleteUserByIdService } from "../../../services/admin/user.service";
+import { EditOutlined, LockOutlined, UnlockOutlined } from "@ant-design/icons";
+import {
+  lockUserByIdService,
+  unlockUserByIdService,
+} from "../../../services/admin/user.service";
 
 const TableUser = (props) => {
   const {
@@ -18,26 +21,28 @@ const TableUser = (props) => {
     setFilterRole,
   } = props;
 
+  console.log("check page:", currentPage, pageSize);
+
   const columns = [
     {
       title: "STT",
       key: "index",
       width: 60,
       align: "center",
-      render: (_, record, item) => {
-        return <>{item + 1 + (currentPage - 1) * pageSize}</>;
+      render: (_, record, index) => {
+        return index + 1 + (Number(currentPage) - 1) * Number(pageSize);
       },
     },
     {
       title: "Avatar",
-      dataIndex: "avatar",
-      key: "avatar",
+      dataIndex: "imageUrl",
+      key: "imageUrl",
       width: 80,
       align: "center",
       render: (avatar) => (
         <img
           src={avatar || "/default-avatar.png"}
-          alt="avatar"
+          alt="Avatar"
           style={{
             width: 50,
             height: 50,
@@ -74,25 +79,31 @@ const TableUser = (props) => {
       width: 100,
       align: "center",
       filters: [
-        { text: "ADMIN", value: "ADMIN" },
-        { text: "STUDENT", value: "STUDENT" },
+        { text: "Admin", value: "Admin" },
+        { text: "Student", value: "Student" },
       ],
       filteredValue: filterRole ? [filterRole] : null,
       render: (role) => {
         const colors = {
-          ADMIN: "red",
-          STUDENT: "purple",
+          Admin: "red",
+          Student: "blue",
         };
         return <Tag color={colors[role] || "default"}>{role}</Tag>;
       },
     },
     {
-      title: "Đăng nhập cuối",
-      dataIndex: "lastLoginAt",
-      key: "lastLoginAt",
+      title: "Trạng thái",
+      dataIndex: "isLocked",
+      key: "isLocked",
       width: 150,
-      render: (date) => (date ? new Date(date).toLocaleString("vi-VN") : "---"),
-      sorter: (a, b) => new Date(a.lastLoginAt) - new Date(b.lastLoginAt),
+      align: "center",
+      render: (isLocked) =>
+        isLocked ? (
+          <Tag color="#E34324">Đã khóa</Tag>
+        ) : (
+          <Tag color="#016425">Hoạt động</Tag>
+        ),
+      sorter: (a, b) => a.isLocked - b.isLocked,
     },
     {
       title: "Hành động",
@@ -109,18 +120,32 @@ const TableUser = (props) => {
           >
             Sửa
           </Button>
-          <Popconfirm
-            title="Xác nhận xóa?"
-            description={`Bạn có chắc muốn xóa user "${record.fullName}"?`}
-            onConfirm={() => handleDelete(record._id)}
-            okText="Xóa"
-            cancelText="Hủy"
-            okButtonProps={{ danger: true }}
-          >
-            <Button type="link" danger icon={<DeleteOutlined />}>
-              Khóa
-            </Button>
-          </Popconfirm>
+          {record.isLocked ? (
+            <Popconfirm
+              title="Xác nhận mở khóa?"
+              description={`Bạn có chắc muốn mở khóa user "${record.fullName}"?`}
+              onConfirm={() => handleUnLockUser(record.id)}
+              okText="Mở khóa"
+              cancelText="Hủy"
+            >
+              <Button type="link" icon={<UnlockOutlined />}>
+                Mở khóa
+              </Button>
+            </Popconfirm>
+          ) : (
+            <Popconfirm
+              title="Xác nhận khóa?"
+              description={`Bạn có chắc muốn khóa user "${record.fullName}"?`}
+              onConfirm={() => handleLockUser(record.id)}
+              okText="Khóa"
+              cancelText="Hủy"
+              okButtonProps={{ danger: true }}
+            >
+              <Button type="link" danger icon={<LockOutlined />}>
+                Khóa
+              </Button>
+            </Popconfirm>
+          )}
         </Space>
       ),
     },
@@ -131,13 +156,24 @@ const TableUser = (props) => {
     setIsModalUpdateOpen(true);
   };
 
-  const handleDelete = async (id) => {
+  const handleLockUser = async (id) => {
     try {
-      await deleteUserByIdService(id);
-      message.success("Xóa user thành công");
+      await lockUserByIdService(id);
+      message.success("Khóa user thành công");
       await loadUser();
     } catch (error) {
-      message.error("Xóa user thất bại");
+      message.error("Khóa user thất bại");
+      console.error(error);
+    }
+  };
+
+  const handleUnLockUser = async (id) => {
+    try {
+      await unlockUserByIdService(id);
+      message.success("Mở khóa user thành công");
+      await loadUser();
+    } catch (error) {
+      message.error("Mở khóa user thất bại");
       console.error(error);
     }
   };
@@ -171,7 +207,7 @@ const TableUser = (props) => {
       <Table
         dataSource={dataUsers}
         columns={columns}
-        rowKey="_id"
+        rowKey="id"
         loading={loading}
         pagination={{
           current: currentPage,

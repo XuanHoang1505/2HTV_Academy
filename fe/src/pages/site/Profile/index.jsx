@@ -251,7 +251,7 @@ const ProfilePage = () => {
                     <div className="bg-gray-50 rounded-lg p-4 text-center">
                       <p className="text-sm text-gray-500 mb-1">Vai trò</p>
                       <p className="text-base font-semibold text-gray-700">
-                        {user.role === "STUDENT" ? "Học viên" : "Quản trị viên"}
+                        {user.role === "Student" ? "Học viên" : "Quản trị viên"}
                       </p>
                     </div>
                   </div>

@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { Button, Divider, Spin, Tag } from "antd";
 import UpdateCourse from "./UpdateCourse";
 import Flag from "react-world-flags";
+import { formatVND } from "../../../utils/formatters";
 
 const DetailCourse = ({ course, fetchCourseDetail }) => {
   const [isEditing, setIsEditing] = useState(false);
@@ -54,10 +55,10 @@ const DetailCourse = ({ course, fetchCourseDetail }) => {
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div className="md:col-span-2 flex gap-6">
             <div>
-              {course.thumbnail ? (
+              {course.courseThumbnail ? (
                 <img
-                  src={course.thumbnail}
-                  alt={course.title}
+                  src={course.courseThumbnail}
+                  alt={course.courseTitle}
                   className="w-40 h-40 object-cover rounded-lg"
                 />
               ) : (
@@ -68,7 +69,7 @@ const DetailCourse = ({ course, fetchCourseDetail }) => {
             </div>
             <div className="flex-1">
               <h3 className="text-xl font-bold text-gray-800 mb-2">
-                {course.title}
+                {course.courseTitle}
               </h3>
               <p className="text-gray-600 mb-2">{course.shortDescription}</p>
               <div className="flex gap-2 flex-wrap">
@@ -104,16 +105,14 @@ const DetailCourse = ({ course, fetchCourseDetail }) => {
             <label className="block font-medium text-gray-700 mb-2">
               Danh mục
             </label>
-            <p className="text-gray-600">{course.categoryId?.name || "N/A"}</p>
+            <p className="text-gray-600">{course.categoryName || "N/A"}</p>
           </div>
 
           <div>
             <label className="block font-medium text-gray-700 mb-2">
               Giá gốc (VNĐ)
             </label>
-            <p className="text-gray-600">
-              {course.price?.toLocaleString("vi-VN")}
-            </p>
+            <p className="text-gray-600">{formatVND(course.coursePrice)}</p>
           </div>
 
           <div>
@@ -128,7 +127,10 @@ const DetailCourse = ({ course, fetchCourseDetail }) => {
               Giá bán (VNĐ)
             </label>
             <p className="text-lg font-bold text-green-600">
-              {course.finalPrice?.toLocaleString("vi-VN")}
+              {formatVND(
+                course.coursePrice -
+                  (course.coursePrice * course.discount) / 100
+              )}
             </p>
           </div>
 
@@ -162,22 +164,9 @@ const DetailCourse = ({ course, fetchCourseDetail }) => {
               Mô tả chi tiết
             </label>
             <p className="text-gray-600 whitespace-pre-wrap">
-              {course.description}
+              {course.courseDescription}
             </p>
           </div>
-
-          {course.requirements && course.requirements.length > 0 && (
-            <div className="md:col-span-2">
-              <label className="block font-medium text-gray-700 mb-2">
-                Yêu cầu
-              </label>
-              <ul className="list-disc list-inside text-gray-600">
-                {course.requirements.map((req, index) => (
-                  <li key={index}>{req}</li>
-                ))}
-              </ul>
-            </div>
-          )}
         </div>
       </div>
     );

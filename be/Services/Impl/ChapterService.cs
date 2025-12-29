@@ -93,7 +93,9 @@ namespace App.Services.Implementations
             if (existing == null)
                 throw new AppException(ErrorCode.CategoryNotFound, $"Không tìm thấy chương với ID = {id}");
 
-            _mapper.Map(dto, existing);
+            existing.ChapterTitle = dto.ChapterTitle;
+            existing.ChapterDescription = dto.ChapterDescription;
+            
             await _chapter.UpdateAsync(existing);
 
             var dtoResult = _mapper.Map<ChapterDTO>(existing);

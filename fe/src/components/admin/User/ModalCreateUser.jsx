@@ -18,10 +18,9 @@ const ModalCreateUser = (props) => {
       formData.append("fullName", values.fullName);
       formData.append("phone", values.phone || "");
       formData.append("password", values.password);
-      formData.append("role", values.role);
 
       if (values.avatar?.[0]?.originFileObj) {
-        formData.append("avatar", values.avatar[0].originFileObj);
+        formData.append("imageFile", values.avatar[0].originFileObj);
       }
 
       const res = await createUserService(formData);
@@ -164,22 +163,6 @@ const ModalCreateUser = (props) => {
                 autoComplete="new-password"
                 disabled={loading}
                 className="h-10 rounded-lg"
-              />
-            </Form.Item>
-
-            <Form.Item
-              label={<span className="font-medium text-gray-700">Vai trò</span>}
-              name="role"
-              className="mb-4"
-            >
-              <Select
-                defaultValue="STUDENT"
-                options={[
-                  { value: "STUDENT", label: "Học viên" },
-                  { value: "ADMIN", label: "Quản trị viên" },
-                ]}
-                disabled={loading}
-                className="h-10"
               />
             </Form.Item>
 

@@ -14,8 +14,6 @@ const ModalUpdateCategory = (props) => {
   const { message, notification } = App.useApp();
   const [loading, setLoading] = useState(false);
 
-  console.log(dataUpdate);
-
   useEffect(() => {
     if (dataUpdate && isModalUpdateOpen) {
       form.setFieldsValue({
@@ -29,7 +27,7 @@ const ModalUpdateCategory = (props) => {
   const handleUpdateCategory = async (values) => {
     try {
       setLoading(true);
-      const res = await updateCategoryByIdService(dataUpdate._id, values);
+      const res = await updateCategoryByIdService(dataUpdate.id, values);
 
       if (res.success) {
         message.success("Cập nhật danh mục thành công");

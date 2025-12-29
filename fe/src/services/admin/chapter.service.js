@@ -1,7 +1,7 @@
 import axios from "../../customs/axios.customize";
 
 const getAllChapterOfCourseService = async (courseId) => {
-  let URL_BACKEND = `/admin/chapters?courseId=${courseId}`;
+  let URL_BACKEND = `/chapters?courseId=${courseId}`;
 
   const response = await axios.get(URL_BACKEND);
 
@@ -9,7 +9,7 @@ const getAllChapterOfCourseService = async (courseId) => {
 };
 
 const getChapterByIdService = async (id) => {
-  const URL_BACKEND = `/admin/chapters/${id}`;
+  const URL_BACKEND = `/chapters/${id}`;
 
   const response = await axios.get(URL_BACKEND);
 
@@ -17,7 +17,7 @@ const getChapterByIdService = async (id) => {
 };
 
 const createChapterService = async (data) => {
-  const URL_BACKEND = "/admin/chapters";
+  const URL_BACKEND = "/chapters";
 
   const response = await axios.post(URL_BACKEND, data);
 
@@ -25,7 +25,7 @@ const createChapterService = async (data) => {
 };
 
 const updateChapterService = async (id, data) => {
-  const URL_BACKEND = `/admin/chapters/${id}`;
+  const URL_BACKEND = `/chapters/${id}`;
 
   const response = await axios.put(URL_BACKEND, data);
 
@@ -33,7 +33,7 @@ const updateChapterService = async (id, data) => {
 };
 
 const deleteChapterService = async (id) => {
-  const URL_BACKEND = `/admin/chapters/${id}`;
+  const URL_BACKEND = `/chapters/${id}`;
 
   const response = await axios.delete(URL_BACKEND);
 

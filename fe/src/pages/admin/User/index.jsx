@@ -35,8 +35,6 @@ const UserAdminPage = () => {
 
       if (res.data) {
         setDataUsers(res.data);
-        setCurrentPage(res.pagination.page);
-        setPageSize(res.pagination.limit);
         setTotal(res.pagination.total);
       }
     } catch (error) {

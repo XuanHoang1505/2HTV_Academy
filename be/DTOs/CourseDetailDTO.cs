@@ -4,9 +4,13 @@ using App.DTOs;
 public class CourseDetailDTO
 {
     public int Id { get; set; }
+    public int? CategoryId { get; set; }
     public string CourseTitle { get; set; } = null!;
     public string Slug { get; set; } = null!;
     public string CourseDescription { get; set; } = null!;
+    public string? ShortDescription { get; set; }
+    public Level Level { get; set; }
+    public Language Language { get; set; }
     public CourseStatus Status { get; set; }
     public string? CourseThumbnail { get; set; }
     public decimal CoursePrice { get; set; }

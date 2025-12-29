@@ -85,6 +85,9 @@ namespace App.Services.Implementations
                 Id = course.Id,
                 CourseTitle = course.CourseTitle,
                 CourseDescription = course.CourseDescription,
+                ShortDescription = course.ShortDescription,
+                Language = course.Language,
+                Level = course.Level,
                 Slug = course.Slug,
                 CoursePrice = course.CoursePrice,
                 Discount = course.Discount,
@@ -94,6 +97,7 @@ namespace App.Services.Implementations
                 PublishedAt = course.PublishedAt,
                 CreatedAt = course.CreatedAt,
                 EducatorName = course.Educator.FullName,
+                CategoryId = course.Category.Id,
                 CategoryName = course.Category.Name,
                 Curriculum = course.CourseContent
                     .OrderBy(ch => ch.ChapterOrder)
@@ -254,11 +258,47 @@ namespace App.Services.Implementations
 
         public async Task<CourseDetailDTO?> CourseDetailAsync(int id)
         {
-            var course = await _repository.CourseDetailAsync(id);
+            var course = await _repository.GetByIdAsync(id);
+            
             if (course == null)
                 throw new AppException(ErrorCode.CourseNotFound, $"Không tìm thấy khóa học với ID = {id}");
-
-            return _mapper.Map<CourseDetailDTO>(course);
+            
+            var result = new CourseDetailDTO
+            {
+                Id = course.Id,
+                CourseTitle = course.CourseTitle,
+                CourseDescription = course.CourseDescription,
+                Slug = course.Slug,
+                CoursePrice = course.CoursePrice,
+                Discount = course.Discount,
+                CourseThumbnail = course.CourseThumbnail,
+                Status = course.Status,
+                IsPublished = course.IsPublished,
+                PublishedAt = course.PublishedAt,
+                CreatedAt = course.CreatedAt,
+                EducatorName = course.Educator.FullName,
+                CategoryName = course.Category.Name,
+                Curriculum = course.CourseContent
+                    .OrderBy(ch => ch.ChapterOrder)
+                    .Select(ch => new ChapterCurriculumDTO
+                    {
+                        Id = ch.Id,
+                        ChapterTitle = ch.ChapterTitle,
+                        ChapterOrder = ch.ChapterOrder,
+                        Lectures = ch.ChapterContent 
+                            .OrderBy(l => l.LectureOrder)
+                            .Select(l => new LectureDTO
+                            {
+                                Id = l.Id,
+                                LectureTitle = l.LectureTitle,
+                                LectureOrder = l.LectureOrder,
+                                LectureUrl = l.LectureUrl,
+                                IsPreviewFree = l.IsPreviewFree,
+                                LectureDuration = l.LectureDuration
+                            }).ToList()
+                    }).ToList(),
+            };
+            return result;
         }
 
 

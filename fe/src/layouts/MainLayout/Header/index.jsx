@@ -1,8 +1,11 @@
+/* eslint-disable no-unused-vars */
+import CodeIcon from "@mui/icons-material/Code";
 import Badge from "@mui/material/Badge";
 import IconButton from "@mui/material/IconButton";
 import Tooltip from "@mui/material/Tooltip";
 import ShoppingCartIcon from "@mui/icons-material/ShoppingCart";
 import { Link, NavLink, useNavigate } from "react-router-dom";
+import Button from "@mui/material/Button";
 import { colors } from "../../../utils/colors";
 import { useContext, useState } from "react";
 import { AuthContext } from "../../../contexts/auth.context";
@@ -11,27 +14,88 @@ import Avatar from "@mui/material/Avatar";
 import Menu from "@mui/material/Menu";
 import MenuItem from "@mui/material/MenuItem";
 import ListItemIcon from "@mui/material/ListItemIcon";
+import Divider from "@mui/material/Divider";
 import Logout from "@mui/icons-material/Logout";
 import AccountCircleIcon from "@mui/icons-material/AccountCircle";
 import MenuBookIcon from "@mui/icons-material/MenuBook";
 import LocalMallIcon from "@mui/icons-material/LocalMall";
 import AdminPanelSettingsIcon from "@mui/icons-material/AdminPanelSettings";
-import { App, Divider } from "antd";
+import { App } from "antd";
 import Skeleton from "@mui/material/Skeleton";
-import Button from "@mui/material/Button";
+import { CartContext } from "../../../contexts/cart.context";
+import Popover from "@mui/material/Popover";
+import { formatVND } from "../../../utils/formatters";
+import { removeCourseFromCarte } from "../../../services/student/cart.service";
+import { orderFromCartService } from "../../../services/student/order.service";
 
 const Header = () => {
   const { user, setUser, appLoading } = useContext(AuthContext);
+  console.log(">>> check user ", user);
+
+  const { refreshCart, cartInfo } = useContext(CartContext);
+  const [loadingCart, setLoadingCart] = useState(false);
+  const [loadingPayment, setLoadingPayment] = useState(false);
   const { message } = App.useApp();
   const [anchorEl, setAnchorEl] = useState(null);
-  const navigate = useNavigate();
   const open = Boolean(anchorEl);
+  const navigate = useNavigate();
+  const [cartAnchorEl, setCartAnchorEl] = useState(null);
+  const cartOpen = Boolean(cartAnchorEl);
+
   const handleClick = (event) => {
     setAnchorEl(event.currentTarget);
   };
+
   const handleClose = () => {
     setAnchorEl(null);
   };
+
+  const handleCartOpen = (event) => {
+    setCartAnchorEl(event.currentTarget);
+  };
+
+  const handleCartClose = () => {
+    setCartAnchorEl(null);
+  };
+
+  const handleRemoveCourseFromCart = async (courseId) => {
+    try {
+      setLoadingCart(true);
+      const res = await removeCourseFromCarte(courseId);
+
+      if (res.success) {
+        message.success(res.message);
+        refreshCart();
+      } else {
+        message.warning(res.message);
+      }
+    } catch (error) {
+      message.error("Không thể xóa khóa học khỏi giỏ hàng");
+      console.log(error);
+    } finally {
+      setLoadingCart(false);
+    }
+  };
+
+  const handlePayment = async () => {
+    try {
+      setLoadingPayment(true);
+      const res = await orderFromCartService();
+
+      if (res.success) {
+        message.success(res.message);
+        window.location.href = res.data.paymentInfo;
+      } else {
+        message.warning(res.message);
+      }
+    } catch (error) {
+      message.error("Thanh toán thất bại");
+      console.log(error);
+    } finally {
+      setLoadingPayment(false);
+    }
+  };
+
   const handleLogout = () => {
     localStorage.removeItem("access_token");
     setUser({
@@ -54,27 +118,24 @@ const Header = () => {
 
   const getRoleDisplayName = (role) => {
     const roleMap = {
-      ADMIN: "Quản trị viên",
-      USER: "Người dùng",
-      STUDENT: "Học viên",
+      Admin: "Quản trị viên",
+      Student: "Học viên",
     };
     return roleMap[role] || role;
   };
 
   const getRoleColor = (role) => {
     const roleColors = {
-      ADMIN: "#dc2626",
-      TEACHER: "#2563eb",
-      STUDENT: "#311B92",
+      Admin: "#dc2626",
+      Student: "#01579B",
     };
     return roleColors[role] || "#6b7280";
   };
 
   const getRoleBackground = (role) => {
     const roleBackgrounds = {
-      ADMIN: "#fee2e2",
-      TEACHER: "#dbeafe",
-      STUDENT: "#D1C4E9",
+      Admin: "#fee2e2",
+      Student: "#dbeafe",
     };
     return roleBackgrounds[role] || "#f3f4f6";
   };
@@ -82,11 +143,12 @@ const Header = () => {
   return (
     <header className="bg-white shadow-md">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex justify-between items-center h-20">
+        <div className="flex justify-between items-center h-16">
           <Link to={"/"} className="flex items-center space-x-2">
-            <span className="text-2xl font-bold text-primary">
-              2HTV Academy
-            </span>
+            <div className="bg-primary p-2 rounded-lg">
+              <CodeIcon className="text-white text-2xl" />
+            </div>
+            <span className="text-xl font-bold text-primary">CodeLearn</span>
           </Link>
 
           <nav className="hidden md:flex items-center space-x-8">
@@ -95,7 +157,7 @@ const Header = () => {
                 key={item.path}
                 to={item.path}
                 className={({ isActive }) =>
-                  `link-menu text-gray-600 hover:text-primary text-base font-bold transition-colors px-2 py-2 ${
+                  `link-menu text-gray-600 hover:text-primary text-base font-bold transition-colors ${
                     isActive ? "active" : ""
                   }`
                 }
@@ -107,9 +169,14 @@ const Header = () => {
 
           <div className="actions flex items-center gap-3">
             <Tooltip title="Giỏ hàng" placement="bottom">
-              <IconButton aria-label="cart">
+              <IconButton
+                aria-label="cart"
+                onClick={handleCartOpen}
+                aria-owns={cartOpen ? "mouse-open-cart" : undefined}
+                aria-haspopup="true"
+              >
                 <Badge
-                  badgeContent={0}
+                  badgeContent={cartInfo ? cartInfo.items.length : 0}
                   showZero={true}
                   anchorOrigin={{
                     vertical: "top",
@@ -128,6 +195,100 @@ const Header = () => {
                 </Badge>
               </IconButton>
             </Tooltip>
+            <Popover
+              id="mouse-open-cart"
+              open={cartOpen}
+              anchorEl={cartAnchorEl}
+              onClose={handleCartClose}
+              anchorOrigin={{
+                vertical: "bottom",
+                horizontal: "right",
+              }}
+              transformOrigin={{
+                vertical: "top",
+                horizontal: "center",
+              }}
+            >
+              {cartInfo ? (
+                cartInfo.items.length === 0 ? (
+                  <div className="p-5 text-primary">
+                    <p className="italic">
+                      Chưa có khóa học nào trong giỏ hàng
+                    </p>
+                  </div>
+                ) : (
+                  <div className="p-5 w-[300px] mb-3 ">
+                    <div>
+                      {cartInfo.items.map((cartItem) => (
+                        <div
+                          key={cartItem.courseId._id}
+                          className="border-b border-gray-300 py-2"
+                        >
+                          <div className="flex items-center gap-2">
+                            <div className="w-[100px] aspect-video relative flex-shrink-0">
+                              <img
+                                className="object-cover w-full h-full rounded"
+                                src={cartItem.courseId.thumbnail}
+                                alt={cartItem.courseId.title}
+                              />
+                              <div
+                                onClick={() =>
+                                  handleRemoveCourseFromCart(
+                                    cartItem.courseId._id
+                                  )
+                                }
+                                className="absolute -top-2 -left-2 cursor-pointer bg-red-500 rounded-full w-[16px] h-[16px] flex items-center justify-center"
+                              >
+                                <p className="text-white">x</p>
+                              </div>
+                            </div>
+                            <div className="flex-1">
+                              <p className="mb-1 text-primary text-sm font-semibold line-clamp-2">
+                                {cartItem.courseId.title}
+                              </p>
+                              <div className="flex items-center justify-between gap-2">
+                                <p className="text-xs text-gray-500 font-semibold line-through">
+                                  {formatVND(cartItem.courseId.price)}
+                                </p>
+                                <p className="text-sm text-primary">
+                                  {formatVND(
+                                    cartItem.courseId.price -
+                                      (cartItem.courseId.price *
+                                        cartItem.courseId.discount) /
+                                        100
+                                  )}
+                                </p>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                    <div>
+                      <div className="flex items-center justify-between mb-[16px]">
+                        <p className="text-base">Tổng tiền:</p>
+                        <p className="text-base text-primary font-bold">
+                          {formatVND(cartInfo.totalPrice)}
+                        </p>
+                      </div>
+                      <Button
+                        onClick={handlePayment}
+                        variant="contained"
+                        className="!w-full"
+                        size="small"
+                        loading={loadingPayment}
+                      >
+                        Thanh toán
+                      </Button>
+                    </div>
+                  </div>
+                )
+              ) : (
+                <div className="p-5 text-primary">
+                  <p className="italic">Vui lòng đăng nhập</p>
+                </div>
+              )}
+            </Popover>
             {appLoading ? (
               <Box>
                 <Tooltip title="Đang tải...">
@@ -152,18 +313,21 @@ const Header = () => {
                       aria-haspopup="true"
                       aria-expanded={open ? "true" : undefined}
                     >
-                      <Avatar
-                        src={
-                          user.avatar ||
-                          "https://res.cloudinary.com/dopxef4b6/image/upload/v1758810804/DuxProject/users/avatars/j0rmvon92t1dhujbanxh.png"
-                        }
-                        sx={{
-                          width: 32,
-                          height: 32,
-                          border: "2px solid #fff",
-                          boxShadow: "0 2px 4px rgba(0,0,0,0.3)",
-                        }}
-                      />
+                      {user.avatar ? (
+                        <Avatar
+                          src={user.avatar}
+                          sx={{
+                            width: 32,
+                            height: 32,
+                            border: "2px solid #fff",
+                            boxShadow: "0 2px 4px rgba(0,0,0,0.3)",
+                          }}
+                        />
+                      ) : (
+                        <div className="w-[32px] h-[32px] rounded-full bg-gray-200 flex items-center justify-center text-gray-400 text-2xl font-semibold">
+                          {user?.fullName?.charAt(0)?.toUpperCase() || "?"}
+                        </div>
+                      )}
                     </IconButton>
                   </Tooltip>
                 </Box>
@@ -208,19 +372,22 @@ const Header = () => {
                   anchorOrigin={{ horizontal: "right", vertical: "bottom" }}
                 >
                   <MenuItem onClick={handleClose}>
-                    <div className="flex items-center justify-center">
-                      <Avatar
-                        src={
-                          user.avatar ||
-                          "https://res.cloudinary.com/dopxef4b6/image/upload/v1758810804/DuxProject/users/avatars/j0rmvon92t1dhujbanxh.png"
-                        }
-                        sx={{
-                          width: 32,
-                          height: 32,
-                          border: "2px solid #fff",
-                          boxShadow: "0 2px 4px rgba(0,0,0,0.3)",
-                        }}
-                      />
+                    <div className="flex items-center justify-center gap-2">
+                      {user.avatar ? (
+                        <Avatar
+                          src={user.avatar}
+                          sx={{
+                            width: 32,
+                            height: 32,
+                            border: "2px solid #fff",
+                            boxShadow: "0 2px 4px rgba(0,0,0,0.3)",
+                          }}
+                        />
+                      ) : (
+                        <div className="w-[32px] h-[32px] rounded-full bg-gray-200 flex items-center justify-center text-gray-400 text-2xl font-semibold">
+                          {user?.fullName?.charAt(0)?.toUpperCase() || "?"}
+                        </div>
+                      )}
                       <div className="flex flex-col">
                         <h3 className="text-sm">{user.fullName}</h3>
                         <span className="text-xs">{user.email}</span>
@@ -237,37 +404,36 @@ const Header = () => {
                     </div>
                   </MenuItem>
                   <Divider />
-                  <MenuItem onClick={handleClose} className="text-sm">
-                    <ListItemIcon>
-                      <AccountCircleIcon fontSize="small" />
-                    </ListItemIcon>
-                    Thông tin tài khoản
-                  </MenuItem>
 
-                  {user.role === "ADMIN" ? (
-                    <>
-                      <MenuItem onClick={() => navigate("/admin")}>
-                        <ListItemIcon>
-                          <AdminPanelSettingsIcon fontSize="small" />
-                        </ListItemIcon>
-                        Trang quản trị
-                      </MenuItem>
-                    </>
+                  {user.role === "Admin" ? (
+                    <MenuItem onClick={() => navigate("/admin")}>
+                      <ListItemIcon>
+                        <AdminPanelSettingsIcon fontSize="small" />
+                      </ListItemIcon>
+                      Trang quản trị
+                    </MenuItem>
                   ) : (
-                    <>
-                      <MenuItem onClick={handleClose}>
+                    [
+                      <MenuItem
+                        key="profile"
+                        onClick={() => navigate("/ho-so")}
+                        className="text-sm"
+                      >
+                        <ListItemIcon>
+                          <AccountCircleIcon fontSize="small" />
+                        </ListItemIcon>
+                        Thông tin tài khoản
+                      </MenuItem>,
+                      <MenuItem
+                        key="courses"
+                        onClick={() => navigate("/khoa-hoc-cua-toi")}
+                      >
                         <ListItemIcon>
                           <MenuBookIcon fontSize="small" />
                         </ListItemIcon>
                         Khóa học của tôi
-                      </MenuItem>
-                      <MenuItem onClick={handleClose}>
-                        <ListItemIcon>
-                          <LocalMallIcon fontSize="small" />
-                        </ListItemIcon>
-                        Đơn hàng của tôi
-                      </MenuItem>
-                    </>
+                      </MenuItem>,
+                    ]
                   )}
                   <Divider />
                   <MenuItem onClick={handleLogout}>
@@ -279,27 +445,9 @@ const Header = () => {
                 </Menu>
               </div>
             ) : (
-              <>
-                <div className="flex items-center">
-                  <Link to={"/dang-nhap"}>
-                    <Button
-                      variant="contained"
-                      sx={{
-                        backgroundColor: colors.primary.DEFAULT,
-                        "&:hover": {
-                          backgroundColor: colors.secondary,
-                        },
-                      }}
-                    >
-                      Đăng nhập
-                    </Button>
-                  </Link>
-                  <Divider type="vertical" className="border-2 h-8" />
-                  <Link to={"/dang-ky-tai-khoan"}>
-                    <Button variant="outlined">Đăng ký</Button>
-                  </Link>
-                </div>
-              </>
+              <Link to={"/dang-nhap"}>
+                <Button variant="contained">Đăng nhập</Button>
+              </Link>
             )}
           </div>
         </div>

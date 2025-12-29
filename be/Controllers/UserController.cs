@@ -16,6 +16,7 @@ namespace App.Controllers
             _userService = userService;
         }
 
+        [Authorize(Roles = "Admin")]
         [HttpGet]
         public async Task<IActionResult> GetAllUsers([FromQuery] int? page, [FromQuery] int? limit)
         {
@@ -95,7 +96,7 @@ namespace App.Controllers
         }
 
         [HttpPut("{id}")]
-        public async Task<IActionResult> UpdateUser(string id, UserDTO dto)
+        public async Task<IActionResult> UpdateUser(string id, [FromForm] UserDTO dto)
         {
             var user = await _userService.UpdateUserAsync(id, dto);
 
@@ -139,7 +140,7 @@ namespace App.Controllers
               );
         }
 
-        [HttpPut("/lock/{id}")]
+        [HttpPut("lock/{id}")]
         public async Task<IActionResult> LockUser(string id)
         {
             var user = await _userService.LockUserAsync(id);
@@ -160,7 +161,7 @@ namespace App.Controllers
               );
         }
 
-        [HttpPut("/unlock/{id}")]
+        [HttpPut("unlock/{id}")]
         public async Task<IActionResult> UnLockUser(string id)
         {
             var user = await _userService.UnLockUserAsync(id);

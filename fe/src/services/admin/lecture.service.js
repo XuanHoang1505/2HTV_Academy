@@ -1,7 +1,7 @@
 import axios from "../../customs/axios.customize";
 
 const getAllLectureOfChapterService = async (chapterId) => {
-  let URL_BACKEND = `/admin/lectures?chapterId=${chapterId}`;
+  let URL_BACKEND = `/lectures?chapterId=${chapterId}`;
 
   const response = await axios.get(URL_BACKEND);
 
@@ -9,7 +9,7 @@ const getAllLectureOfChapterService = async (chapterId) => {
 };
 
 const getLectureByIdService = async (id) => {
-  const URL_BACKEND = `/admin/lectures/${id}`;
+  const URL_BACKEND = `/lectures/${id}`;
 
   const response = await axios.get(URL_BACKEND);
 
@@ -17,7 +17,7 @@ const getLectureByIdService = async (id) => {
 };
 
 const createLectureService = async (data) => {
-  const URL_BACKEND = "/admin/lectures";
+  const URL_BACKEND = "/lectures";
 
   const response = await axios.post(URL_BACKEND, data);
 
@@ -25,7 +25,7 @@ const createLectureService = async (data) => {
 };
 
 const updateLectureService = async (id, data) => {
-  const URL_BACKEND = `/admin/lectures/${id}`;
+  const URL_BACKEND = `/lectures/${id}`;
 
   const response = await axios.put(URL_BACKEND, data);
 
@@ -33,7 +33,7 @@ const updateLectureService = async (id, data) => {
 };
 
 const deleteLectureService = async (id) => {
-  const URL_BACKEND = `/admin/lectures/${id}`;
+  const URL_BACKEND = `/lectures/${id}`;
 
   const response = await axios.delete(URL_BACKEND);
 

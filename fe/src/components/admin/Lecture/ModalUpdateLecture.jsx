@@ -16,11 +16,13 @@ const ModalUpdateLecture = (props) => {
 
   useEffect(() => {
     if (dataUpdateLecture && isModalUpdateLectureOpen) {
+      console.log(">>> check dataUpdateLecture: ", dataUpdateLecture);
+
       form.setFieldsValue({
-        title: dataUpdateLecture.title,
-        videoUrl: dataUpdateLecture.videoUrl,
-        videoDuration: dataUpdateLecture.videoDuration,
-        isFree: dataUpdateLecture.isFree,
+        lectureTitle: dataUpdateLecture.lectureTitle,
+        lectureUrl: dataUpdateLecture.lectureUrl,
+        lectureDuration: dataUpdateLecture.lectureDuration,
+        isPreviewFree: dataUpdateLecture.isPreviewFree,
       });
     }
   }, [dataUpdateLecture, isModalUpdateLectureOpen, form]);
@@ -28,7 +30,7 @@ const ModalUpdateLecture = (props) => {
   const handleUpdateLecture = async (values) => {
     try {
       setLoading(true);
-      const res = await updateLectureService(dataUpdateLecture._id, values);
+      const res = await updateLectureService(dataUpdateLecture.id, values);
 
       if (res.success) {
         message.success("Cập nhật bài giảng thành công");
@@ -90,7 +92,7 @@ const ModalUpdateLecture = (props) => {
           className="space-y-1"
         >
           <Form.Item
-            name="title"
+            name="lectureTitle"
             label={<span className="font-medium text-gray-700">Tiêu đề</span>}
             rules={[{ required: true, message: "Không được để trống tiêu đề" }]}
             className="mb-4"
@@ -102,7 +104,7 @@ const ModalUpdateLecture = (props) => {
             />
           </Form.Item>
           <Form.Item
-            name="videoUrl"
+            name="lectureUrl"
             label={<span className="font-medium text-gray-700">Đường dẫn</span>}
             rules={[
               {
@@ -120,7 +122,7 @@ const ModalUpdateLecture = (props) => {
           </Form.Item>
           <div className="grid grid-cols-2">
             <Form.Item
-              name="videoDuration"
+              name="lectureDuration"
               label={
                 <span className="font-medium text-gray-700">
                   Thời lượng (s)
@@ -145,7 +147,7 @@ const ModalUpdateLecture = (props) => {
               label={
                 <span className="font-medium text-gray-700">Truy cập</span>
               }
-              name="isFree"
+              name="isPreviewFree"
               className="mb-4"
             >
               <Select
