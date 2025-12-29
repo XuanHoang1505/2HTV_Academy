@@ -56,6 +56,8 @@ namespace App.Services.Implementations
 
             _logger.LogInformation($"Created enrollment {created.Id} for user {dto.UserId} in course {dto.CourseId}");
 
+            await TotalStudentsEnrolledAsync(created.CourseId);
+
             return MapToResponseDTO(created, course.CourseTitle);
         }
 
@@ -193,7 +195,7 @@ namespace App.Services.Implementations
                                 LectureUrl = l.LectureUrl,
                                 IsPreviewFree = l.IsPreviewFree,
                                 LectureDuration = l.LectureDuration,
-                                IsCompleted = completedLectureIds.Contains(l.Id)
+                                // IsCompleted = completedLectureIds.Contains(l.Id)
                             }).ToList()
                     }).ToList(),
                 }
@@ -407,6 +409,22 @@ namespace App.Services.Implementations
                 CreatedAt = enrollment.CreatedAt,
                 UpdatedAt = enrollment.UpdatedAt
             };
+        }
+
+        public async Task<int> TotalStudentsEnrolledAsync(int courseId)
+        {
+            var course = await _courseRepo.GetByIdAsync(courseId);
+
+            if (course == null)
+            {
+                throw new InvalidOperationException("Khóa học không tồn tại");
+            }
+
+            course.TotalStudents = course.Enrollments?.Count(e => e.Status == EnrollmentStatus.Active) ?? 0;
+
+            await _courseRepo.UpdateAsync(course);
+
+            return course.TotalStudents;
         }
     }
 }

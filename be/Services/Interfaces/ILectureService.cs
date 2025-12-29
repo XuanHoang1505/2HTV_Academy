@@ -12,5 +12,7 @@ namespace App.Services.Interfaces
         Task<LectureDTO> CreateAsync(LectureDTO dto);
         Task<LectureDTO> UpdateAsync(int id, LectureDTO dto);
         Task<bool> DeleteAsync(int id);
+        Task CountLecturesAsync(int courseId);
+        Task TotalDurationAsync(int courseId);
     }
 }

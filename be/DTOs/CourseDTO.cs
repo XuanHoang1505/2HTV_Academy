@@ -8,6 +8,7 @@ namespace App.DTOs
         public string CourseTitle { get; set; } = null!;
         public string Slug { get; set; } = null!;
         public string CourseDescription { get; set; } = null!;
+        public string? ShortDescription { get; set; }
         public string? CourseThumbnail { get; set; }
         public string? PreviewVideo { get; set; }
         public Level Level { set; get; }
