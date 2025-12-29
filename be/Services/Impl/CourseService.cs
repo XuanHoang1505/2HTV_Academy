@@ -142,6 +142,7 @@ namespace App.Services.Implementations
                 PublishedAt = course.PublishedAt,
                 CreatedAt = course.CreatedAt,
                 EducatorName = course.Educator.FullName,
+                CategoryId = course.Category.Id,
                 CategoryName = course.Category.Name,
                 Curriculum = course.CourseContent
                     .OrderBy(ch => ch.ChapterOrder)
@@ -268,6 +269,7 @@ namespace App.Services.Implementations
                 Id = course.Id,
                 CourseTitle = course.CourseTitle,
                 CourseDescription = course.CourseDescription,
+                ShortDescription = course.ShortDescription,
                 Slug = course.Slug,
                 CoursePrice = course.CoursePrice,
                 Discount = course.Discount,
@@ -277,6 +279,7 @@ namespace App.Services.Implementations
                 PublishedAt = course.PublishedAt,
                 CreatedAt = course.CreatedAt,
                 EducatorName = course.Educator.FullName,
+                CategoryId = course.Category.Id, 
                 CategoryName = course.Category.Name,
                 Curriculum = course.CourseContent
                     .OrderBy(ch => ch.ChapterOrder)

@@ -33,19 +33,19 @@ const CourseCard = ({ course }) => {
         </div>
         <img
           className="w-full h-full object-cover border border-gray-200 transition-transform duration-300 hover:scale-110"
-          src={course.thumbnail}
-          alt=""
+          src={course.courseThumbnail}
+          alt={course.courseTitle}
         />
       </div>
       <div className="px-3 py-2">
         <h3 className="text-lg font-[600] text-primary hover:text-primary-700 transition-colors duration-200">
-          {course.title}
+          {course.courseTitle}
         </h3>
         <h4 className="text-sm text-primary-400 truncate">
           {course.shortDescription}
         </h4>
         <div className="flex justify-between mt-2">
-          <p className="text-gray-500 text-base">CodeLearn</p>
+          <p className="text-gray-500 text-base">B2HTV Academy</p>
           <div className="flex items-center gap-3">
             <div className="flex justify-center items-center gap-1">
               <ReactStars
@@ -75,7 +75,7 @@ const CourseCard = ({ course }) => {
             <CiClock1 className="text-primary" />
             <p className="text-sm">
               <span className="font-[500]">
-                {formatDuration(course.totalDuration)}
+                {formatDuration(parseInt(course.totalDuration))}
               </span>
             </p>
           </div>
@@ -90,10 +90,12 @@ const CourseCard = ({ course }) => {
         </div>
         <div className="flex items-center justify-between py-4">
           <p className="text-lg font-[600] text-primary">
-            {formatVND(course.finalPrice)}
+            {formatVND(
+              course.coursePrice - (course.coursePrice * course.discount) / 100
+            )}
           </p>
           <p className="text-base line-through text-gray-500">
-            {formatVND(course.price)}
+            {formatVND(course.coursePrice)}
           </p>
         </div>
       </div>
