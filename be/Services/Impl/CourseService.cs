@@ -23,15 +23,93 @@ namespace App.Services.Implementations
             _cloudinaryService = cloudinaryService;
         }
 
-        public async Task<CourseDTO> GetByIdAsync(int id)
+        public async Task<CourseDetailDTO?> GetByIdAsync(int id)
         {
             var course = await _repository.GetByIdAsync(id);
             if (course == null)
                 throw new AppException(ErrorCode.CourseNotFound, $"Không tìm thấy khóa học với ID = {id}");
 
-            return _mapper.Map<CourseDTO>(course);
+            var result = new CourseDetailDTO
+            {
+                Id = course.Id,
+                CourseTitle = course.CourseTitle,
+                CourseDescription = course.CourseDescription,
+                Slug = course.Slug,
+                CoursePrice = course.CoursePrice,
+                Discount = course.Discount,
+                CourseThumbnail = course.CourseThumbnail,
+                Status = course.Status,
+                IsPublished = course.IsPublished,
+                PublishedAt = course.PublishedAt,
+                CreatedAt = course.CreatedAt,
+                EducatorName = course.Educator.FullName,
+                CategoryName = course.Category.Name,
+                Curriculum = course.CourseContent
+                    .OrderBy(ch => ch.ChapterOrder)
+                    .Select(ch => new ChapterCurriculumDTO
+                    {
+                        Id = ch.Id,
+                        ChapterTitle = ch.ChapterTitle,
+                        ChapterOrder = ch.ChapterOrder,
+                        Lectures = ch.ChapterContent
+                            .OrderBy(l => l.LectureOrder)
+                            .Select(l => new LectureDTO
+                            {
+                                Id = l.Id,
+                                LectureTitle = l.LectureTitle,
+                                LectureOrder = l.LectureOrder,
+                                LectureUrl = l.LectureUrl,
+                                IsPreviewFree = l.IsPreviewFree,
+                                LectureDuration = l.LectureDuration
+                            }).ToList()
+                    }).ToList(),
+            };
+            return result;
         }
 
+        public async Task<CourseDetailDTO?> GetBySlugAsync(string slug)
+        {
+            var course = await _repository.GetBySlugAsync(slug);
+            if (course == null)
+                throw new AppException(ErrorCode.CourseNotFound, $"Không tìm thấy khóa học với Slug = {slug}");
+
+            var result = new CourseDetailDTO
+            {
+                Id = course.Id,
+                CourseTitle = course.CourseTitle,
+                CourseDescription = course.CourseDescription,
+                Slug = course.Slug,
+                CoursePrice = course.CoursePrice,
+                Discount = course.Discount,
+                CourseThumbnail = course.CourseThumbnail,
+                Status = course.Status,
+                IsPublished = course.IsPublished,
+                PublishedAt = course.PublishedAt,
+                CreatedAt = course.CreatedAt,
+                EducatorName = course.Educator.FullName,
+                CategoryName = course.Category.Name,
+                Curriculum = course.CourseContent
+                    .OrderBy(ch => ch.ChapterOrder)
+                    .Select(ch => new ChapterCurriculumDTO
+                    {
+                        Id = ch.Id,
+                        ChapterTitle = ch.ChapterTitle,
+                        ChapterOrder = ch.ChapterOrder,
+                        Lectures = ch.ChapterContent
+                            .OrderBy(l => l.LectureOrder)
+                            .Select(l => new LectureDTO
+                            {
+                                Id = l.Id,
+                                LectureTitle = l.LectureTitle,
+                                LectureOrder = l.LectureOrder,
+                                LectureUrl = l.IsPreviewFree ? l.LectureUrl : null,
+                                IsPreviewFree = l.IsPreviewFree,
+                                LectureDuration = l.LectureDuration
+                            }).ToList()
+                    }).ToList(),
+            };
+            return result;
+        }
 
         public async Task<CourseDTO> CreateAsync(CourseDTO dto)
         {
@@ -190,11 +268,7 @@ namespace App.Services.Implementations
             return _mapper.Map<IEnumerable<CourseDTO>>(courses);
         }
 
-        public async Task<CourseDTO?> GetBySlugAsync(string slug)
-        {
-            var course = await _repository.GetBySlugAsync(slug);
-            return _mapper.Map<CourseDTO>(course);
-        }
+
 
         public async Task<IEnumerable<CourseDTO>> GetCoursesBestSellerAsync()
         {

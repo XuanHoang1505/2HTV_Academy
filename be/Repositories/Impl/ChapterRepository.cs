@@ -34,6 +34,7 @@ namespace App.Repositories.Implementations
         public async Task<IPagedList<Chapter>> GetAllAsync(int page, int limit)
         {
             return await _context.Chapters
+                .OrderByDescending(c => c.CourseId)
                 .ToPagedListAsync(page, limit);
         }
         public async Task<IEnumerable<Chapter>> GetAllAsync()

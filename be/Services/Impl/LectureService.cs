@@ -21,7 +21,7 @@ namespace App.Services.Implementations
             _course = course;
             _chapter = chapter;
         }
-        public async Task<int> CountLecturesAsync(int courseId)
+        public async Task CountLecturesAsync(int courseId)
         {
             var course = await _course.GetByIdAsync(courseId);
 
@@ -30,10 +30,9 @@ namespace App.Services.Implementations
             course.TotalLectures = course.CourseContent?.Sum(ch => ch.ChapterContent?.Count ?? 0) ?? 0;
 
             await _course.UpdateAsync(course);
-            return course.TotalLectures;
         }
 
-        public async Task<int> TotalDurationAsync(int courseId)
+        public async Task TotalDurationAsync(int courseId)
         {
             var course = await _course.GetByIdAsync(courseId);
 
@@ -43,7 +42,6 @@ namespace App.Services.Implementations
             course.TotalDuration = course.CourseContent?.Sum(ch => ch.ChapterContent?.Sum(lec => lec.LectureDuration) ?? 0) ?? 0;
 
             await _course.UpdateAsync(course);
-            return course.TotalDuration;
         }
         public async Task<LectureDTO> CreateAsync(LectureDTO dto)
         {

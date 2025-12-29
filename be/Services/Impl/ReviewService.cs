@@ -76,8 +76,8 @@ namespace App.Services
 
             var result = await _reviewRepository.GetByIdWithDetailsAsync(createdReview.Id);
 
-            var courseTotalReviews = await _reviewRepository.GetTotalReviewsCountAsync(createdReview.CourseId);
-            var courseAverageRating = await _reviewRepository.GetAverageRatingAsync(createdReview.CourseId);
+            await _reviewRepository.GetTotalReviewsCountAsync(createdReview.CourseId);
+            await _reviewRepository.GetAverageRatingAsync(createdReview.CourseId);
 
             return _mapper.Map<ReviewDTO>(result);
         }
@@ -250,7 +250,7 @@ namespace App.Services
             return _mapper.Map<ReviewDTO>(result);
         }
 
-        public async Task<int> TotalReviewsAsync(int courseId)
+        public async Task TotalReviewsAsync(int courseId)
         {
             var course = await _courseRepository.GetByIdAsync(courseId);
             if (course == null)
@@ -261,11 +261,9 @@ namespace App.Services
             course.TotalReviews = course.Reviews?.Count ?? 0;
             await _courseRepository.UpdateAsync(course);
 
-            return course.TotalReviews;
-
         }
 
-        public async Task<int> AverageRatingAsync(int courseId)
+        public async Task AverageRatingAsync(int courseId)
         {
             var course = await _courseRepository.GetByIdAsync(courseId);
             if (course == null)
@@ -281,7 +279,6 @@ namespace App.Services
             }
             await _courseRepository.UpdateAsync(course);
 
-            return course.AverageRating;
         }
     }
 }

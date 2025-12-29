@@ -3,6 +3,7 @@ using App.Domain.Models;
 using App.DTOs;
 using App.Repositories.Interfaces;
 using App.Services.Interfaces;
+using App.Utils.Exceptions;
 
 namespace App.Services.Implementations
 {
@@ -143,9 +144,63 @@ namespace App.Services.Implementations
         public async Task<EnrollmentDetailDTO?> GetEnrollmentByIdAsync(int id)
         {
             var enrollment = await _enrollmentRepo.GetByIdAsync(id);
-            if (enrollment == null) return null;
+            if (enrollment == null)
+                throw new AppException(ErrorCode.EnrollmentNotFound, "Enrollment không tồn tại");
 
-            return MapToDetailDTO(enrollment);
+            var completedLectureIds = enrollment.CourseProgresses
+                .Select(cp => cp.LectureId)
+                .ToHashSet();
+
+            var result = new EnrollmentDetailDTO
+            {
+                Id = enrollment.Id,
+                UserId = enrollment.UserId,
+                CourseId = enrollment.CourseId,
+                EnrolledAt = enrollment.EnrolledAt,
+                ExpiresAt = enrollment.ExpiresAt,
+                Progress = enrollment.Progress,
+                Status = enrollment.Status,
+                IsExpired = enrollment.ExpiresAt.HasValue && enrollment.ExpiresAt.Value < DateTime.UtcNow,
+                CreatedAt = enrollment.CreatedAt,
+                UpdatedAt = enrollment.UpdatedAt,
+                Course = new CourseDetailDTO
+                {
+                    Id = enrollment.Course.Id,
+                    CourseTitle = enrollment.Course.CourseTitle,
+                    CourseDescription = enrollment.Course.CourseDescription,
+                    Slug = enrollment.Course.Slug,
+                    CoursePrice = enrollment.Course.CoursePrice,
+                    Discount = enrollment.Course.Discount,
+                    CourseThumbnail = enrollment.Course.CourseThumbnail,
+                    Status = enrollment.Course.Status,
+                    IsPublished = enrollment.Course.IsPublished,
+                    PublishedAt = enrollment.Course.PublishedAt,
+                    CreatedAt = enrollment.Course.CreatedAt,
+                    EducatorName = enrollment.Course.Educator.FullName,
+                    CategoryName = enrollment.Course.Category.Name,
+                    Curriculum = enrollment.Course.CourseContent
+                    .OrderBy(ch => ch.ChapterOrder)
+                    .Select(ch => new ChapterCurriculumDTO
+                    {
+                        Id = ch.Id,
+                        ChapterTitle = ch.ChapterTitle,
+                        ChapterOrder = ch.ChapterOrder,
+                        Lectures = ch.ChapterContent
+                            .OrderBy(l => l.LectureOrder)
+                            .Select(l => new LectureDTO
+                            {
+                                Id = l.Id,
+                                LectureTitle = l.LectureTitle,
+                                LectureOrder = l.LectureOrder,
+                                LectureUrl = l.LectureUrl,
+                                IsPreviewFree = l.IsPreviewFree,
+                                LectureDuration = l.LectureDuration,
+                                // IsCompleted = completedLectureIds.Contains(l.Id)
+                            }).ToList()
+                    }).ToList(),
+                }
+            };
+            return result;
         }
 
         public async Task<EnrollmentResponseDTO?> GetUserEnrollmentForCourseAsync(string userId, int courseId)
@@ -325,10 +380,7 @@ namespace App.Services.Implementations
             {
                 Id = enrollment.Id,
                 UserId = enrollment.UserId,
-                UserName = enrollment.User?.UserName ?? "",
-                UserEmail = enrollment.User?.Email ?? "",
                 CourseId = enrollment.CourseId,
-                CourseName = enrollment.Course?.CourseTitle ?? "",
                 EnrolledAt = enrollment.EnrolledAt,
                 ExpiresAt = enrollment.ExpiresAt,
                 Progress = enrollment.Progress,
