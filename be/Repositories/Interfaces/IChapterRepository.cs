@@ -12,5 +12,9 @@ namespace App.Repositories.Interfaces
         Task<Chapter> AddAsync(Chapter category);
         Task UpdateAsync(Chapter category);
         Task DeleteAsync(int id);
+        /// <summary>
+        /// Get the next chapter order for a specific course (max existing + 1). Returns 1 when no chapter exists for the course.
+        /// </summary>
+        Task<int> GetNextChapterOrderAsync(int courseId);
     }
 }

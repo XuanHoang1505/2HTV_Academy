@@ -26,6 +26,9 @@ namespace App.Services.Implementations
             
             var entity = _mapper.Map<Chapter>(dto);
 
+            // Auto-increment ChapterOrder within the same course
+            entity.ChapterOrder = await _chapter.GetNextChapterOrderAsync(dto.CourseId);
+
             var created = await _chapter.AddAsync(entity);
             var dtoResult = _mapper.Map<ChapterDTO>(created);
 
