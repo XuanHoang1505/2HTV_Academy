@@ -110,5 +110,7 @@ namespace App.Controllers
                 data = purchases
             });
         }
+
+
     }
 }

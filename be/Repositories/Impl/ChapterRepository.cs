@@ -9,6 +9,7 @@ namespace App.Repositories.Implementations
     public class ChapterRepository : IChapterRepository
     {
         private readonly AppDBContext _context;
+        private readonly string[] _searchableFields = { "Title", "Description", "CourseId" };
 
         public ChapterRepository(AppDBContext context)
         {
@@ -31,11 +32,61 @@ namespace App.Repositories.Implementations
             }
         }
 
-        public async Task<IPagedList<Chapter>> GetAllAsync(int page, int limit)
+        public async Task<IPagedList<Chapter>> GetAllAsync(int page, int limit, Dictionary<string, string>? filters = null)
         {
-            return await _context.Chapters
-                .OrderByDescending(c => c.CourseId)
-                .ToPagedListAsync(page, limit);
+            var query = _context.Chapters.AsQueryable();
+            query = ApplyFilters(query, filters);
+            return await query.ToPagedListAsync(page, limit);
+        }
+
+        private IQueryable<Chapter> ApplyFilters(
+            IQueryable<Chapter> query,
+            Dictionary<string, string>? filters)
+        {
+            if (filters == null || !filters.Any())
+                return query;
+
+            if (filters.ContainsKey("search") && !string.IsNullOrEmpty(filters["search"]))
+            {
+                var searchTerm = filters["search"];
+                query = query.Where(c =>
+                    EF.Functions.Like(c.ChapterTitle, $"%{searchTerm}%") ||
+                    EF.Functions.Like(c.ChapterDescription, $"%{searchTerm}%") ||
+                    EF.Functions.Like(c.CourseId, $"%{searchTerm}%")
+                );
+            }
+
+            foreach (var filter in filters)
+            {
+                var key = filter.Key;
+                var value = filter.Value;
+
+                if (key.ToLower() == "search")
+                    continue;
+
+                if (string.IsNullOrEmpty(value))
+                    continue;
+
+                // Chỉ apply filter cho searchable fields
+                if (!_searchableFields.Contains(key, StringComparer.OrdinalIgnoreCase))
+                    continue;
+
+                // Partial search (LIKE %value%)
+                switch (key.ToLower())
+                {
+                    case "title":
+                        query = query.Where(c => EF.Functions.Like(c.ChapterTitle, $"%{value}%"));
+                        break;
+                    case "description":
+                        query = query.Where(c => EF.Functions.Like(c.ChapterDescription, $"%{value}%"));
+                        break;
+                    case "courseId":
+                        query = query.Where(c => EF.Functions.Like(c.CourseId, $"%{value}%"));
+                        break;
+                }
+            }
+
+            return query;
         }
         public async Task<IEnumerable<Chapter>> GetAllAsync()
         {

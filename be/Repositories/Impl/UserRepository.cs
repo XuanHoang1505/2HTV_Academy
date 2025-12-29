@@ -19,6 +19,7 @@ namespace App.Repositories.Implementations
         private readonly JwtTokenProvider _jwtTokenProvider;
         private readonly ISendMailService _emailService;
         private readonly AppDBContext _context;
+        private readonly string[] _searchableFields = { "UserName", "FullName", "Email", "Phone", "Role" };
 
         public UserRepository(
             UserManager<ApplicationUser> userManager,
@@ -131,9 +132,73 @@ namespace App.Repositories.Implementations
             return result.Succeeded;
         }
 
-        public async Task<IPagedList<ApplicationUser>> GetAllUsersPagedAsync(int page, int limit)
+        public async Task<IPagedList<ApplicationUser>> GetAllUsersPagedAsync(int page, int limit, Dictionary<string, string>? filters = null)
         {
-            return await _userManager.Users.ToPagedListAsync(page, limit);
+            var query = _userManager.Users.AsQueryable();
+            query = ApplyUserFilters(query, filters);
+            return await query.ToPagedListAsync(page, limit);
+        }
+
+        private IQueryable<ApplicationUser> ApplyUserFilters(
+            IQueryable<ApplicationUser> query,
+            Dictionary<string, string>? filters)
+        {
+            if (filters == null || !filters.Any())
+                return query;
+
+            if (filters.ContainsKey("search") && !string.IsNullOrEmpty(filters["search"]))
+            {
+                var searchTerm = filters["search"];
+                query = query.Where(u =>
+                    EF.Functions.Like(u.UserName, $"%{searchTerm}%") ||
+                    EF.Functions.Like(u.Email, $"%{searchTerm}%") ||
+                    EF.Functions.Like(u.FullName, $"%{searchTerm}%") ||
+                    (u.PhoneNumber != null && EF.Functions.Like(u.PhoneNumber, $"%{searchTerm}%"))
+                );
+
+            }
+
+            foreach (var (key, value) in filters)
+            {
+                if (key.Equals("search", StringComparison.OrdinalIgnoreCase) ||
+                    string.IsNullOrEmpty(value))
+                    continue;
+
+                if (!_searchableFields.Contains(key, StringComparer.OrdinalIgnoreCase))
+                    continue;
+
+                var lowerKey = key.ToLower();
+
+                switch (lowerKey)
+                {
+                    case "username":
+                        query = query.Where(u => EF.Functions.Like(u.UserName, $"%{value}%"));
+                        break;
+
+                    case "fullname":
+                        query = query.Where(u => EF.Functions.Like(u.FullName, $"%{value}%"));
+                        break;
+
+                    case "email":
+                        query = query.Where(u => EF.Functions.Like(u.Email, $"%{value}%"));
+                        break;
+
+                    case "phone":
+                        query = query.Where(u => u.PhoneNumber != null &&
+                                               EF.Functions.Like(u.PhoneNumber, $"%{value}%"));
+                        break;
+
+                    case "role":
+                        var userIdsWithRole = _context.UserRoles
+                            .Where(ur => _context.Roles.Any(r => r.Id == ur.RoleId && r.Name == value))
+                            .Select(ur => ur.UserId);
+
+                        query = query.Where(u => userIdsWithRole.Contains(u.Id));
+                        break;
+                }
+            }
+
+            return query;
         }
     }
 }

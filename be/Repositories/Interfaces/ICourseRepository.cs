@@ -8,9 +8,9 @@ namespace App.Repositories.Interfaces
     public interface ICourseRepository
     {
         Task<Course?> GetByIdAsync(int id);
-        Task<IPagedList<Course>> GetAllAsync(int page, int limit);
+        Task<IPagedList<Course>> GetAllAsync(int page, int limit, Dictionary<string, string>? filters = null);
         Task<Course?> GetBySlugAsync(string slug);
-        Task<IPagedList<Course>> GetAllPublishAsync(int page, int limit);
+        Task<IPagedList<Course>> GetAllPublishAsync(int page, int limit, Dictionary<string, string>? filters = null);
         Task<IEnumerable<Course>> AllCoursesPublishAsync();
         Task<IEnumerable<Course>> AllCoursesAsync();
         Task<Course> AddAsync(Course course);

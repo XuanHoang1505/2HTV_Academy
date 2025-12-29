@@ -17,14 +17,16 @@ namespace App.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetAllCategories([FromQuery] int? page, [FromQuery] int? limit)
+        public async Task<IActionResult> GetAllCategories(
+            [FromQuery] int? page,
+            [FromQuery] int? limit)
         {
             if (limit.HasValue && (limit <= 0 || limit > 100))
             {
                 return BadRequest(new
                 {
                     success = false,
-                    message = "Limit phải trong khoảng 1-100"
+                    message = "Limit phải là số dương và không vượt quá 100"
                 });
             }
 
@@ -36,21 +38,27 @@ namespace App.Controllers
                     message = "Page phải là số dương"
                 });
             }
-            
-            var result = await _categoryService.GetAllAsync(page, limit);
+
+            var queryParams = HttpContext.Request.Query
+                .Where(q => q.Key != "page" && q.Key != "limit")
+                .ToDictionary(q => q.Key, q => q.Value.ToString());
+
+            var result = await _categoryService.GetAllAsync(page, limit, queryParams);
 
             return Ok(new
             {
                 success = true,
                 message = "Lấy danh sách danh mục thành công",
-                data = result.Data,
-                pagination = new
-                {
-                    total = result.Total,
-                    totalPages = page.HasValue ? result.TotalPages : null,
-                    currentPage = page.HasValue ? result.CurrentPage : null,
-                    limit = page.HasValue ? result.Limit : null
-                }
+                pagination = limit.HasValue && page.HasValue
+                    ? new
+                    {
+                        total = result.Total,
+                        page = result.CurrentPage,
+                        limit = result.Limit,
+                        totalPages = result.TotalPages
+                    }
+                    : (object)new { total = result.Total },
+                data = result.Data
             });
         }
 

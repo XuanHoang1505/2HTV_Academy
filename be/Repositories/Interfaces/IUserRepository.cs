@@ -9,7 +9,7 @@ namespace App.Repositories.Interfaces
     public interface IUserRepository
     {
         Task<IEnumerable<ApplicationUser>> AllUsersAsync();
-        Task<IPagedList<ApplicationUser>> GetAllUsersPagedAsync(int page, int limit);
+        Task<IPagedList<ApplicationUser>> GetAllUsersPagedAsync(int page, int limit, Dictionary<string, string>? filters = null);
         Task<ApplicationUser> GetUserByIdAsync(string userId);
         Task<ApplicationUser> CreateUserAsync(ApplicationUser user, string password);
         Task UpdateUserAsync(ApplicationUser user);

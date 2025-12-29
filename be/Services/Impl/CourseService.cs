@@ -23,6 +23,57 @@ namespace App.Services.Implementations
             _cloudinaryService = cloudinaryService;
         }
 
+                public async Task<PagedResult<CourseDTO>> GetAllCourses(int? page, int? limit, Dictionary<string, string>? filters = null)
+        {
+            if (!page.HasValue || !limit.HasValue)
+            {
+                var allCorses = await _repository.AllCoursesAsync();
+                var totalCourses = allCorses.Count();
+
+                return new PagedResult<CourseDTO>
+                {
+                    Data = _mapper.Map<IEnumerable<CourseDTO>>(allCorses),
+                    Total = totalCourses
+                };
+            }
+
+            var courses = await _repository.GetAllAsync(page.Value, limit.Value, filters);
+
+            return new PagedResult<CourseDTO>
+            {
+                Data = _mapper.Map<IEnumerable<CourseDTO>>(courses),
+                Total = courses.TotalItemCount,
+                TotalPages = courses.PageCount,
+                CurrentPage = courses.PageNumber,
+                Limit = courses.PageSize
+            };
+        }
+        public async Task<PagedResult<CourseDTO>> GetAllCoursesPublishAsync(int? page, int? limit, Dictionary<string, string>? filters = null)
+        {
+            if (!page.HasValue || !limit.HasValue)
+            {
+                var allCorsesPublish = await _repository.AllCoursesPublishAsync();
+                var totalCourses = allCorsesPublish.Count();
+
+                return new PagedResult<CourseDTO>
+                {
+                    Data = _mapper.Map<IEnumerable<CourseDTO>>(allCorsesPublish),
+                    Total = totalCourses
+                };
+            }
+
+            var courses = await _repository.GetAllPublishAsync(page.Value, limit.Value, filters);
+
+            return new PagedResult<CourseDTO>
+            {
+                Data = _mapper.Map<IEnumerable<CourseDTO>>(courses),
+                Total = courses.TotalItemCount,
+                TotalPages = courses.PageCount,
+                CurrentPage = courses.PageNumber,
+                Limit = courses.PageSize
+            };
+        }
+
         public async Task<CourseDetailDTO?> GetByIdAsync(int id)
         {
             var course = await _repository.GetByIdAsync(id);
@@ -110,6 +161,7 @@ namespace App.Services.Implementations
             };
             return result;
         }
+
 
         public async Task<CourseDTO> CreateAsync(CourseDTO dto)
         {
@@ -210,58 +262,6 @@ namespace App.Services.Implementations
         }
 
 
-        // public async Task<IEnumerable<StudentCourseProgressDTO>> GetStudentProgressByCourseIdAsync(int courseId)
-        // {
-        //     var course = await _repository.CourseDetailAsync(courseId);
-        //     if (course == null)
-        //     {
-        //         throw new AppException(ErrorCode.CourseNotFound, $"Không tìm thấy khóa học với ID = {courseId}");
-        //     }
-
-        //     // Tổng số bài giảng trong khóa
-        //     var totalLectures = course.CourseContent
-        //         .SelectMany(ch => ch.ChapterContent)
-        //         .Count();
-
-        //     if (totalLectures == 0)
-        //     {
-        //         // Nếu chưa có lecture, trả về danh sách rỗng
-        //         return Enumerable.Empty<StudentCourseProgressDTO>();
-        //     }
-
-        //     var progresses = await _repository.GetCourseProgressByCourseIdAsync(courseId);
-
-        //     var result = progresses.Select(cp =>
-        //     {
-        //         var completedLectureCount = 0;
-        //         if (!string.IsNullOrWhiteSpace(cp.LectureCompleted))
-        //         {
-        //             completedLectureCount = cp.LectureCompleted
-        //                 .Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries)
-        //                 .Length;
-        //         }
-
-        //         var percent = totalLectures == 0
-        //             ? 0
-        //             : (double)completedLectureCount / totalLectures * 100.0;
-
-        //         return new StudentCourseProgressDTO
-        //         {
-        //             UserId = cp.UserId,
-        //             FullName = cp.User.FullName,
-        //             Email = cp.User.Email,
-        //             CourseId = cp.CourseId,
-        //             Completed = cp.Completed,
-        //             TotalLectures = totalLectures,
-        //             CompletedLectures = completedLectureCount,
-        //             ProgressPercent = Math.Round(percent, 2),
-        //             LectureCompletedRaw = cp.LectureCompleted
-        //         };
-        //     });
-
-        //     return result;
-        // }
-
         public async Task<IEnumerable<CourseDTO>> SearchAsync(CourseFilterDTO filter)
         {
             var courses = await _repository.SearchAsync(filter);
@@ -286,58 +286,6 @@ namespace App.Services.Implementations
         {
             var courses = await _repository.GetCoursesRatingAsync();
             return _mapper.Map<IEnumerable<CourseDTO>>(courses);
-        }
-
-        public async Task<object> GetAllCoursesPublishAsync(int? page, int? limit)
-        {
-            if (!page.HasValue || !limit.HasValue)
-            {
-                var allCorsesPublish = await _repository.AllCoursesPublishAsync();
-                var totalCourses = allCorsesPublish.Count();
-
-                return new
-                {
-                    data = _mapper.Map<IEnumerable<CourseDTO>>(allCorsesPublish),
-                    total = totalCourses
-                };
-            }
-
-            var courses = await _repository.GetAllPublishAsync(page.Value, limit.Value);
-
-            return new
-            {
-                data = _mapper.Map<IEnumerable<CourseDTO>>(courses),
-                total = courses.TotalItemCount,
-                totalPages = courses.PageCount,
-                currentPage = courses.PageNumber,
-                limit = courses.PageSize
-            };
-        }
-
-        public async Task<object> GetAllCourses(int? page, int? limit)
-        {
-            if (!page.HasValue || !limit.HasValue)
-            {
-                var allCorses = await _repository.AllCoursesAsync();
-                var totalCourses = allCorses.Count();
-
-                return new
-                {
-                    data = _mapper.Map<IEnumerable<CourseDTO>>(allCorses),
-                    total = totalCourses
-                };
-            }
-
-            var courses = await _repository.GetAllAsync(page.Value, limit.Value);
-
-            return new
-            {
-                data = _mapper.Map<IEnumerable<CourseDTO>>(courses),
-                total = courses.TotalItemCount,
-                totalPages = courses.PageCount,
-                currentPage = courses.PageNumber,
-                limit = courses.PageSize
-            };
         }
 
         public Task<IEnumerable<StudentCourseProgressDTO>> GetStudentProgressByCourseIdAsync(int courseId)

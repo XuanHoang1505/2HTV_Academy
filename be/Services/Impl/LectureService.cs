@@ -88,7 +88,7 @@ namespace App.Services.Implementations
             return true;
         }
 
-        public async Task<PagedResult<LectureDTO>> GetAllAsync(int? page, int? limit)
+        public async Task<PagedResult<LectureDTO>> GetAllAsync(int? page, int? limit, Dictionary<string, string>? filters = null)
         {
             if (!page.HasValue || !limit.HasValue)
             {
@@ -101,7 +101,7 @@ namespace App.Services.Implementations
                 };
             }
 
-            var lectures = await _lecture.GetAllAsync(page.Value, limit.Value);
+            var lectures = await _lecture.GetAllAsync(page.Value, limit.Value, filters);
             return new PagedResult<LectureDTO>
             {
                 Data = _mapper.Map<IEnumerable<LectureDTO>>(lectures),

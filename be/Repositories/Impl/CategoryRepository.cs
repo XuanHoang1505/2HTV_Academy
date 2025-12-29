@@ -11,6 +11,7 @@ namespace App.Repositories.Implementations
     public class CategoryRepository : ICategoryRepository
     {
         private readonly AppDBContext _context;
+        private readonly string[] _searchableFields = { "Name", "Description", "Slug" };
 
         public CategoryRepository(AppDBContext context)
         {
@@ -23,11 +24,65 @@ namespace App.Repositories.Implementations
                 .FirstOrDefaultAsync(c => c.Id == id);
         }
 
-        public async Task<IPagedList<Category>> GetAllAsync(int page, int limit)
+        public async Task<IPagedList<Category>> GetAllAsync(
+            int page,
+            int limit,
+            Dictionary<string, string>? filters = null)
         {
-            return await _context.Categories.ToPagedListAsync(page, limit);
+            var query = _context.Categories.AsQueryable();
+            query = ApplyFilters(query, filters);
+            return await query.ToPagedListAsync(page, limit);
         }
 
+        private IQueryable<Category> ApplyFilters(
+            IQueryable<Category> query,
+            Dictionary<string, string>? filters)
+        {
+            if (filters == null || !filters.Any())
+                return query;
+
+            if (filters.ContainsKey("search") && !string.IsNullOrEmpty(filters["search"]))
+            {
+                var searchTerm = filters["search"];
+                query = query.Where(c =>
+                    EF.Functions.Like(c.Name, $"%{searchTerm}%") ||
+                    EF.Functions.Like(c.Description, $"%{searchTerm}%") ||
+                    EF.Functions.Like(c.Slug, $"%{searchTerm}%")
+                );
+            }
+
+            foreach (var filter in filters)
+            {
+                var key = filter.Key;
+                var value = filter.Value;
+
+                if (key.ToLower() == "search")
+                    continue;
+
+                if (string.IsNullOrEmpty(value))
+                    continue;
+
+                // Chỉ apply filter cho searchable fields
+                if (!_searchableFields.Contains(key, StringComparer.OrdinalIgnoreCase))
+                    continue;
+
+                // Partial search (LIKE %value%)
+                switch (key.ToLower())
+                {
+                    case "name":
+                        query = query.Where(c => EF.Functions.Like(c.Name, $"%{value}%"));
+                        break;
+                    case "description":
+                        query = query.Where(c => EF.Functions.Like(c.Description, $"%{value}%"));
+                        break;
+                    case "slug":
+                        query = query.Where(c => EF.Functions.Like(c.Slug, $"%{value}%"));
+                        break;
+                }
+            }
+
+            return query;
+        }
 
         public async Task<Category> AddAsync(Category category)
         {

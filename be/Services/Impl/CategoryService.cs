@@ -29,12 +29,14 @@ namespace App.Services.Implementations
         }
 
 
-        public async Task<PagedResult<CategoryDTO>> GetAllAsync(int? page, int? limit)
+        public async Task<PagedResult<CategoryDTO>> GetAllAsync(
+            int? page,
+            int? limit,
+            Dictionary<string, string>? filters = null)
         {
             if (!page.HasValue || !limit.HasValue)
             {
                 var allCategories = await _repository.AllCategoriesAsync();
-
                 return new PagedResult<CategoryDTO>
                 {
                     Data = _mapper.Map<IEnumerable<CategoryDTO>>(allCategories),
@@ -42,7 +44,7 @@ namespace App.Services.Implementations
                 };
             }
 
-            var categories = await _repository.GetAllAsync(page.Value, limit.Value);
+            var categories = await _repository.GetAllAsync(page.Value, limit.Value, filters);
 
             return new PagedResult<CategoryDTO>
             {

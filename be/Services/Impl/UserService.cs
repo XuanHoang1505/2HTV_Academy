@@ -438,15 +438,23 @@ namespace App.Services.Implementations
             return userDto;
         }
 
-        public async Task<PagedResult<UserDTO>> GetAllUsersAsync(int? page, int? limit)
+        public async Task<PagedResult<UserDTO>> GetAllUsersAsync(int? page, int? limit, Dictionary<string, string>? filters = null)
         {
             if (page.HasValue && limit.HasValue)
             {
-                var pagedUsers = await _userRepository.GetAllUsersPagedAsync(page.Value, limit.Value);
+                var pagedUsers = await _userRepository.GetAllUsersPagedAsync(page.Value, limit.Value, filters);
+                
+                IEnumerable<UserDTO> userDTOs = _mapper.Map<IEnumerable<UserDTO>>(pagedUsers);
+                foreach (var userDto in userDTOs)
+                {
+                    var user = await _userRepository.GetUserByIdAsync(userDto.Id!);
+                    var role = await _userRepository.GetUserRoleAsync(user);
+                    userDto.Role = role;
+                }
 
                 return new PagedResult<UserDTO>
                 {
-                    Data = _mapper.Map<IEnumerable<UserDTO>>(pagedUsers),
+                    Data = userDTOs,
                     Total = pagedUsers.TotalItemCount,
                     TotalPages = pagedUsers.PageCount,
                     CurrentPage = pagedUsers.PageNumber,
