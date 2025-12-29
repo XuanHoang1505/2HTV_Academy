@@ -18,5 +18,8 @@ namespace App.Services.Interfaces
         Task<ReviewDTO> HideReviewAsync(int id);
         Task<ReviewDTO> ShowReviewAsync(int id);
         Task<bool> UserHasReviewedCourseAsync(string userId, int courseId);
+
+        Task TotalReviewsAsync(int courseId);
+        Task AverageRatingAsync(int courseId);
     }
 }

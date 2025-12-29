@@ -117,6 +117,7 @@ namespace App.Controllers
             try
             {
                 await _lectureService.DeleteAsync(id);
+                await _lectureService.CountLecturesAsync(id); // Cập nhật lại tổng số bài học của khóa học
                 return Ok(new
                 {
                     success = true,
