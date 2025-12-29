@@ -11,7 +11,7 @@ namespace App.Services.Interfaces
         Task<bool> LockUserAsync(string userId);
         Task<bool> UnLockUserAsync(string userId);
         Task<UserDTO> GetUserByIdAsync(string userId);
-        Task<PagedResult<UserDTO>> GetAllUsersAsync(int? page, int? limit);
+        Task<PagedResult<UserDTO>> GetAllUsersAsync(int? page, int? limit, Dictionary<string, string>? filters = null);
         Task<bool> RegisterUserAsync(RegisterDTO registerDTO);
         Task<LoginResponse> LoginAsync(string userName, string password);
         Task<bool> ResetPasswordAsync(string email, string newPassword);

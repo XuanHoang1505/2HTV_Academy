@@ -4,7 +4,6 @@ using App.Domain.Models;
 using App.DTOs;
 using App.Repositories.Interfaces;
 using Microsoft.EntityFrameworkCore;
-using System.Linq;
 using X.PagedList;
 using X.PagedList.EF;
 
@@ -13,6 +12,8 @@ namespace App.Repositories.Implementations
     public class CourseRepository : ICourseRepository
     {
         private readonly AppDBContext _context;
+        private readonly string[] _searchableFields = { "Title", "Description", "Slug", "ShortDescription" };
+        private readonly string[] _exactMatchFields = { "Level", "Language", "Status", "CategoryId", "InstructorId" };
 
         public CourseRepository(AppDBContext context)
         {
@@ -40,12 +41,90 @@ namespace App.Repositories.Implementations
                 .FirstOrDefaultAsync(c => c.Slug == slug);
         }
 
-        public async Task<IPagedList<Course>> GetAllAsync(int page, int limit)
+        public async Task<IPagedList<Course>> GetAllAsync(int page, int limit, Dictionary<string, string>? filters = null)
         {
-            return await _context.Courses.Include(c => c.Category).Include(u => u.Educator).ToPagedListAsync(page, limit);
-
+            var query = _context.Courses.Include(c => c.Category).Include(u => u.Educator).AsQueryable();
+            query = ApplyFilters(query, filters);
+            return await query.ToPagedListAsync(page, limit);
         }
 
+        private IQueryable<Course> ApplyFilters(
+            IQueryable<Course> query,
+            Dictionary<string, string>? filters)
+        {
+            if (filters == null || !filters.Any())
+                return query;
+
+            // 1. Handle SEARCH (OR logic)
+            if (filters.TryGetValue("search", out var searchTerm) && !string.IsNullOrEmpty(searchTerm))
+            {
+                query = query.Where(c =>
+                    EF.Functions.Like(c.CourseTitle, $"%{searchTerm}%") ||
+                    EF.Functions.Like(c.CourseDescription, $"%{searchTerm}%") ||
+                    EF.Functions.Like(c.Slug, $"%{searchTerm}%") ||
+                    EF.Functions.Like(c.ShortDescription, $"%{searchTerm}%")
+                );
+            }
+
+            // 2. Handle FILTERS (AND logic)
+            foreach (var (key, value) in filters)
+            {
+                if (key.Equals("search", StringComparison.OrdinalIgnoreCase) ||
+                    string.IsNullOrEmpty(value))
+                    continue;
+
+                var lowerKey = key.ToLower();
+
+                // Partial match for searchable fields
+                if (_searchableFields.Contains(key, StringComparer.OrdinalIgnoreCase))
+                {
+                    query = ApplyPartialMatch(query, lowerKey, value);
+                }
+                // Exact match for exact match fields
+                else if (_exactMatchFields.Contains(key, StringComparer.OrdinalIgnoreCase))
+                {
+                    query = ApplyExactMatch(query, lowerKey, value);
+                }
+            }
+
+            return query;
+        }
+
+        private IQueryable<Course> ApplyPartialMatch(IQueryable<Course> query, string key, string value)
+        {
+            return key switch
+            {
+                "title" => query.Where(c => EF.Functions.Like(c.CourseTitle, $"%{value}%")),
+                "description" => query.Where(c => EF.Functions.Like(c.CourseDescription, $"%{value}%")),
+                "slug" => query.Where(c => EF.Functions.Like(c.Slug, $"%{value}%")),
+                "shortdescription" => query.Where(c => EF.Functions.Like(c.ShortDescription, $"%{value}%")),
+                _ => query
+            };
+        }
+
+        private IQueryable<Course> ApplyExactMatch(IQueryable<Course> query, string key, string value)
+        {
+            return key switch
+            {
+                // Parse enum với IgnoreCase
+                "level" when Enum.TryParse<Level>(value, true, out var level)
+                    => query.Where(c => c.Level == level),
+
+                "language" when Enum.TryParse<Language>(value, true, out var language)
+                    => query.Where(c => c.Language == language),
+
+                "status" when Enum.TryParse<CourseStatus>(value, true, out var status)
+                    => query.Where(c => c.Status == status),
+
+                // Parse int cho foreign keys
+                "categoryid" when int.TryParse(value, out var categoryId)
+                    => query.Where(c => c.CategoryId == categoryId),
+
+                "instructorid" => query.Where(c => c.EducatorId == value),
+                
+                _ => query
+            };
+        }
 
         public async Task<Course> AddAsync(Course course)
         {
@@ -201,16 +280,18 @@ namespace App.Repositories.Implementations
                 .AnyAsync(c => c.Slug == slug);
         }
 
-        public async Task<IPagedList<Course>> GetAllPublishAsync(int page, int limit)
+        public async Task<IPagedList<Course>> GetAllPublishAsync(int page, int limit, Dictionary<string, string>? filters = null)
         {
-            return await _context.Courses.Include(c => c.Category).Include(u => u.Educator)
-                 .Where(c => c.Status.Equals("published") && c.IsPublished == true).ToPagedListAsync(page, limit);
+            var query = _context.Courses.Include(c => c.Category).Include(u => u.Educator)
+                 .Where(c => c.Status == CourseStatus.published && c.IsPublished == true).AsQueryable();
+            query = ApplyFilters(query, filters);
+            return await query.ToPagedListAsync(page, limit);
         }
 
         public async Task<IEnumerable<Course>> AllCoursesPublishAsync()
         {
             return await _context.Courses.Include(c => c.Category).Include(u => u.Educator)
-                 .Where(c => c.Status.Equals("published") && c.IsPublished == true)
+                 .Where(c => c.Status == CourseStatus.published && c.IsPublished == true)
                  .ToListAsync();
         }
 

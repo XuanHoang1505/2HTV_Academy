@@ -8,7 +8,7 @@ namespace App.Services.Interfaces
     {
         Task<LectureDTO?> GetByIdAsync(int id);
         Task<LectureDTO?> GetByTitleAsync(String lectureTitle);
-        Task<PagedResult<LectureDTO>> GetAllAsync(int? page, int? limit);
+        Task<PagedResult<LectureDTO>> GetAllAsync(int? page, int? limit, Dictionary<string, string>? filters = null);
         Task<LectureDTO> CreateAsync(LectureDTO dto);
         Task<LectureDTO> UpdateAsync(int id, LectureDTO dto);
         Task<bool> DeleteAsync(int id);

@@ -6,6 +6,7 @@ namespace App.Domain.Models
     {
         public int Id { get; set; }
         public string LectureTitle { get; set; } = null!;
+        public string? LectureDescription { get; set; }
         public double LectureDuration { get; set; }
         public string? LectureUrl { get; set; }
         public bool IsPreviewFree { get; set; }

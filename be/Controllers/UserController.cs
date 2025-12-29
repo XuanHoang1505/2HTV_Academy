@@ -17,9 +17,32 @@ namespace App.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetAllUsers(int? page, int? limit)
+        public async Task<IActionResult> GetAllUsers([FromQuery] int? page, [FromQuery] int? limit)
         {
-            var users = await _userService.GetAllUsersAsync(page, limit);
+            if (limit.HasValue && (limit <= 0 || limit > 100))
+            {
+                return BadRequest(new
+                {
+                    success = false,
+                    message = "Limit phải là số dương và không vượt quá 100"
+                });
+            }
+
+            if (page.HasValue && page <= 0)
+            {
+                return BadRequest(new
+                {
+                    success = false,
+                    message = "Page phải là số dương"
+                });
+            }
+
+            var queryParams = HttpContext.Request.Query
+                .Where(q => q.Key != "page" && q.Key != "limit")
+                .ToDictionary(q => q.Key, q => q.Value.ToString());
+
+            var users = await _userService.GetAllUsersAsync(page, limit, queryParams);
+            
             return Ok(new
             {
                 success = true,

@@ -35,7 +35,12 @@ namespace App.Controllers
                     message = "Page phải là số dương"
                 });
             }
-            var result = await _chapterService.GetAllAsync(page, limit);
+
+            var queryParams = HttpContext.Request.Query
+                .Where(q => q.Key != "page" && q.Key != "limit")
+                .ToDictionary(q => q.Key, q => q.Value.ToString());
+
+            var result = await _chapterService.GetAllAsync(page, limit, queryParams);
             if (result == null)
             {
                 return NotFound(new

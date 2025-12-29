@@ -24,29 +24,92 @@ namespace App.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetAllCourses(int? page, int? limit)
+        public async Task<IActionResult> GetAllCourses([FromQuery] int? page, [FromQuery] int? limit)
         {
-            var courses = await _courseService.GetAllCourses(page, limit);
+            if (limit.HasValue && (limit <= 0 || limit > 100))
+            {
+                return BadRequest(new
+                {
+                    success = false,
+                    message = "Limit phải là số dương và không vượt quá 100"
+                });
+            }
+
+            if (page.HasValue && page <= 0)
+            {
+                return BadRequest(new
+                {
+                    success = false,
+                    message = "Page phải là số dương"
+                });
+            }
+
+            var queryParams = HttpContext.Request.Query
+                .Where(q => q.Key != "page" && q.Key != "limit")
+                .ToDictionary(q => q.Key, q => q.Value.ToString());
+
+            var result = await _courseService.GetAllCourses(page, limit, queryParams);
             return Ok(new
             {
                 success = true,
                 message = "Lấy danh sách khóa học thành công ",
-                data = courses
+                data = result.Data,
+                pagination = limit.HasValue && page.HasValue
+                    ? new
+                    {
+                        total = result.Total,
+                        page = result.CurrentPage,
+                        limit = result.Limit,
+                        totalPages = result.TotalPages
+                    }
+                    : (object)new { total = result.Total}
+
             }
            );
         }
 
         [HttpGet("courses-published")]
-        public async Task<IActionResult> GetAllCoursesPublish(int? page, int? limit)
+        public async Task<IActionResult> GetAllCoursesPublish([FromQuery] int? page, [FromQuery] int? limit)
         {
-            var courses = await _courseService.GetAllCoursesPublishAsync(page, limit);
+             if (limit.HasValue && (limit <= 0 || limit > 100))
+            {
+                return BadRequest(new
+                {
+                    success = false,
+                    message = "Limit phải là số dương và không vượt quá 100"
+                });
+            }
+
+            if (page.HasValue && page <= 0)
+            {
+                return BadRequest(new
+                {
+                    success = false,
+                    message = "Page phải là số dương"
+                });
+            }
+
+            var queryParams = HttpContext.Request.Query
+                .Where(q => q.Key != "page" && q.Key != "limit")
+                .ToDictionary(q => q.Key, q => q.Value.ToString());
+
+            var result = await _courseService.GetAllCoursesPublishAsync(page, limit, queryParams);
             return Ok(new
             {
                 success = true,
                 message = "Lấy danh sách khóa học thành công ",
-                data = courses
+                data = result.Data,
+                pagination = limit.HasValue && page.HasValue
+                    ? new
+                    {
+                        total = result.Total,
+                        page = result.CurrentPage,
+                        limit = result.Limit,
+                        totalPages = result.TotalPages
+                    }
+                    : (object)new { total = result.Total}
             }
-           );
+            );
         }
 
         [HttpGet("{id}")]

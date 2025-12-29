@@ -42,7 +42,10 @@ namespace App.Services.Implementations
             return true;
         }
 
-        public async Task<PagedResult<ChapterDTO>> GetAllAsync(int? page, int? limit)
+        public async Task<PagedResult<ChapterDTO>> GetAllAsync(
+            int? page, 
+            int? limit, 
+            Dictionary<string, string>? filters = null)
         {
             if (!page.HasValue || !limit.HasValue)
             {
@@ -55,7 +58,7 @@ namespace App.Services.Implementations
                 };
             }
 
-            var chapters = await _chapter.GetAllAsync(page.Value, limit.Value);
+            var chapters = await _chapter.GetAllAsync(page.Value, limit.Value, filters);
             return new PagedResult<ChapterDTO>
             {
                 Data = _mapper.Map<IEnumerable<ChapterDTO>>(chapters),

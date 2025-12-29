@@ -17,7 +17,29 @@ namespace App.Controllers
         [HttpGet]
         public async Task<IActionResult> GetAllLectures(int? page, int? limit)
         {
-            var lectures = await _lectureService.GetAllAsync(page, limit);
+            if (limit.HasValue && (limit <= 0 || limit > 100))
+            {
+                return BadRequest(new
+                {
+                    success = false,
+                    message = "Limit phải trong khoảng 1-100"
+                });
+            }
+
+            if (page.HasValue && page <= 0)
+            {
+                return BadRequest(new
+                {
+                    success = false,
+                    message = "Page phải là số dương"
+                });
+            }
+
+            var queryParams = HttpContext.Request.Query
+                .Where(q => q.Key != "page" && q.Key != "limit")
+                .ToDictionary(q => q.Key, q => q.Value.ToString());
+
+            var lectures = await _lectureService.GetAllAsync(page, limit, queryParams);
             if (lectures == null)
             {
                 return NotFound(new
