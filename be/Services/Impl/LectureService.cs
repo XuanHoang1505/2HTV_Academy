@@ -50,6 +50,10 @@ namespace App.Services.Implementations
                 throw new AppException(ErrorCode.CategorySlugAlreadyExists, $"Slug '{dto.LectureTitle}' đã tồn tại.");
 
             var entity = _mapper.Map<Lecture>(dto);
+
+            // Auto-increment LectureOrder within the same chapter
+            entity.LectureOrder = await _lecture.GetNextLectureOrderAsync(entity.ChapterId);
+
             var created = await _lecture.AddAsync(entity);
             var chapter = await _chapter.GetByIdAsync(entity.ChapterId);
             if (chapter != null)

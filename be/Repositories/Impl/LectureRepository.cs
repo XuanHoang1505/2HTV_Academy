@@ -52,6 +52,15 @@ namespace App.Repositories.Implementations
                .FirstOrDefaultAsync(l => l.LectureTitle == lectureTitle);
         }
 
+        public async Task<int> GetNextLectureOrderAsync(int chapterId)
+        {
+            var maxOrder = await _context.Lectures
+                .Where(l => l.ChapterId == chapterId)
+                .MaxAsync(l => (int?)l.LectureOrder);
+
+            return (maxOrder ?? 0) + 1;
+        }
+
         public async Task UpdateAsync(Lecture lecture)
         {
             _context.Lectures.Update(lecture);
