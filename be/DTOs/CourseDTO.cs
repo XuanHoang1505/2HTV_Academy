@@ -18,6 +18,7 @@ namespace App.DTOs
         public CourseStatus Status { set; get; }
         public int Discount { get; set; }
         public DateTime? PublishedAt { get; set; }
+        public int? TotalStudents { get; set; }
 
         public string? EducatorId { get; set; }
         public string? EducatorName { get; set; }

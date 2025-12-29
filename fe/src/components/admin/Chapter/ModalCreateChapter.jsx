@@ -85,7 +85,7 @@ const ModalCreateChapter = (props) => {
           className="space-y-1"
         >
           <Form.Item
-            name="title"
+            name="chapterTitle"
             label={<span className="font-medium text-gray-700">Tiêu đề</span>}
             rules={[{ required: true, message: "Không được để trống tiêu đề" }]}
             className="mb-4"
@@ -98,7 +98,7 @@ const ModalCreateChapter = (props) => {
           </Form.Item>
 
           <Form.Item
-            name="description"
+            name="chapterDescription"
             label={<span className="font-medium text-gray-700">Mô tả</span>}
             rules={[{ required: true, message: "Không được để trống mô tả" }]}
             className="mb-4"

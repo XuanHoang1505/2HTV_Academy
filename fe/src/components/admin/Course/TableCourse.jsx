@@ -21,6 +21,8 @@ const TableCourse = (props) => {
 
   const { message, notification } = App.useApp();
   const [categories, setCategories] = useState([]);
+  console.log(">>> check categories", categories);
+
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -83,8 +85,8 @@ const TableCourse = (props) => {
   const columns = [
     {
       title: "Ảnh",
-      dataIndex: "thumbnail",
-      key: "thumbnail",
+      dataIndex: "courseThumbnail",
+      key: "courseThumbnail",
       width: "8%",
       render: (thumbnail) => (
         <img
@@ -96,24 +98,24 @@ const TableCourse = (props) => {
     },
     {
       title: "Tên khóa học",
-      dataIndex: "title",
-      key: "title",
+      dataIndex: "courseTitle",
+      key: "courseTitle",
       width: "18%",
       render: (text) => <span className="font-medium">{text}</span>,
     },
     {
       title: "Danh mục",
-      dataIndex: ["categoryId", "name"],
-      key: "categoryId",
+      dataIndex: ["categoryName"],
+      key: "categoryName",
       width: "12%",
       render: (text) => <span className="text-gray-600">{text}</span>,
       filters: categories.map((cat) => ({
         text: cat.name,
-        value: cat._id,
+        value: cat.id,
       })),
       onFilter: (value, record) => {
         if (!filterCategory) return true;
-        return record.categoryId?._id === filterCategory;
+        return record.categoryId === value;
       },
     },
     {
@@ -138,8 +140,8 @@ const TableCourse = (props) => {
     },
     {
       title: "Giá",
-      dataIndex: "price",
-      key: "price",
+      dataIndex: "coursePrice",
+      key: "coursePrice",
       width: "10%",
       render: (price) => (
         <span className="text-gray-700">
@@ -183,7 +185,7 @@ const TableCourse = (props) => {
           <Popconfirm
             title="Xóa khóa học"
             description="Bạn có chắc chắn muốn xóa khóa học này?"
-            onConfirm={() => handleDeleteCourse(record._id)}
+            onConfirm={() => handleDeleteCourse(record.id)}
             okText="Xóa"
             cancelText="Hủy"
             okButtonProps={{ danger: true }}
@@ -203,7 +205,7 @@ const TableCourse = (props) => {
   ];
 
   const handleViewDetail = (record) => {
-    navigate(`/admin/khoa-hoc/${record._id}`);
+    navigate(`/admin/khoa-hoc/${record.id}`);
   };
 
   const handleTableChange = (pagination, filters) => {
@@ -223,7 +225,7 @@ const TableCourse = (props) => {
         columns={columns}
         dataSource={dataCourses}
         loading={loading}
-        rowKey="_id"
+        rowKey="id"
         pagination={{
           current: currentPage,
           pageSize: pageSize,

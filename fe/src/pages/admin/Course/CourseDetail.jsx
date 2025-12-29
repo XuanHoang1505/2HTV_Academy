@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 /* eslint-disable react-hooks/exhaustive-deps */
 import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
@@ -18,7 +19,6 @@ const CourseDetailAdminPage = () => {
   const [loading, setLoading] = useState(false);
   const [loadingEnrollment, setLoadingEnrollment] = useState(false);
   const [selectedTab, setSelectedTab] = useState(0);
-  const { notification } = App.useApp();
   const [currentPage, setCurrentPage] = useState(1);
   const [pageSize, setPageSize] = useState(5);
   const [total, setTotal] = useState(0);
@@ -33,32 +33,25 @@ const CourseDetailAdminPage = () => {
 
   const fetchCourseDetail = async () => {
     try {
-      setLoadingEnrollment(true);
+      setLoading(true);
 
       const res = await getCourseByIdService(id);
 
       if (res.success) {
         setCourse(res.data);
       } else {
-        console.log(res.message);
-        notification.error({
-          message: "Không thể lấy thông tin chi tiết khóa học",
-          description: res.message,
-        });
+        console.log("Đã xảy ra lỗi");
       }
     } catch (error) {
-      notification.error({
-        message: "Không thể lấy thông tin chi tiết khóa học",
-        description: error,
-      });
+      console.log("Đã xảy ra lỗi");
     } finally {
-      setLoadingEnrollment(false);
+      setLoading(false);
     }
   };
 
   const fetchEnrollmentCourse = async () => {
     try {
-      setLoading(true);
+      setLoadingEnrollment(true);
 
       const res = await getEnrollmentCourse(id, currentPage, pageSize);
 
@@ -68,18 +61,12 @@ const CourseDetailAdminPage = () => {
         setPageSize(res.pagination.limit);
         setTotal(res.pagination.total);
       } else {
-        notification.error({
-          message: "Không thể lấy thông tin chi tiết khóa học",
-          description: res.message,
-        });
+        console.log("Đã xảy ra lỗi");
       }
     } catch (error) {
-      notification.error({
-        message: "Không thể lấy thông tin chi tiết khóa học",
-        description: error,
-      });
+      console.log("Đã xảy ra lỗi");
     } finally {
-      setLoading(false);
+      setLoadingEnrollment(false);
     }
   };
 

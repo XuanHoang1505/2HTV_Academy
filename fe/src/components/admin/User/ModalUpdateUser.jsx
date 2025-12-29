@@ -45,7 +45,7 @@ const ModalUpdateUser = (props) => {
         formData.append("fullName", values.fullName);
       }
       if (values.phone !== undefined && values.phone !== dataUpdate.phone) {
-        formData.append("phone", values.phone || "");
+        formData.append("phoneNumber", values.phone || "");
       }
       if (values.role && values.role !== dataUpdate.role) {
         formData.append("role", values.role);
@@ -57,10 +57,10 @@ const ModalUpdateUser = (props) => {
       }
 
       if (values.avatar?.[0]?.originFileObj) {
-        formData.append("avatar", values.avatar[0].originFileObj);
+        formData.append("imageFile", values.avatar[0].originFileObj);
       }
 
-      const res = await updateUserByIdService(dataUpdate._id, formData);
+      const res = await updateUserByIdService(dataUpdate.id, formData);
 
       if (res.success) {
         message.success("Cập nhật người dùng thành công");

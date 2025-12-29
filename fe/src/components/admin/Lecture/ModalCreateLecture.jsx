@@ -1,49 +1,49 @@
-import { App, Form, Input, Modal } from "antd";
-import TextArea from "antd/es/input/TextArea";
-import React, { useEffect, useState } from "react";
-import { updateChapterService } from "../../../services/admin/chapter.service";
+import { App, Form, Input, InputNumber, Modal, Select } from "antd";
+import React, { useState } from "react";
+import { createLectureService } from "../../../services/admin/lecture.service";
 
-const ModalUpdateChapter = (props) => {
+const ModalCreateLecture = (props) => {
   const {
-    isModalUpdateChapterOpen,
-    setIsModalUpdateChapterOpen,
-    dataUpdateChapter,
-    setDataUpdateChapter,
+    isModalCreateLectureOpen,
+    setIsModalCreateLectureOpen,
     fetchCourseDetail,
+    courseId,
+    chapterId,
   } = props;
+  const [form] = Form.useForm();
   const [loading, setLoading] = useState(false);
   const { message, notification } = App.useApp();
-  const [form] = Form.useForm();
 
-  useEffect(() => {
-    if (dataUpdateChapter && isModalUpdateChapterOpen) {
-      form.setFieldsValue({
-        title: dataUpdateChapter.title,
-        description: dataUpdateChapter.description,
-      });
-    }
-  }, [dataUpdateChapter, isModalUpdateChapterOpen, form]);
-
-  const handleUpdateChapter = async (values) => {
+  const handleCreateLecture = async (values) => {
     try {
       setLoading(true);
-      const res = await updateChapterService(dataUpdateChapter._id, values);
+
+      const dataCreate = {
+        ...values,
+        courseId: courseId,
+        chapterId: chapterId,
+      };
+
+      const res = await createLectureService(dataCreate);
 
       if (res.success) {
-        message.success("Cập nhật chương học thành công");
+        message.success("Tạo mới bài giảng thành công");
+
         handleCloseAndResetModal();
         await fetchCourseDetail();
       } else {
         notification.error({
-          message: "Cập nhật chương học thất bại",
+          message: "Tạo mới bài giảng thất bại",
           description: res.message || "Có lỗi xảy ra, vui lòng thử lại",
         });
       }
     } catch (error) {
-      console.error(error);
+      console.log("Create Lecture Error:", error);
+
       const errorMessage = error.message || "Không thể kết nối đến server";
+
       notification.error({
-        message: "Cập nhật chương học thất bại",
+        message: "Tạo mới bài giảng thất bại",
         description: errorMessage,
         duration: 5,
       });
@@ -57,21 +57,21 @@ const ModalUpdateChapter = (props) => {
   };
 
   const handleCloseAndResetModal = () => {
-    setIsModalUpdateChapterOpen(false);
-    setDataUpdateChapter(null);
+    setIsModalCreateLectureOpen(false);
     form.resetFields();
   };
+
   return (
     <Modal
       title={
         <div className="text-lg font-semibold text-gray-800">
-          Cập nhật chương học
+          Tạo mới bài giảng
         </div>
       }
-      open={isModalUpdateChapterOpen}
+      open={isModalCreateLectureOpen}
       onOk={handleModalOk}
       onCancel={handleCloseAndResetModal}
-      okText="Cập nhật"
+      okText="Tạo mới"
       cancelText="Hủy bỏ"
       confirmLoading={loading}
       width={600}
@@ -85,38 +85,83 @@ const ModalUpdateChapter = (props) => {
           layout="vertical"
           form={form}
           autoComplete="off"
-          onFinish={handleUpdateChapter}
+          onFinish={handleCreateLecture}
           className="space-y-1"
         >
           <Form.Item
-            name="title"
+            name="lectureTitle"
             label={<span className="font-medium text-gray-700">Tiêu đề</span>}
             rules={[{ required: true, message: "Không được để trống tiêu đề" }]}
             className="mb-4"
           >
             <Input
-              placeholder="Nhập tiêu đề"
+              placeholder="Nhập tiêu đề của bài giảng"
               disabled={loading}
               className="h-10 rounded-lg"
             />
           </Form.Item>
-
           <Form.Item
-            name="description"
-            label={<span className="font-medium text-gray-700">Mô tả</span>}
-            rules={[{ required: true, message: "Không được để trống mô tả" }]}
+            name="lectureUrl"
+            label={<span className="font-medium text-gray-700">Đường dẫn</span>}
+            rules={[
+              {
+                required: true,
+                message: "Không được để trống đường dẫn bài giảng",
+              },
+            ]}
             className="mb-4"
           >
-            <TextArea
-              rows={4}
-              placeholder="Nhập mô tả của chương học"
+            <Input
+              placeholder="Nhập đường dẫn của bài giảng"
               disabled={loading}
+              className="h-10 rounded-lg"
             />
           </Form.Item>
+          <div className="grid grid-cols-2">
+            <Form.Item
+              name="lectureDuration"
+              label={
+                <span className="font-medium text-gray-700">
+                  Thời lượng (s)
+                </span>
+              }
+              rules={[
+                {
+                  required: true,
+                  message: "Không được để trống thời lượng bài giảng",
+                },
+              ]}
+              className="mb-4"
+            >
+              <InputNumber
+                min={0}
+                placeholder="0"
+                disabled={loading}
+                className="h-10 rounded-lg"
+              />
+            </Form.Item>
+            <Form.Item
+              label={
+                <span className="font-medium text-gray-700">Truy cập</span>
+              }
+              name="isPreviewFree"
+              className="mb-4"
+            >
+              <Select
+                defaultValue="Trả phí"
+                options={[
+                  { value: false, label: "Trả phí" },
+                  { value: true, label: "Miễn phí" },
+                ]}
+                disabled={loading}
+                className="h-10"
+              />
+            </Form.Item>
+          </div>
         </Form>
       </div>
     </Modal>
   );
 };
 
-export default ModalUpdateChapter;
+export default ModalCreateLecture;

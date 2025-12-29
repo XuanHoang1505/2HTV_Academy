@@ -65,7 +65,7 @@ const TableCategory = (props) => {
           <Popconfirm
             title="Xác nhận xóa?"
             description={`Bạn có chắc muốn xóa danh mục "${record.name}"?`}
-            onConfirm={() => handleDelete(record._id)}
+            onConfirm={() => handleDelete(record.id)}
             okText="Xóa"
             cancelText="Hủy"
             okButtonProps={{ danger: true }}
@@ -113,7 +113,7 @@ const TableCategory = (props) => {
       <Table
         dataSource={dataCategories}
         columns={columns}
-        rowKey="_id"
+        rowKey="id"
         loading={loading}
         pagination={{
           current: currentPage,

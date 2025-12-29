@@ -6,7 +6,7 @@ const getAllCourseService = async (
   searchText = "",
   filterCategory = null
 ) => {
-  let URL_BACKEND = `/admin/courses?limit=${pageSize}&page=${currentPage}`;
+  let URL_BACKEND = `/courses?limit=${pageSize}&page=${currentPage}`;
 
   if (searchText && searchText.trim() !== "") {
     URL_BACKEND += `&title=${searchText.trim()}`;
@@ -22,7 +22,7 @@ const getAllCourseService = async (
 };
 
 const createCourseService = async (formData) => {
-  const URL_BACKEND = "/admin/courses";
+  const URL_BACKEND = "/courses";
 
   const response = await axios.post(URL_BACKEND, formData, {
     headers: {
@@ -33,7 +33,7 @@ const createCourseService = async (formData) => {
 };
 
 const updateCourseByIdService = async (id, formData) => {
-  const URL_BACKEND = `/admin/courses`;
+  const URL_BACKEND = `/courses`;
 
   const response = await axios.put(`${URL_BACKEND}/${id}`, formData, {
     headers: {
@@ -45,7 +45,7 @@ const updateCourseByIdService = async (id, formData) => {
 };
 
 const deleteCourseByIdService = async (id) => {
-  const URL_BACKEND = `/admin/courses`;
+  const URL_BACKEND = `/courses`;
 
   const response = await axios.delete(`${URL_BACKEND}/${id}`);
 
@@ -53,7 +53,7 @@ const deleteCourseByIdService = async (id) => {
 };
 
 const getCourseByIdService = async (id) => {
-  const URL_BACKEND = `/admin/courses/${id}`;
+  const URL_BACKEND = `/courses/detail/${id}`;
 
   const response = await axios.get(URL_BACKEND);
 

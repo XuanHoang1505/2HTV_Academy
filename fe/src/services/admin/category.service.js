@@ -5,7 +5,7 @@ const getAllCategoryService = async (
   pageSize,
   searchText = ""
 ) => {
-  let URL_BACKEND = `/admin/categories?limit=${pageSize}&page=${currentPage}`;
+  let URL_BACKEND = `/categories?limit=${pageSize}&page=${currentPage}`;
 
   if (searchText && searchText.trim() != "") {
     URL_BACKEND += `&name=${searchText.trim()}`;
@@ -16,23 +16,23 @@ const getAllCategoryService = async (
   return response;
 };
 
-const createCategoryService = async (JSON) => {
-  const URL_BACKEND = "/admin/categories";
+const createCategoryService = async (data) => {
+  const URL_BACKEND = "/categories";
 
-  const response = await axios.post(URL_BACKEND, JSON);
+  const response = await axios.post(URL_BACKEND, data);
   return response;
 };
 
-const updateCategoryByIdService = async (id, JSON) => {
-  const URL_BACKEND = `/admin/categories`;
+const updateCategoryByIdService = async (id, data) => {
+  const URL_BACKEND = `/categories`;
 
-  const response = await axios.put(`${URL_BACKEND}/${id}`, JSON);
+  const response = await axios.put(`${URL_BACKEND}/${id}`, data);
 
   return response;
 };
 
 const deleteCategoryByIdService = async (id) => {
-  const URL_BACKEND = `/admin/categories`;
+  const URL_BACKEND = `/categories`;
 
   const response = await axios.delete(`${URL_BACKEND}/${id}`);
 

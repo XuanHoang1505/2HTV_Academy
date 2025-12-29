@@ -6,7 +6,7 @@ const getAllUserService = async (
   searchText = "",
   filterRole = null
 ) => {
-  let URL_BACKEND = `/admin/users?limit=${pageSize}&page=${currentPage}`;
+  let URL_BACKEND = `/users?limit=${pageSize}&page=${currentPage}`;
 
   if (searchText && searchText.trim() !== "") {
     URL_BACKEND += `&fullName=${searchText.trim()}`;
@@ -22,7 +22,7 @@ const getAllUserService = async (
 };
 
 const createUserService = async (formData) => {
-  const URL_BACKEND = "/admin/users";
+  const URL_BACKEND = "/users";
 
   const response = await axios.post(URL_BACKEND, formData, {
     headers: {
@@ -34,7 +34,7 @@ const createUserService = async (formData) => {
 };
 
 const updateUserByIdService = async (id, formData) => {
-  const URL_BACKEND = "/admin/users";
+  const URL_BACKEND = "/users";
 
   const response = await axios.put(`${URL_BACKEND}/${id}`, formData, {
     headers: {
@@ -45,10 +45,16 @@ const updateUserByIdService = async (id, formData) => {
   return response;
 };
 
-const deleteUserByIdService = async (id) => {
-  const URL_BACKEND = "/admin/users";
-  console.log(id);
-  const response = await axios.delete(`${URL_BACKEND}/${id}`);
+const lockUserByIdService = async (id) => {
+  const URL_BACKEND = "/users/lock";
+  const response = await axios.put(`${URL_BACKEND}/${id}`);
+
+  return response;
+};
+
+const unlockUserByIdService = async (id) => {
+  const URL_BACKEND = "/users/unlock";
+  const response = await axios.put(`${URL_BACKEND}/${id}`);
 
   return response;
 };
@@ -57,5 +63,6 @@ export {
   getAllUserService,
   createUserService,
   updateUserByIdService,
-  deleteUserByIdService,
+  lockUserByIdService,
+  unlockUserByIdService,
 };

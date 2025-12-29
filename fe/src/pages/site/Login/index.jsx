@@ -30,12 +30,12 @@ const LoginPage = () => {
         });
 
         // save access_token to localStorage
-        if (res.data.access_token) {
-          localStorage.setItem("access_token", res.data.access_token);
+        if (res.data.accessToken) {
+          localStorage.setItem("access_token", res.data.accessToken);
         }
 
         // save info user to context
-        setUser(res.data.user);
+        setUser(res.data);
 
         form.resetFields();
 

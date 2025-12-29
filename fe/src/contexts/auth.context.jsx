@@ -31,10 +31,9 @@ export const AuthWrapper = (props) => {
 
     try {
       const res = await getAccountService();
-      console.log(res);
 
       if (res.data) {
-        setUser(res.data.user);
+        setUser(res.data);
       }
     } catch (error) {
       console.error("Fetch account error:", error);

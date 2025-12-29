@@ -78,15 +78,29 @@ namespace App.Services.Implementations
             if (user == null)
                 throw new AppException(ErrorCode.UserNotFound, "Người dùng không tồn tại!");
 
-            if (userDto.Email != user.Email && await _userRepository.IsEmailExistsForUpdateAsync(userDto.Email, userId))
-                throw new AppException(ErrorCode.EmailAlreadyExists, "Email đã tồn tại!");
-
             bool isEmailChanged = userDto.Email != user.Email;
-            string oldEmail = user.Email;
+            string oldEmail = user.Email; 
 
-            // Update thông tin user
-            user.UserName = userDto.Email;
-            user.Email = userDto.Email;
+            if (isEmailChanged)
+            {
+                bool emailExists = await _userRepository
+                    .IsEmailExistsForUpdateAsync(userDto.Email, userId);
+
+                if (emailExists)
+                    throw new AppException(ErrorCode.EmailAlreadyExists, "Email đã tồn tại!");
+            }
+
+            // Update basic info
+            user.FullName = userDto.FullName;
+            user.PhoneNumber = userDto.PhoneNumber;
+
+            if (isEmailChanged)
+            {
+                user.Email = userDto.Email;
+                user.UserName = userDto.Email;
+            }
+
+            // Update avatar
             if (userDto.ImageFile != null && userDto.ImageFile.Length > 0)
             {
                 if (!string.IsNullOrEmpty(user.ImageUrl))
@@ -94,21 +108,20 @@ namespace App.Services.Implementations
                     var oldPublicId = CloudinaryService.ExtractPublicId(user.ImageUrl);
                     await _cloudinaryService.DeleteImageAsync(oldPublicId);
                 }
-                user.ImageUrl = await _cloudinaryService.UploadImageAsync(userDto.ImageFile, "user_avatar");
+
+                user.ImageUrl = await _cloudinaryService
+                    .UploadImageAsync(userDto.ImageFile, "user_avatar");
             }
-
-
-            _mapper.Map(userDto, user);
 
             await _userRepository.UpdateUserAsync(user);
 
-            // Gửi thông báo thay đổi email nếu cần
+            // Send email change notification
             if (isEmailChanged)
             {
                 await SendEmailChangeNotification(user, oldEmail);
             }
 
-            // Cập nhật role
+            // Update role
             if (!string.IsNullOrEmpty(userDto.Role))
             {
                 var currentRoles = await _userManager.GetRolesAsync(user);
@@ -119,10 +132,9 @@ namespace App.Services.Implementations
                 }
             }
 
-            // Trả về DTO
-            var updatedDto = _mapper.Map<UserDTO>(user);
-            updatedDto.Role = await _userRepository.GetUserRoleAsync(user);
-            return updatedDto;
+            var result = _mapper.Map<UserDTO>(user);
+            result.Role = await _userRepository.GetUserRoleAsync(user);
+            return result;
         }
 
         public async Task<bool> DeleteUserAsync(string userId)
@@ -194,7 +206,7 @@ namespace App.Services.Implementations
 
                 return new LoginResponse
                 {
-                    UserId = user.Id,
+                    Id = user.Id,
                     FullName = user.FullName,
                     Email = user.Email,
                     ImageUrl = user.ImageUrl,

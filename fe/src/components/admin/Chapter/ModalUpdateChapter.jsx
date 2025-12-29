@@ -17,9 +17,10 @@ const ModalUpdateChapter = (props) => {
 
   useEffect(() => {
     if (dataUpdateChapter && isModalUpdateChapterOpen) {
+      console.log("dataUpdateChapter:", dataUpdateChapter);
       form.setFieldsValue({
-        title: dataUpdateChapter.title,
-        description: dataUpdateChapter.description,
+        chapterTitle: dataUpdateChapter.chapterTitle,
+        chapterDescription: dataUpdateChapter.chapterDescription,
       });
     }
   }, [dataUpdateChapter, isModalUpdateChapterOpen, form]);
@@ -27,7 +28,7 @@ const ModalUpdateChapter = (props) => {
   const handleUpdateChapter = async (values) => {
     try {
       setLoading(true);
-      const res = await updateChapterService(dataUpdateChapter._id, values);
+      const res = await updateChapterService(dataUpdateChapter.id, values);
 
       if (res.success) {
         message.success("Cập nhật chương học thành công");
@@ -89,7 +90,7 @@ const ModalUpdateChapter = (props) => {
           className="space-y-1"
         >
           <Form.Item
-            name="title"
+            name="chapterTitle"
             label={<span className="font-medium text-gray-700">Tiêu đề</span>}
             rules={[{ required: true, message: "Không được để trống tiêu đề" }]}
             className="mb-4"
@@ -102,7 +103,7 @@ const ModalUpdateChapter = (props) => {
           </Form.Item>
 
           <Form.Item
-            name="description"
+            name="chapterDescription"
             label={<span className="font-medium text-gray-700">Mô tả</span>}
             rules={[{ required: true, message: "Không được để trống mô tả" }]}
             className="mb-4"
