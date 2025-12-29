@@ -19,10 +19,13 @@ namespace App.DTOs
         public int Discount { get; set; }
         public DateTime? PublishedAt { get; set; }
         public int? TotalStudents { get; set; }
+        public int? TotalDuration { get; set; }
+        public int? TotalLectures { get; set; }
+        public int? TotalReviews { get; set; }
 
         public string? EducatorId { get; set; }
         public string? EducatorName { get; set; }
-        public int CategoryId { get; set; }
+        public int? CategoryId { get; set; }
         public string? CategoryName { get; set; }
 
         public IFormFile? CourseThumbnailFile { get; set; }

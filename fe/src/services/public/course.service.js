@@ -32,7 +32,7 @@ const getAllCoursesPublic = async (
   filterCategory,
   filterLevel
 ) => {
-  let URL_BACKEND = `/courses?limit=${pageSize}&page=${currentPage}`;
+  let URL_BACKEND = `/courses/courses-published?limit=${pageSize}&page=${currentPage}`;
 
   if (filterRating) {
     URL_BACKEND += `&minRating=${filterRating}`;
@@ -56,7 +56,7 @@ const getAllCoursesPublic = async (
 };
 
 const getCourseBySlugPublic = async (slug) => {
-  const URL_BACKEND = `/courses/${slug}`;
+  const URL_BACKEND = `/courses/slug/${slug}`;
   const response = await axios.get(URL_BACKEND);
   return response;
 };

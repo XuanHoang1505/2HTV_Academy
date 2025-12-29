@@ -1,5 +1,4 @@
 /* eslint-disable no-unused-vars */
-import CodeIcon from "@mui/icons-material/Code";
 import Badge from "@mui/material/Badge";
 import IconButton from "@mui/material/IconButton";
 import Tooltip from "@mui/material/Tooltip";
@@ -18,7 +17,6 @@ import Divider from "@mui/material/Divider";
 import Logout from "@mui/icons-material/Logout";
 import AccountCircleIcon from "@mui/icons-material/AccountCircle";
 import MenuBookIcon from "@mui/icons-material/MenuBook";
-import LocalMallIcon from "@mui/icons-material/LocalMall";
 import AdminPanelSettingsIcon from "@mui/icons-material/AdminPanelSettings";
 import { App } from "antd";
 import Skeleton from "@mui/material/Skeleton";
@@ -145,10 +143,7 @@ const Header = () => {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-16">
           <Link to={"/"} className="flex items-center space-x-2">
-            <div className="bg-primary p-2 rounded-lg">
-              <CodeIcon className="text-white text-2xl" />
-            </div>
-            <span className="text-xl font-bold text-primary">CodeLearn</span>
+            <span className="text-xl font-bold text-primary">2HTV Academy</span>
           </Link>
 
           <nav className="hidden md:flex items-center space-x-8">

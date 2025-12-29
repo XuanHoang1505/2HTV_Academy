@@ -184,7 +184,9 @@ const CourseDetailPage = () => {
             >
               {getLevelConfig(course.level).label}
             </div>
-            <h1 className="text-3xl mb-[16px] font-semibold">{course.title}</h1>
+            <h1 className="text-3xl mb-[16px] font-semibold">
+              {course.courseTitle}
+            </h1>
             <p className="text-lg mb-[16px]">{course.shortDescription}</p>
             <div className="flex items-center gap-4 mb-[16px]">
               <div className="flex items-center gap-1">
@@ -215,7 +217,7 @@ const CourseDetailPage = () => {
             <p className="text-sm mb-[16px]">
               Khóa học của{" "}
               <span className="text-primary-200 font-semibold underline cursor-pointer">
-                CodeLearn
+                2HTV Academy
               </span>
             </p>
             <div className="flex items-center gap-2 text-sm">
@@ -238,7 +240,7 @@ const CourseDetailPage = () => {
                 {previewVideo ? (
                   <div className="relative w-[440px] h-[250px] overflow-hidden">
                     <YouTube
-                      videoId={getYouTubeVideoId(previewVideo.videoUrl)}
+                      videoId={getYouTubeVideoId(previewVideo.lectureUrl)}
                       opts={youtubeOpts}
                       className="absolute top-0 left-0 w-full h-full"
                     />
@@ -251,8 +253,8 @@ const CourseDetailPage = () => {
                   </div>
                 ) : (
                   <img
-                    src={course.thumbnail}
-                    alt={course.title}
+                    src={course.courseThumbnail}
+                    alt={course.courseTitle}
                     className="w-[450px] h-full object-cover"
                   />
                 )}
@@ -265,11 +267,12 @@ const CourseDetailPage = () => {
                 <div className="flex items-center justify-between mb-[16px]">
                   <p className="text-2xl text-primary font-bold">
                     {formatVND(
-                      course.price - (course.price * course.discount) / 100
+                      course.coursePrice -
+                        (course.coursePrice * course.discount) / 100
                     )}
                   </p>
                   <p className="text-xl text-gray-500 font-bold line-through">
-                    {formatVND(course.price)}
+                    {formatVND(course.coursePrice)}
                   </p>
                 </div>
                 <div className="flex flex-col gap-2 mb-[16px]">
@@ -354,59 +357,68 @@ const CourseDetailPage = () => {
               <p>{formatDuration(course.totalDuration)}</p>
             </div>
             <div className="mb-[36px]">
-              {course.curriculum.map((section, index) => (
-                <Accordion key={section._id} defaultExpanded={index === 0}>
-                  <AccordionSummary expandIcon={<ExpandMoreIcon />}>
-                    <div className="flex justify-between w-full items-center pr-4">
-                      <h3 className="font-medium text-primary text-lg">
-                        {section.order}. {section.title}
-                      </h3>
-                      <p className="text-sm text-gray-600">
-                        {section.lectures.length} bài giảng
-                      </p>
-                    </div>
-                  </AccordionSummary>
-                  <AccordionDetails>
-                    <div className="flex flex-col gap-2">
-                      {section.lectures.length > 0 ? (
-                        section.lectures.map((lecture) => (
-                          <div
-                            key={lecture._id}
-                            className="flex items-center justify-between py-2 px-3 hover:bg-gray-50 rounded transition-colors"
-                          >
-                            <div className="flex items-center gap-3">
-                              <FaFileVideo className="text-primary" />
-                              <span className="text-base">
-                                {lecture.order}. {lecture.title}
-                              </span>
-                            </div>
-                            <div className="flex items-center gap-8">
-                              {lecture.isFree && (
-                                <div className="flex items-center justify-center gap-2 text-sm text-primary font-semibold ">
-                                  <FaPlayCircle />
-                                  <Link
-                                    onClick={() => handlePreviewClick(lecture)}
-                                    className="hover:text-primary-300"
-                                  >
-                                    <span className="underline">Học thử</span>
-                                  </Link>
-                                </div>
-                              )}
-                              <span className="text-sm text-gray-600">
-                                {formatTime(lecture.videoDuration)}
-                              </span>
-                            </div>
-                          </div>
-                        ))
-                      ) : (
-                        <p className="text-gray-500 text-sm text-primary italic py-2">
-                          Chưa có bài giảng
+              {course.curriculum && course.curriculum.length > 0 ? (
+                course.curriculum.map((section, index) => (
+                  <Accordion key={section.id} defaultExpanded={index === 0}>
+                    <AccordionSummary expandIcon={<ExpandMoreIcon />}>
+                      <div className="flex justify-between w-full items-center pr-4">
+                        <h3 className="font-medium text-primary text-lg">
+                          {section.chapterOrder + 1}. {section.chapterTitle}
+                        </h3>
+                        <p className="text-sm text-gray-600">
+                          {section.lectures?.length || 0} bài giảng
                         </p>
-                      )}
-                    </div>
-                  </AccordionDetails>
-                </Accordion>
-              ))}
+                      </div>
+                    </AccordionSummary>
+                    <AccordionDetails>
+                      <div className="flex flex-col gap-2">
+                        {section.lectures && section.lectures.length > 0 ? (
+                          section.lectures.map((lecture) => (
+                            <div
+                              key={lecture.id}
+                              className="flex items-center justify-between py-2 px-3 hover:bg-gray-50 rounded transition-colors"
+                            >
+                              <div className="flex items-center gap-3">
+                                <FaFileVideo className="text-primary" />
+                                <span className="text-base">
+                                  {lecture.lectureOrder + 1}.{" "}
+                                  {lecture.lectureTitle}
+                                </span>
+                              </div>
+                              <div className="flex items-center gap-8">
+                                {lecture.isPreviewFree && (
+                                  <div className="flex items-center justify-center gap-2 text-sm text-primary font-semibold ">
+                                    <FaPlayCircle />
+                                    <Link
+                                      onClick={() =>
+                                        handlePreviewClick(lecture)
+                                      }
+                                      className="hover:text-primary-300"
+                                    >
+                                      <span className="underline">Học thử</span>
+                                    </Link>
+                                  </div>
+                                )}
+                                <span className="text-sm text-gray-600">
+                                  {formatTime(lecture.lectureDuration)}
+                                </span>
+                              </div>
+                            </div>
+                          ))
+                        ) : (
+                          <p className="text-gray-500 text-sm text-primary italic py-2">
+                            Chưa có bài giảng
+                          </p>
+                        )}
+                      </div>
+                    </AccordionDetails>
+                  </Accordion>
+                ))
+              ) : (
+                <p className="text-gray-500 text-sm text-primary italic py-2">
+                  Chưa có chương học nào
+                </p>
+              )}
             </div>
             <div className="space-y-4">
               <h2 className="text-2xl font-semibold text-primary mb-4">
@@ -414,7 +426,7 @@ const CourseDetailPage = () => {
               </h2>
 
               <p className="text-base leading-relaxed text-gray-700 whitespace-pre-line">
-                {course.description}
+                {course.courseDescription}
               </p>
             </div>
           </div>
