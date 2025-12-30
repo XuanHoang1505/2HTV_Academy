@@ -1,7 +1,7 @@
 import axios from "../../customs/axios.customize";
 
 const getAllOrders = async (currentPage, pageSize, filterStatus = null) => {
-  let URL_BACKEND = `/orders?limit=${pageSize}&page=${currentPage}`;
+  let URL_BACKEND = `/purchases?limit=${pageSize}&page=${currentPage}`;
 
   if (filterStatus) {
     URL_BACKEND += `&status=${filterStatus}`;

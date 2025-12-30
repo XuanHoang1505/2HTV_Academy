@@ -19,6 +19,7 @@ import EnrollmentPage from "../pages/site/Enrollment";
 import EnrollmentDetailPage from "../pages/site/EnrollmentDetail";
 import ProfilePage from "../pages/site/Profile";
 import CourseDetailAdminPage from "../pages/admin/Course/CourseDetail";
+import PurchaseSuccessPage from "../pages/site/PurchaseSuccess";
 import ProtectedRoute from "./ProtectedRoute";
 
 const router = createBrowserRouter([
@@ -29,6 +30,7 @@ const router = createBrowserRouter([
       { index: true, element: <HomePage /> },
       { path: "khoa-hoc", element: <CoursesPage /> },
       { path: "khoa-hoc/:slug", element: <CourseDetailPage /> },
+      { path: "mua-khoa-hoc-thanh-cong", element: <PurchaseSuccessPage /> },
       {
         path: "khoa-hoc-cua-toi",
         element: (

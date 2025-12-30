@@ -28,8 +28,8 @@ import { orderFromCartService } from "../../../services/student/order.service";
 
 const Header = () => {
   const { user, setUser, appLoading } = useContext(AuthContext);
-
   const { refreshCart, cartInfo } = useContext(CartContext);
+
   const [loadingCart, setLoadingCart] = useState(false);
   const [loadingPayment, setLoadingPayment] = useState(false);
   const { message } = App.useApp();
@@ -77,11 +77,16 @@ const Header = () => {
   const handlePayment = async () => {
     try {
       setLoadingPayment(true);
-      const res = await orderFromCartService();
+
+      const courseIds = cartInfo?.cartItems.map((item) => item.courseId) || [];
+      const res = await orderFromCartService(
+        user?.id,
+        cartInfo?.totalPrice,
+        courseIds
+      );
 
       if (res.success) {
-        message.success(res.message);
-        window.location.href = res.data.paymentInfo;
+        window.location.href = res.paymentUrl;
       } else {
         message.warning(res.message);
       }
@@ -138,7 +143,6 @@ const Header = () => {
   };
 
   console.log(">>>check user", user);
-  
 
   return (
     <header className="bg-white shadow-md">
@@ -230,9 +234,7 @@ const Header = () => {
                               />
                               <div
                                 onClick={() =>
-                                  handleRemoveCourseFromCart(
-                                    cartItem.courseId
-                                  )
+                                  handleRemoveCourseFromCart(cartItem.courseId)
                                 }
                                 className="absolute -top-2 -left-2 cursor-pointer bg-red-500 rounded-full w-[16px] h-[16px] flex items-center justify-center"
                               >
@@ -250,9 +252,7 @@ const Header = () => {
                                 <p className="text-sm text-primary">
                                   {formatVND(
                                     cartItem.price -
-                                      (cartItem.price *
-                                        cartItem.discount ) /
-                                        100
+                                      (cartItem.price * cartItem.discount) / 100
                                   )}
                                 </p>
                               </div>
