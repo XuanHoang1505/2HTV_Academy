@@ -110,5 +110,12 @@ namespace App.Repositories.Implementations
             _context.Chapters.Update(chapter);
             await _context.SaveChangesAsync();
         }
+        
+        public async Task<int> GetMaxOrderByCourseIdAsync(int courseId)
+        {
+            return await _context.Chapters
+                .Where(c => c.CourseId == courseId)
+                .MaxAsync(c => (int?)c.ChapterOrder) ?? 0;
+        }
     }
 }

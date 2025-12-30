@@ -118,5 +118,12 @@ namespace App.Repositories.Implementations
 
             return query;
         }
+        public async Task<int> GetMaxOrderByChapterIdAsync(int chapterId)
+        {
+            return await _context.Lectures
+                .Where(l => l.ChapterId == chapterId)
+                .MaxAsync(l => (int?)l.LectureOrder) ?? 0;
+        }
     }
+
 }

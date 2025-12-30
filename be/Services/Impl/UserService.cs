@@ -24,6 +24,7 @@ namespace App.Services.Implementations
         private readonly OtpService _otpService;
 
         private readonly CloudinaryService _cloudinaryService;
+        private readonly ILogger<UserService> _logger;
 
         public UserService(
             IUserRepository userRepository,
@@ -33,7 +34,8 @@ namespace App.Services.Implementations
             JwtTokenProvider jwtTokenProvider,
             IMapper mapper,
             OtpService otpService,
-            CloudinaryService cloudinaryService
+            CloudinaryService cloudinaryService,
+            ILogger<UserService> logger
             )
         {
             _userRepository = userRepository;
@@ -44,6 +46,7 @@ namespace App.Services.Implementations
             _mapper = mapper;
             _otpService = otpService;
             _cloudinaryService = cloudinaryService;
+            _logger = logger;
         }
 
         public async Task<UserDTO> CreateUserAsync(UserDTO userDto)
@@ -78,29 +81,24 @@ namespace App.Services.Implementations
             if (user == null)
                 throw new AppException(ErrorCode.UserNotFound, "Người dùng không tồn tại!");
 
-            bool isEmailChanged = userDto.Email != user.Email;
-            string oldEmail = user.Email; 
+            bool isEmailChanged =
+                !string.IsNullOrWhiteSpace(userDto.Email) &&
+                !string.Equals(userDto.Email, user.Email, StringComparison.OrdinalIgnoreCase);
+
+            string oldEmail = user.Email;
+
+            if (!string.IsNullOrWhiteSpace(userDto.FullName))
+                user.FullName = userDto.FullName;
+
+            if (!string.IsNullOrWhiteSpace(userDto.PhoneNumber))
+                user.PhoneNumber = userDto.PhoneNumber;
 
             if (isEmailChanged)
             {
-                bool emailExists = await _userRepository
-                    .IsEmailExistsForUpdateAsync(userDto.Email, userId);
-
-                if (emailExists)
-                    throw new AppException(ErrorCode.EmailAlreadyExists, "Email đã tồn tại!");
+                user.Email = userDto.Email!.Trim();
+                user.UserName = userDto.Email!.Trim();
             }
 
-            // Update basic info
-            user.FullName = userDto.FullName;
-            user.PhoneNumber = userDto.PhoneNumber;
-
-            if (isEmailChanged)
-            {
-                user.Email = userDto.Email;
-                user.UserName = userDto.Email;
-            }
-
-            // Update avatar
             if (userDto.ImageFile != null && userDto.ImageFile.Length > 0)
             {
                 if (!string.IsNullOrEmpty(user.ImageUrl))
@@ -113,29 +111,25 @@ namespace App.Services.Implementations
                     .UploadImageAsync(userDto.ImageFile, "user_avatar");
             }
 
-            await _userRepository.UpdateUserAsync(user);
-
-            // Send email change notification
-            if (isEmailChanged)
-            {
-                await SendEmailChangeNotification(user, oldEmail);
-            }
-
-            // Update role
-            if (!string.IsNullOrEmpty(userDto.Role))
+            if(userDto.Role != null)
             {
                 var currentRoles = await _userManager.GetRolesAsync(user);
-                if (!currentRoles.Contains(userDto.Role))
-                {
-                    await _userManager.RemoveFromRolesAsync(user, currentRoles);
-                    await _userManager.AddToRoleAsync(user, userDto.Role);
-                }
+                await _userManager.RemoveFromRolesAsync(user, currentRoles);
+                await _userManager.AddToRoleAsync(user, userDto.Role);
             }
+
+            await _userRepository.UpdateUserAsync(user);
+
+            if (isEmailChanged)
+                await SendEmailChangeNotification(user, oldEmail);
 
             var result = _mapper.Map<UserDTO>(user);
             result.Role = await _userRepository.GetUserRoleAsync(user);
+
             return result;
         }
+
+
 
         public async Task<bool> DeleteUserAsync(string userId)
         {
@@ -455,7 +449,7 @@ namespace App.Services.Implementations
             if (page.HasValue && limit.HasValue)
             {
                 var pagedUsers = await _userRepository.GetAllUsersPagedAsync(page.Value, limit.Value, filters);
-                
+
                 IEnumerable<UserDTO> userDTOs = _mapper.Map<IEnumerable<UserDTO>>(pagedUsers);
                 foreach (var userDto in userDTOs)
                 {

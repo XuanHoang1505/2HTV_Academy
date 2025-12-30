@@ -82,8 +82,10 @@ namespace App.Repositories.Implementations
 
         public async Task UpdateUserAsync(ApplicationUser user)
         {
-            await _userManager.UpdateAsync(user);
+            _context.Users.Update(user);
+            await _context.SaveChangesAsync();
         }
+        
         public async Task<string> GetUserRoleAsync(ApplicationUser user)
         {
             var roles = await _userManager.GetRolesAsync(user);

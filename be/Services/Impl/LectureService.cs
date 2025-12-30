@@ -50,6 +50,8 @@ namespace App.Services.Implementations
                 throw new AppException(ErrorCode.CategorySlugAlreadyExists, $"Slug '{dto.LectureTitle}' đã tồn tại.");
 
             var entity = _mapper.Map<Lecture>(dto);
+            var maxOrder = await _lecture.GetMaxOrderByChapterIdAsync(dto.ChapterId);
+            entity.LectureOrder = maxOrder + 1;
             var created = await _lecture.AddAsync(entity);
             var chapter = await _chapter.GetByIdAsync(entity.ChapterId);
             if (chapter != null)
@@ -137,7 +139,11 @@ namespace App.Services.Implementations
             if (existing == null)
                 throw new AppException(ErrorCode.CategoryNotFound, $"Không tìm thấy bài học với ID = {id}");
 
-            _mapper.Map(dto, existing);
+            existing.LectureTitle = dto.LectureTitle ?? existing.LectureTitle;
+            existing.LectureDuration = dto.LectureDuration ?? existing.LectureDuration;
+            existing.LectureUrl = dto.LectureUrl ?? existing.LectureUrl;
+            existing.IsPreviewFree = dto.IsPreviewFree ?? existing.IsPreviewFree;
+            
             await _lecture.UpdateAsync(existing);
 
             var chapter = await _chapter.GetByIdAsync(existing.ChapterId);

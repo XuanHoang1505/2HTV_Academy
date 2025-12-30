@@ -12,5 +12,6 @@ namespace App.Repositories.Interfaces
         Task<Lecture> AddAsync(Lecture lecture);
         Task UpdateAsync(Lecture lecture);
         Task DeleteAsync(int id);
+        Task<int> GetMaxOrderByChapterIdAsync(int chapterId);
     }
 }
