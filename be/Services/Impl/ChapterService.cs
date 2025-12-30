@@ -26,6 +26,9 @@ namespace App.Services.Implementations
             
             var entity = _mapper.Map<Chapter>(dto);
 
+            var maxOrder = await _chapter.GetMaxOrderByCourseIdAsync(dto.CourseId);
+            entity.ChapterOrder = maxOrder + 1;
+
             var created = await _chapter.AddAsync(entity);
             var dtoResult = _mapper.Map<ChapterDTO>(created);
 

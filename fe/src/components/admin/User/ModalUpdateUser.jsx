@@ -23,11 +23,11 @@ const ModalUpdateUser = (props) => {
       form.setFieldsValue({
         email: dataUpdate.email,
         fullName: dataUpdate.fullName,
-        phone: dataUpdate.phone,
+        phoneNumber: dataUpdate.phoneNumber,
         role: dataUpdate.role,
       });
       // Set preview image to existing avatar
-      setPreviewImage(dataUpdate.avatar || null);
+      setPreviewImage(dataUpdate.imageUrl || null);
     }
   }, [dataUpdate, isModalUpdateOpen, form]);
 
@@ -44,8 +44,8 @@ const ModalUpdateUser = (props) => {
       if (values.fullName && values.fullName !== dataUpdate.fullName) {
         formData.append("fullName", values.fullName);
       }
-      if (values.phone !== undefined && values.phone !== dataUpdate.phone) {
-        formData.append("phoneNumber", values.phone || "");
+      if (values.phoneNumber !== undefined && values.phoneNumber !== dataUpdate.phoneNumber) {
+        formData.append("phoneNumber", values.phoneNumber || "");
       }
       if (values.role && values.role !== dataUpdate.role) {
         formData.append("role", values.role);
@@ -107,7 +107,7 @@ const ModalUpdateUser = (props) => {
       };
       reader.readAsDataURL(file);
     } else {
-      setPreviewImage(dataUpdate?.avatar || null);
+      setPreviewImage(dataUpdate?.imageUrl || null);
     }
   };
 
@@ -234,7 +234,7 @@ const ModalUpdateUser = (props) => {
             </Form.Item>
 
             <Form.Item
-              name="phone"
+              name="phoneNumber"
               label={
                 <span className="font-medium text-gray-700">Số điện thoại</span>
               }
@@ -282,8 +282,8 @@ const ModalUpdateUser = (props) => {
             >
               <Select
                 options={[
-                  { value: "STUDENT", label: "Học viên" },
-                  { value: "ADMIN", label: "Quản trị viên" },
+                  { value: "Student", label: "Học viên" },
+                  { value: "Admin", label: "Quản trị viên" },
                 ]}
                 disabled={loading}
                 className="h-10"

@@ -110,6 +110,7 @@ namespace App.Services.Implementations
                         Id = ch.Id,
                         ChapterTitle = ch.ChapterTitle,
                         ChapterOrder = ch.ChapterOrder,
+                        ChapterDescription = ch.ChapterDescription,
                         Lectures = ch.ChapterContent
                             .OrderBy(l => l.LectureOrder)
                             .Select(l => new LectureDTO
@@ -162,6 +163,7 @@ namespace App.Services.Implementations
                         Id = ch.Id,
                         ChapterTitle = ch.ChapterTitle,
                         ChapterOrder = ch.ChapterOrder,
+                        ChapterDescription = ch.ChapterDescription,
                         Lectures = ch.ChapterContent
                             .OrderBy(l => l.LectureOrder)
                             .Select(l => new LectureDTO
@@ -309,7 +311,8 @@ namespace App.Services.Implementations
                         Id = ch.Id,
                         ChapterTitle = ch.ChapterTitle,
                         ChapterOrder = ch.ChapterOrder,
-                        Lectures = ch.ChapterContent
+                        ChapterDescription = ch.ChapterDescription,
+                        Lectures = ch.ChapterContent 
                             .OrderBy(l => l.LectureOrder)
                             .Select(l => new LectureDTO
                             {

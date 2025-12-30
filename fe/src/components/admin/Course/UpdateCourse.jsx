@@ -28,7 +28,6 @@ const UpdateCourse = ({ course, onCancel, onSuccess }) => {
 
   useEffect(() => {
     if (course) {
-      console.log(">>> check course", course);
 
       form.setFieldsValue({
         title: course.courseTitle,

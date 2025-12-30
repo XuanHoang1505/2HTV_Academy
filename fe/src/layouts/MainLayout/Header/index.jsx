@@ -28,7 +28,6 @@ import { orderFromCartService } from "../../../services/student/order.service";
 
 const Header = () => {
   const { user, setUser, appLoading } = useContext(AuthContext);
-  console.log(">>> check user ", user);
 
   const { refreshCart, cartInfo } = useContext(CartContext);
   const [loadingCart, setLoadingCart] = useState(false);

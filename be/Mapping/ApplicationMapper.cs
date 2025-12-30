@@ -12,7 +12,9 @@ namespace App.Mappings
         public ApplicationMapper()
         {
             CreateMap<Chapter, ChapterDTO>().ReverseMap();
-            CreateMap<Lecture, LectureDTO>().ReverseMap();
+            CreateMap<Lecture, LectureDTO>();
+            CreateMap<LectureDTO, Lecture>()
+                .ForMember(dest => dest.Id, opt => opt.Ignore());
 
             CreateMap<Chapter, MyCourseChapterDTO>()
                 .ForMember(dest => dest.Lectures,

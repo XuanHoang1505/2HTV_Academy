@@ -52,6 +52,7 @@ const CurriculumCourse = ({ curriculum, fetchCourseDetail, courseId }) => {
     }
   };
 
+
   return (
     <>
       <div className="bg-white rounded-lg p-6">
@@ -70,7 +71,7 @@ const CurriculumCourse = ({ curriculum, fetchCourseDetail, courseId }) => {
         </div>
         <div>
           {curriculum.map((section, index) => (
-            <Accordion key={section._id}>
+            <Accordion key={section.id}>
               <AccordionSummary expandIcon={<ExpandMoreIcon />}>
                 <div className="flex justify-between w-full items-center pr-4">
                   <h3 className="font-medium text-primary text-lg">
