@@ -23,7 +23,7 @@ import AccordionDetails from "@mui/material/AccordionDetails";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import { addToCardService } from "../../../services/student/cart.service";
 import { CartContext } from "../../../contexts/cart.context";
-import { orderNowService } from "../../../services/student/order.service";
+import { orderFromCartService } from "../../../services/student/order.service";
 import YouTube from "react-youtube";
 import Flag from "react-world-flags";
 
@@ -85,7 +85,7 @@ const CourseDetailPage = () => {
   const handlePaymentNow = async (courseId) => {
     try {
       setLoadingPayment(true);
-      const res = await orderNowService(courseId);
+      const res = await orderFromCartService(courseId);
 
       if (res.success) {
         message.success(res.message);
@@ -363,7 +363,7 @@ const CourseDetailPage = () => {
                     <AccordionSummary expandIcon={<ExpandMoreIcon />}>
                       <div className="flex justify-between w-full items-center pr-4">
                         <h3 className="font-medium text-primary text-lg">
-                          {section.chapterOrder + 1}. {section.chapterTitle}
+                          {section.chapterOrder}. {section.chapterTitle}
                         </h3>
                         <p className="text-sm text-gray-600">
                           {section.lectures?.length || 0} bài giảng
@@ -381,8 +381,7 @@ const CourseDetailPage = () => {
                               <div className="flex items-center gap-3">
                                 <FaFileVideo className="text-primary" />
                                 <span className="text-base">
-                                  {lecture.lectureOrder + 1}.{" "}
-                                  {lecture.lectureTitle}
+                                  {lecture.lectureOrder}. {lecture.lectureTitle}
                                 </span>
                               </div>
                               <div className="flex items-center gap-8">

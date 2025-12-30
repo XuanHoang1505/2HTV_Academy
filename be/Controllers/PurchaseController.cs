@@ -17,6 +17,7 @@ namespace App.Controllers
             _purchaseService = purchaseService;
         }
 
+        [Authorize]
         [HttpGet]
         public async Task<IActionResult> GetAllPurchases(int? page, int? limit)
         {

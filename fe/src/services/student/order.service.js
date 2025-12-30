@@ -1,25 +1,15 @@
 import axios from "../../customs/axios.customize";
 
-const orderFromCartService = async () => {
-  const URL_BACKEND = "/student/orders";
+const orderFromCartService = async (userId, amount, courseIds) => {
+  const URL_BACKEND = "/payment/create-payment";
 
   const response = await axios.post(URL_BACKEND, {
-    fromCart: true,
-    paymentMethod: "vnpay",
+    userId,
+    amount,
+    courseIds,
   });
 
   return response;
 };
 
-const orderNowService = async (courseId) => {
-  const URL_BACKEND = "/student/orders";
-
-  const response = await axios.post(URL_BACKEND, {
-    items: [{ courseId }],
-    paymentMethod: "vnpay",
-  });
-
-  return response;
-};
-
-export { orderFromCartService, orderNowService };
+export { orderFromCartService };
