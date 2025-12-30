@@ -121,7 +121,7 @@ namespace App.Repositories.Implementations
                     => query.Where(c => c.CategoryId == categoryId),
 
                 "instructorid" => query.Where(c => c.EducatorId == value),
-                
+
                 _ => query
             };
         }
