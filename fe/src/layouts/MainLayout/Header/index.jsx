@@ -100,7 +100,7 @@ const Header = () => {
       email: "",
       fullName: "",
       role: "",
-      avatar: "",
+      imageUrl: "",
     });
     message.success("Đăng xuất thành công");
     navigate("/");
@@ -137,6 +137,7 @@ const Header = () => {
     return roleBackgrounds[role] || "#f3f4f6";
   };
 
+  console.log(">>>check user", user);
   
 
   return (
@@ -309,9 +310,9 @@ const Header = () => {
                       aria-haspopup="true"
                       aria-expanded={open ? "true" : undefined}
                     >
-                      {user.avatar ? (
+                      {user.imageUrl ? (
                         <Avatar
-                          src={user.avatar}
+                          src={user.imageUrl}
                           sx={{
                             width: 32,
                             height: 32,
@@ -369,9 +370,9 @@ const Header = () => {
                 >
                   <MenuItem onClick={handleClose}>
                     <div className="flex items-center justify-center gap-2">
-                      {user.avatar ? (
+                      {user.imageUrl ? (
                         <Avatar
-                          src={user.avatar}
+                          src={user.imageUrl}
                           sx={{
                             width: 32,
                             height: 32,

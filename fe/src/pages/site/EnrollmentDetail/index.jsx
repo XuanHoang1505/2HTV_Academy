@@ -134,7 +134,8 @@ const EnrollmentDetailPage = () => {
   }
 
   const course = enrollment.course;
-  console.log(">>>check enrollment",enrollment);
+  console.log(course);
+  
 
   return (
     <section className="min-h-screen fade-in-up">
@@ -142,7 +143,7 @@ const EnrollmentDetailPage = () => {
         <div className="container">
           <div className="flex items-center justify-between mb-6">
             <div className="text-white">
-              <h1 className="text-3xl font-bold mb-2">{course.title}</h1>
+              <h1 className="text-3xl font-bold mb-2">{course.courseTitle}</h1>
               <p className="">Tiếp tục học nào</p>
             </div>
             <div
@@ -182,15 +183,15 @@ const EnrollmentDetailPage = () => {
             <div className="relative w-full aspect-video bg-black">
               {currentVideo ? (
                 <YouTube
-                  videoId={getYouTubeVideoId(currentVideo.videoUrl)}
+                  videoId={getYouTubeVideoId(currentVideo.lectureUrl)}
                   opts={youtubeOpts}
                   className="absolute top-0 left-0 w-full h-full"
                 />
               ) : (
                 <img
                   className="w-full"
-                  src={course.thumbnail}
-                  alt={course.title}
+                  src={course.courseThumbnail}
+                  alt={course.courseName}
                 />
               )}
             </div>
@@ -198,10 +199,10 @@ const EnrollmentDetailPage = () => {
               <div className="p-6">
                 <div className="flex items-center justify-between mb-4">
                   <h2 className="text-xl font-semibold text-primary">
-                    {currentVideo.title}
+                    {currentVideo.lectureTitle}
                   </h2>
                   <span className="text-sm text-gray-600">
-                    {formatTime(currentVideo.videoDuration)}
+                    {formatTime(currentVideo.lectureDuration)}
                   </span>
                 </div>
                 {currentVideo.content && (
@@ -215,7 +216,7 @@ const EnrollmentDetailPage = () => {
                   startIcon={
                     currentVideo.isCompleted ? <FaCheckCircle /> : null
                   }
-                  onClick={() => handleCompleteLesson(currentVideo._id)}
+                  onClick={() => handleCompleteLesson(currentVideo.id)}
                   disabled={currentVideo.isCompleted}
                   className="!w-full"
                   loading={loadingCompletedLecture}
