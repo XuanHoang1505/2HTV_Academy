@@ -32,7 +32,7 @@ namespace App.Services.Implementations
                 return new CartDTO
                 {
                     CartItems = new List<CartItemDTO>(),
-                    Total = 0,
+                    TotalPrice = 0,
                     ItemCount = 0
                 };
             }

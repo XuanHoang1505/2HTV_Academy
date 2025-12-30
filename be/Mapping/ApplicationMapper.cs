@@ -42,13 +42,15 @@ namespace App.Mappings
             CreateMap<ApplicationUser, RegisterDTO>().ReverseMap();
 
             CreateMap<Cart, CartDTO>()
-            .ForMember(dest => dest.Total, opt => opt.MapFrom(src => src.CartItems.Sum(ci => ci.Price)))
+            .ForMember(dest => dest.TotalPrice, opt => opt.MapFrom(src => src.CartItems.Sum(ci => ci.Price)))
             .ForMember(dest => dest.ItemCount, opt => opt.MapFrom(src => src.CartItems.Count));
 
             // CartItem -> CartItemDto
             CreateMap<CartItem, CartItemDTO>()
                 .ForMember(dest => dest.CourseName, opt => opt.MapFrom(src => src.Course.CourseTitle))
-                .ForMember(dest => dest.CourseImage, opt => opt.MapFrom(src => src.Course.CourseThumbnail));
+                .ForMember(dest => dest.CourseImage, opt => opt.MapFrom(src => src.Course.CourseThumbnail))
+                .ForMember(dest => dest.Discount, opt => opt.MapFrom(src => src.Course.Discount));
+                
             CreateMap<Category, CategoryDTO>();
             CreateMap<CategoryDTO, Category>()
              .ForMember(dest => dest.Id, opt => opt.Ignore());

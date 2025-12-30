@@ -487,5 +487,14 @@ namespace App.Services.Implementations
         {
             return await _userRepository.UnLockUserAsync(userId);
         }
+
+        public async Task<UserDTO> GetProfileAsync(string userId)
+        {
+            var user = await _userRepository.GetUserByIdAsync(userId);
+            var role = await _userRepository.GetUserRoleAsync(user);
+            UserDTO userDto = _mapper.Map<UserDTO>(user);
+            userDto.Role = role;
+            return userDto;
+        }
     }
 }

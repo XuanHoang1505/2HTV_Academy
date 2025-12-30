@@ -5,7 +5,7 @@ import { useNavigate } from "react-router-dom";
 import Button from "@mui/material/Button";
 import LinearProgress from "@mui/material/LinearProgress";
 import { formatDate, formatVND } from "../../../utils/formatters";
-import { FaFileVideo } from "react-icons/fa";
+import { FaClock, FaFileVideo } from "react-icons/fa";
 import { getEnrollmentService } from "../../../services/student/enrollment.service";
 
 const EnrollmentPage = () => {
@@ -23,7 +23,6 @@ const EnrollmentPage = () => {
       setLoading(true);
 
       const res = await getEnrollmentService();
-      console.log(res);
 
       if (res.success) {
         setEnrollments(res.data);
@@ -64,6 +63,7 @@ const EnrollmentPage = () => {
     );
   };
 
+
   const handleNavigateToLearning = (slug, enrollmentId) => {
     navigate(`/hoc-tap/${slug}?enrollment=${enrollmentId}`);
   };
@@ -75,6 +75,9 @@ const EnrollmentPage = () => {
       </div>
     );
   }
+
+  console.log(">>>check enrollments", enrollments );
+  
 
   return (
     <section className="min-h-screen fade-in-up">
@@ -111,21 +114,21 @@ const EnrollmentPage = () => {
           <div className="space-y-4">
             {enrollments?.map((enrollment) => (
               <div
-                key={enrollment._id}
+                key={enrollment.id}
                 className="bg-white rounded-lg shadow-lg hover:shadow-primary transition-all duration-300 overflow-hidden cursor-pointer"
               >
                 <div className="flex gap-6 p-4">
                   <div>
                     <img
-                      src={enrollment.courseId.thumbnail}
-                      alt={enrollment.courseId.title}
+                      src={enrollment.courseThumbnail}
+                      alt={enrollment.courseName}
                       className="w-64 h-40 object-cover rounded-lg"
                     />
                   </div>
                   <div className="flex-1 flex flex-col justify-between">
                     <div className="flex justify-between mb-3">
                       <h3 className="text-xl font-semibold text-primary line-clamp-2">
-                        {enrollment.courseId.title}
+                        {enrollment.courseName}
                       </h3>
                       <div
                         className={`${
@@ -176,7 +179,7 @@ const EnrollmentPage = () => {
                       <div className="flex items-center gap-2">
                         <span className="text-gray-600 text-sm">Giá:</span>
                         <span className="font-bold text-primary text-xl">
-                          {formatVND(enrollment.courseId.finalPrice)}
+                          {formatVND(enrollment.finalPrice)}
                         </span>
                       </div>
                       <Button
@@ -185,8 +188,8 @@ const EnrollmentPage = () => {
                         onClick={(e) => {
                           e.stopPropagation();
                           handleNavigateToLearning(
-                            enrollment.courseId.slug,
-                            enrollment._id
+                            enrollment.slug,
+                            enrollment.id
                           );
                         }}
                       >

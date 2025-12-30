@@ -83,15 +83,15 @@ const EnrollmentDetailPage = () => {
 
   const getStatusConfig = (status) => {
     const configs = {
-      active: {
+      Active: {
         label: "Đang học",
         bgColor: "bg-green-500",
       },
-      completed: {
+      Completed: {
         label: "Hoàn thành",
         bgColor: "bg-blue-500",
       },
-      expired: {
+      Expired: {
         label: "Đã hết hạn",
         bgColor: "bg-gray-500",
       },
@@ -133,8 +133,8 @@ const EnrollmentDetailPage = () => {
     return null;
   }
 
-  const course = enrollment.courseId;
-  console.log(course);
+  const course = enrollment.course;
+  console.log(">>>check enrollment",enrollment);
 
   return (
     <section className="min-h-screen fade-in-up">
@@ -255,14 +255,14 @@ const EnrollmentDetailPage = () => {
               </div>
               <div className="max-h-[calc(100vh-250px)] overflow-y-auto">
                 {course.curriculum.map((section, index) => (
-                  <Accordion key={section._id} defaultExpanded={index === 0}>
+                  <Accordion key={section.id} defaultExpanded={index === 0}>
                     <AccordionSummary
                       expandIcon={<ExpandMoreIcon />}
                       sx={{ padding: "12px 16px" }}
                     >
                       <div className="w-full">
                         <h4 className="font-semibold text-base text-primary">
-                          {section.order}. {section.title}
+                          {section.chapterOrder}. {section.chapterTitle}
                         </h4>
                         <p className="text-xs text-gray-600 mt-1">
                           Hoàn thành{" "}
@@ -280,9 +280,9 @@ const EnrollmentDetailPage = () => {
                         {section.lectures.length > 0 ? (
                           section.lectures.map((lecture) => (
                             <div
-                              key={lecture._id}
+                              key={lecture.id}
                               className={`flex items-center justify-between py-3 px-4 hover:bg-gray-50 cursor-pointer transition-colors border-b border-gray-100 ${
-                                currentVideo?._id === lecture._id
+                                currentVideo?.id === lecture.id
                                   ? "bg-blue-50"
                                   : ""
                               }`}
@@ -295,11 +295,11 @@ const EnrollmentDetailPage = () => {
                                   <FaFileVideo className="text-primary flex-shrink-0" />
                                 )}
                                 <span className="text-sm line-clamp-2">
-                                  {lecture.order}. {lecture.title}
+                                  {lecture.lectureOrder}. {lecture.lectureTitle}
                                 </span>
                               </div>
                               <span className="text-xs text-gray-600 ml-2 flex-shrink-0">
-                                {formatTime(lecture.videoDuration)}
+                                {formatTime(lecture.lectureDuration)}
                               </span>
                             </div>
                           ))

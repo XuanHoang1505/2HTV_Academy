@@ -66,7 +66,7 @@ const CourseDetailPage = () => {
   const handleAddToCart = async () => {
     try {
       setLoadingCart(true);
-      const res = await addToCardService(course._id);
+      const res = await addToCardService(course.id);
 
       if (res.success) {
         message.success(res.message);

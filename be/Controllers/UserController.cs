@@ -181,5 +181,67 @@ namespace App.Controllers
             }
               );
         }
+
+        [HttpGet("profile")]
+        public async Task<IActionResult> GetProfile()
+        {
+            var userId = User.FindFirst("userId")?.Value;
+            if (string.IsNullOrEmpty(userId))
+            {
+                return Unauthorized(new
+                {
+                    success = false,
+                    message = "Unauthorized"
+                });
+            }
+            var user = await _userService.GetProfileAsync(userId);
+
+            if (user == null)
+            {
+                return NotFound(new
+                {
+                    success = false,
+                    message = "Không tìm thấy thông tin người dùng"
+                });
+            }
+
+            return Ok(new
+            {
+                success = true,
+                data = user
+            });
+        }
+
+        [HttpPut("profile")]
+        public async Task<IActionResult> UpdateProfile([FromForm] UserDTO dto)
+        {
+            var userId = User.FindFirst("userId")?.Value;
+            if (string.IsNullOrEmpty(userId))
+            {
+                return Unauthorized(new
+                {
+                    success = false,
+                    message = "Unauthorized"
+                });
+            }
+
+            var user = await _userService.UpdateUserAsync(userId, dto);
+
+            if (user == null)
+            {
+                return NotFound(new
+                {
+                    success = false,
+                    message = $"Không tìm thấy user với id {userId}"
+                });
+            }
+
+            return Ok(new
+            {
+                success = true,
+                data = user,
+                message = "Cập nhật profile thành công"
+            });
+        }
     }
 }

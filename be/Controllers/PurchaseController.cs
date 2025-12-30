@@ -90,7 +90,7 @@ namespace App.Controllers
         }
 
         [HttpGet("purchaseUser")]
-        [Authorize] // endpoint này thường là user thường
+        [Authorize] 
         public async Task<IActionResult> GetPurchasesByUserId()
         {
             var userId = User.FindFirst("userId")?.Value;
@@ -111,6 +111,6 @@ namespace App.Controllers
             });
         }
 
-
+        
     }
 }

@@ -137,6 +137,8 @@ const Header = () => {
     return roleBackgrounds[role] || "#f3f4f6";
   };
 
+  
+
   return (
     <header className="bg-white shadow-md">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -170,7 +172,7 @@ const Header = () => {
                 aria-haspopup="true"
               >
                 <Badge
-                  badgeContent={cartInfo ? cartInfo.items.length : 0}
+                  badgeContent={cartInfo ? cartInfo.cartItems.length : 0}
                   showZero={true}
                   anchorOrigin={{
                     vertical: "top",
@@ -204,7 +206,7 @@ const Header = () => {
               }}
             >
               {cartInfo ? (
-                cartInfo.items.length === 0 ? (
+                cartInfo.cartItems.length === 0 ? (
                   <div className="p-5 text-primary">
                     <p className="italic">
                       Chưa có khóa học nào trong giỏ hàng
@@ -213,22 +215,22 @@ const Header = () => {
                 ) : (
                   <div className="p-5 w-[300px] mb-3 ">
                     <div>
-                      {cartInfo.items.map((cartItem) => (
+                      {cartInfo.cartItems.map((cartItem) => (
                         <div
-                          key={cartItem.courseId._id}
+                          key={cartItem.courseId}
                           className="border-b border-gray-300 py-2"
                         >
                           <div className="flex items-center gap-2">
                             <div className="w-[100px] aspect-video relative flex-shrink-0">
                               <img
                                 className="object-cover w-full h-full rounded"
-                                src={cartItem.courseId.thumbnail}
-                                alt={cartItem.courseId.title}
+                                src={cartItem.courseImage}
+                                alt={cartItem.courseName}
                               />
                               <div
                                 onClick={() =>
                                   handleRemoveCourseFromCart(
-                                    cartItem.courseId._id
+                                    cartItem.courseId
                                   )
                                 }
                                 className="absolute -top-2 -left-2 cursor-pointer bg-red-500 rounded-full w-[16px] h-[16px] flex items-center justify-center"
@@ -238,17 +240,17 @@ const Header = () => {
                             </div>
                             <div className="flex-1">
                               <p className="mb-1 text-primary text-sm font-semibold line-clamp-2">
-                                {cartItem.courseId.title}
+                                {cartItem.courseName}
                               </p>
                               <div className="flex items-center justify-between gap-2">
                                 <p className="text-xs text-gray-500 font-semibold line-through">
-                                  {formatVND(cartItem.courseId.price)}
+                                  {formatVND(cartItem.price)}
                                 </p>
                                 <p className="text-sm text-primary">
                                   {formatVND(
-                                    cartItem.courseId.price -
-                                      (cartItem.courseId.price *
-                                        cartItem.courseId.discount) /
+                                    cartItem.price -
+                                      (cartItem.price *
+                                        cartItem.discount ) /
                                         100
                                   )}
                                 </p>

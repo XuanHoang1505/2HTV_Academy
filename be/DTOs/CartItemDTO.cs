@@ -7,6 +7,7 @@ namespace App.DTOs
         public string CourseName { get; set; } = null!;
         public string? CourseImage { get; set; }
         public decimal Price { get; set; }
+        public int Discount { get; set; }
         public DateTime AddedAt { get; set; }
     }
 }

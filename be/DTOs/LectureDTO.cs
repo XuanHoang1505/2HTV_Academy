@@ -9,5 +9,6 @@ namespace App.DTOs
         public bool? IsPreviewFree { get; set; }
         public int LectureOrder { get; set; }
         public int ChapterId { get; set; }
+        public bool IsCompleted { get; set; }
     }
 }

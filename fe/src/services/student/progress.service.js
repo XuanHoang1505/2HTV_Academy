@@ -1,7 +1,7 @@
 import axios from "../../customs/axios.customize";
 
 const updateEnrollmentProgress = async (enrollmentId, lectureId) => {
-  const URL_BACKEND = "/student/progress";
+  const URL_BACKEND = "/progresses";
 
   const response = await axios.post(URL_BACKEND, { enrollmentId, lectureId });
 

@@ -7,6 +7,7 @@ namespace App.Services.Interfaces
     {
         Task<UserDTO> CreateUserAsync(UserDTO userDto);
         Task<UserDTO> UpdateUserAsync(string userId, UserDTO userDto);
+        Task<UserDTO> GetProfileAsync(string userId);
         Task<bool> DeleteUserAsync(string userId);
         Task<bool> LockUserAsync(string userId);
         Task<bool> UnLockUserAsync(string userId);

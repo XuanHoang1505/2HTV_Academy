@@ -1,7 +1,7 @@
 import axios from "../../customs/axios.customize";
 
 const getCardOfStudentService = async () => {
-  const URL_BACKEND = "/student/cart";
+  const URL_BACKEND = "/carts";
 
   const response = await axios.get(URL_BACKEND);
 
@@ -9,7 +9,7 @@ const getCardOfStudentService = async () => {
 };
 
 const addToCardService = async (courseId) => {
-  const URL_BACKEND = "/student/cart/add";
+  const URL_BACKEND = "/carts/add";
 
   const response = await axios.post(URL_BACKEND, { courseId });
 
@@ -17,7 +17,7 @@ const addToCardService = async (courseId) => {
 };
 
 const removeCourseFromCarte = async (courseId) => {
-  const URL_BACKEND = `/student/cart/remove/${courseId}`;
+  const URL_BACKEND = `/carts/remove/${courseId}`;
 
   const response = await axios.delete(URL_BACKEND);
 
