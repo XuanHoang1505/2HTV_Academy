@@ -21,7 +21,6 @@ const TableCourse = (props) => {
 
   const { message, notification } = App.useApp();
   const [categories, setCategories] = useState([]);
-  console.log(">>> check categories", categories);
 
   const navigate = useNavigate();
 

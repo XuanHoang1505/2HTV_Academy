@@ -56,9 +56,17 @@ namespace App.Services
 
         public async Task DeleteImageAsync(string publicId)
         {
+            if (string.IsNullOrWhiteSpace(publicId))
+            {
+                _logger.LogWarning("Bỏ qua xóa ảnh Cloudinary vì publicId rỗng");
+                return;
+            }
+
             var deletionParams = new DeletionParams(publicId);
             var result = await _cloudinary.DestroyAsync(deletionParams);
-            _logger.LogInformation($"Xóa ảnh kết quả: {result.Result}");
+
+            _logger.LogInformation("Xóa ảnh Cloudinary - publicId: {PublicId}, result: {Result}",
+                publicId, result.Result);
         }
 
         public async Task<string> UploadVideoAsync(IFormFile file, string prefix)

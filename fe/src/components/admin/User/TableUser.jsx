@@ -67,8 +67,8 @@ const TableUser = (props) => {
     },
     {
       title: "Số điện thoại",
-      dataIndex: "phone",
-      key: "phone",
+      dataIndex: "phoneNumber",
+      key: "phoneNumber",
       width: 120,
       render: (phone) => phone || "---",
     },
