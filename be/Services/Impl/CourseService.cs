@@ -23,7 +23,7 @@ namespace App.Services.Implementations
             _cloudinaryService = cloudinaryService;
         }
 
-                public async Task<PagedResult<CourseDTO>> GetAllCourses(int? page, int? limit, Dictionary<string, string>? filters = null)
+        public async Task<PagedResult<CourseDTO>> GetAllCourses(int? page, int? limit, Dictionary<string, string>? filters = null)
         {
             if (!page.HasValue || !limit.HasValue)
             {
@@ -91,6 +91,10 @@ namespace App.Services.Implementations
                 Slug = course.Slug,
                 CoursePrice = course.CoursePrice,
                 Discount = course.Discount,
+                TotalLectures = course.TotalLectures,
+                TotalDuration = course.TotalDuration,
+                TotalStudents = course.TotalStudents,
+                AverageRating = course.AverageRating,
                 CourseThumbnail = course.CourseThumbnail,
                 Status = course.Status,
                 IsPublished = course.IsPublished,
@@ -134,9 +138,16 @@ namespace App.Services.Implementations
                 Id = course.Id,
                 CourseTitle = course.CourseTitle,
                 CourseDescription = course.CourseDescription,
+                ShortDescription = course.ShortDescription,
+                Language = course.Language,
+                Level = course.Level,
                 Slug = course.Slug,
                 CoursePrice = course.CoursePrice,
                 Discount = course.Discount,
+                TotalLectures = course.TotalLectures,
+                TotalDuration = course.TotalDuration,
+                TotalStudents = course.TotalStudents,
+                AverageRating = course.AverageRating,
                 CourseThumbnail = course.CourseThumbnail,
                 Status = course.Status,
                 IsPublished = course.IsPublished,
@@ -187,15 +198,13 @@ namespace App.Services.Implementations
                     .UploadImageAsync(dto.CourseThumbnailFile, "course_thumbnail");
             }
 
-            if (dto.Status.Equals("published"))
+            if (dto.Status == CourseStatus.published)
             {
-                entity.Status = CourseStatus.published;
                 entity.IsPublished = true;
                 entity.PublishedAt = DateTime.UtcNow;
             }
             else
             {
-                entity.Status = CourseStatus.draft;
                 entity.IsPublished = false;
                 entity.PublishedAt = null;
             }
@@ -227,14 +236,20 @@ namespace App.Services.Implementations
 
             _mapper.Map(dto, existing);
 
-            if (dto.Status.Equals("published"))
+            if (dto.Status == CourseStatus.published)
             {
-                existing.Status = CourseStatus.published;
+                existing.Status = dto.Status;
                 existing.IsPublished = true;
                 if (existing.PublishedAt == null)
                 {
                     existing.PublishedAt = DateTime.UtcNow;
                 }
+            }
+            else
+            {
+                existing.Status = dto.Status;
+                existing.IsPublished = false;
+                existing.PublishedAt = null;
             }
 
             await _repository.UpdateAsync(existing);
@@ -262,26 +277,32 @@ namespace App.Services.Implementations
         public async Task<CourseDetailDTO?> CourseDetailAsync(int id)
         {
             var course = await _repository.GetByIdAsync(id);
-            
+
             if (course == null)
                 throw new AppException(ErrorCode.CourseNotFound, $"Không tìm thấy khóa học với ID = {id}");
-            
+
             var result = new CourseDetailDTO
             {
                 Id = course.Id,
                 CourseTitle = course.CourseTitle,
                 CourseDescription = course.CourseDescription,
                 ShortDescription = course.ShortDescription,
+                Language = course.Language,
+                Level = course.Level,
                 Slug = course.Slug,
                 CoursePrice = course.CoursePrice,
                 Discount = course.Discount,
+                TotalLectures = course.TotalLectures,
+                TotalDuration = course.TotalDuration,
+                TotalStudents = course.TotalStudents,
+                AverageRating = course.AverageRating,
                 CourseThumbnail = course.CourseThumbnail,
                 Status = course.Status,
                 IsPublished = course.IsPublished,
                 PublishedAt = course.PublishedAt,
                 CreatedAt = course.CreatedAt,
                 EducatorName = course.Educator.FullName,
-                CategoryId = course.Category.Id, 
+                CategoryId = course.Category.Id,
                 CategoryName = course.Category.Name,
                 Curriculum = course.CourseContent
                     .OrderBy(ch => ch.ChapterOrder)

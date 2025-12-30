@@ -25,7 +25,7 @@ namespace App.DTOs
 
         public string? EducatorId { get; set; }
         public string? EducatorName { get; set; }
-        public int? CategoryId { get; set; }
+        public int CategoryId { get; set; }
         public string? CategoryName { get; set; }
 
         public IFormFile? CourseThumbnailFile { get; set; }

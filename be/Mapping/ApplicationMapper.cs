@@ -74,7 +74,7 @@ namespace App.Mappings
 
             CreateMap<PurchaseItem, PurchaseItemDTO>().ReverseMap();
 
-        
+
         }
     }
 }
