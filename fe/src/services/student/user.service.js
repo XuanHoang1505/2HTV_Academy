@@ -1,7 +1,7 @@
 import axios from "../../customs/axios.customize";
 
 const getProfileService = async () => {
-  const URL_BACKEND = "/student/user";
+  const URL_BACKEND = "/users/profile";
 
   const response = await axios.get(URL_BACKEND);
 
@@ -9,7 +9,7 @@ const getProfileService = async () => {
 };
 
 const updateProfileService = async (formData) => {
-  const URL_BACKEND = "/student/user";
+  const URL_BACKEND = "/users/profile";
 
   const response = await axios.put(URL_BACKEND, formData, {
     headers: {

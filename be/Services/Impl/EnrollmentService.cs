@@ -195,7 +195,7 @@ namespace App.Services.Implementations
                                 LectureUrl = l.LectureUrl,
                                 IsPreviewFree = l.IsPreviewFree,
                                 LectureDuration = l.LectureDuration,
-                                // IsCompleted = completedLectureIds.Contains(l.Id)
+                                IsCompleted = completedLectureIds.Contains(l.Id)
                             }).ToList()
                     }).ToList(),
                 }
@@ -383,7 +383,12 @@ namespace App.Services.Implementations
                 Id = enrollment.Id,
                 UserId = enrollment.UserId,
                 CourseId = enrollment.CourseId,
+                FinalPrice = enrollment.Course != null
+                    ? enrollment.Course.CoursePrice * (1 - enrollment.Course.Discount / 100)
+                    : 0,
                 CourseName = courseName,
+                Slug = enrollment.Course?.Slug ?? "",
+                CourseThumbnail = enrollment.Course?.CourseThumbnail ?? "",
                 EnrolledAt = enrollment.EnrolledAt,
                 ExpiresAt = enrollment.ExpiresAt,
                 Progress = enrollment.Progress,
@@ -401,7 +406,8 @@ namespace App.Services.Implementations
                 Id = enrollment.Id,
                 UserId = enrollment.UserId,
                 CourseId = enrollment.CourseId,
-                EnrolledAt = enrollment.EnrolledAt,
+                CourseName = enrollment.Course?.CourseTitle ?? "",
+                CourseThumbnail = enrollment.Course?.CourseThumbnail ?? "",
                 ExpiresAt = enrollment.ExpiresAt,
                 Progress = enrollment.Progress,
                 Status = enrollment.Status,

@@ -7,6 +7,8 @@ namespace App.DTOs
         public int Id { get; set; }
         public string UserId { get; set; } = null!;
         public int CourseId { get; set; }
+        public string CourseName { get; set; } = null!;
+        public string CourseThumbnail { get; set; } = null!;
         public DateTime EnrolledAt { get; set; }
         public DateTime? ExpiresAt { get; set; }
         public int Progress { get; set; }

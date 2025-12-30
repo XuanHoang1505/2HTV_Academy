@@ -14,7 +14,10 @@ const ProtectedRoute = ({ children, requiredRole }) => {
     );
   }
 
-  if (!user.userId) {
+  console.log(">>>check user", user);
+  
+
+  if (!user.id) {
     return <Navigate to="/dang-nhap" replace />;
   }
 

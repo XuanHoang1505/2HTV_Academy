@@ -29,11 +29,11 @@ const ProfilePage = () => {
 
       if (res.success) {
         setUser(res.data);
-        setPreviewImage(res.data.avatar);
+        setPreviewImage(res.data.imageUrl);
         form.setFieldsValue({
           email: res.data.email,
           fullName: res.data.fullName,
-          phone: res.data.phone,
+          phone: res.data.phoneNumber,
         });
       } else {
         console.error(res.message);
@@ -62,8 +62,8 @@ const ProfilePage = () => {
       if (values.fullName && values.fullName !== user.fullName) {
         formData.append("fullName", values.fullName);
       }
-      if (values.phone !== undefined && values.phone !== user.phone) {
-        formData.append("phone", values.phone || "");
+      if (values.phone !== undefined && values.phone !== user.phoneNumber) {
+        formData.append("phoneNumber", values.phone || "");
       }
 
       // chi them mat khau vao formdata neu duoc cung cap
@@ -73,7 +73,7 @@ const ProfilePage = () => {
 
       // them avatar neu co thay doi
       if (values.avatar?.[0]?.originFileObj) {
-        formData.append("avatar", values.avatar[0].originFileObj);
+        formData.append("imageFile", values.avatar[0].originFileObj);
       }
 
       const res = await updateProfileService(formData);
@@ -109,11 +109,11 @@ const ProfilePage = () => {
 
   const handleCancel = () => {
     setIsEditing(false);
-    setPreviewImage(user?.avatar);
+    setPreviewImage(user?.imageUrl);
     form.setFieldsValue({
       email: user?.email,
       fullName: user?.fullName,
-      phone: user?.phone,
+      phone: user?.phoneNumber,
       password: "",
     });
   };
@@ -127,7 +127,7 @@ const ProfilePage = () => {
       };
       reader.readAsDataURL(file);
     } else {
-      setPreviewImage(user?.avatar || null);
+      setPreviewImage(user?.imageUrl || null);
     }
   };
 
@@ -219,7 +219,7 @@ const ProfilePage = () => {
 
                   {isEditing && (
                     <Form.Item
-                      name="avatar"
+                      name="imageUrl"
                       valuePropName="fileList"
                       getValueFromEvent={(e) => {
                         if (Array.isArray(e)) {
