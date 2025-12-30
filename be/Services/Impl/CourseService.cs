@@ -137,6 +137,9 @@ namespace App.Services.Implementations
                 Id = course.Id,
                 CourseTitle = course.CourseTitle,
                 CourseDescription = course.CourseDescription,
+                ShortDescription = course.ShortDescription,
+                Language = course.Language,
+                Level = course.Level,
                 Slug = course.Slug,
                 CoursePrice = course.CoursePrice,
                 Discount = course.Discount,
@@ -193,7 +196,7 @@ namespace App.Services.Implementations
                     .UploadImageAsync(dto.CourseThumbnailFile, "course_thumbnail");
             }
 
-            if (dto.Status.Equals("published"))
+            if (dto.Status == CourseStatus.published)
             {
                 entity.IsPublished = true;
                 entity.PublishedAt = DateTime.UtcNow;
@@ -231,8 +234,9 @@ namespace App.Services.Implementations
 
             _mapper.Map(dto, existing);
 
-            if (dto.Status.Equals("published"))
+            if (dto.Status == CourseStatus.published)
             {
+                existing.Status = dto.Status;
                 existing.IsPublished = true;
                 if (existing.PublishedAt == null)
                 {
@@ -241,6 +245,7 @@ namespace App.Services.Implementations
             }
             else
             {
+                existing.Status = dto.Status;
                 existing.IsPublished = false;
                 existing.PublishedAt = null;
             }
@@ -280,6 +285,8 @@ namespace App.Services.Implementations
                 CourseTitle = course.CourseTitle,
                 CourseDescription = course.CourseDescription,
                 ShortDescription = course.ShortDescription,
+                Language = course.Language,
+                Level = course.Level,
                 Slug = course.Slug,
                 CoursePrice = course.CoursePrice,
                 Discount = course.Discount,
