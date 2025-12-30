@@ -16,7 +16,6 @@ const ModalUpdateLecture = (props) => {
 
   useEffect(() => {
     if (dataUpdateLecture && isModalUpdateLectureOpen) {
-      console.log(">>> check dataUpdateLecture: ", dataUpdateLecture);
 
       form.setFieldsValue({
         lectureTitle: dataUpdateLecture.lectureTitle,

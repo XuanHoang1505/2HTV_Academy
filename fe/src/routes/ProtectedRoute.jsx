@@ -5,7 +5,6 @@ import CircularProgress from "@mui/material/CircularProgress";
 
 const ProtectedRoute = ({ children, requiredRole }) => {
   const { user, appLoading } = useContext(AuthContext);
-  console.log("Check role", user.role);
 
   if (appLoading) {
     return (

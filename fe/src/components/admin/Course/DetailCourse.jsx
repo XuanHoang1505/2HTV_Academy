@@ -6,6 +6,7 @@ import { formatVND } from "../../../utils/formatters";
 
 const DetailCourse = ({ course, fetchCourseDetail }) => {
   const [isEditing, setIsEditing] = useState(false);
+  
 
   const getLevelLabel = (level) => {
     const levelMap = {

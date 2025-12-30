@@ -117,7 +117,6 @@ const CourseDetailAdminPage = () => {
     }
   };
 
-  console.log(">>> check course:", course);
 
   return (
     <div>
