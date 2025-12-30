@@ -33,7 +33,7 @@ const ProfilePage = () => {
         form.setFieldsValue({
           email: res.data.email,
           fullName: res.data.fullName,
-          phone: res.data.phoneNumber,
+          phoneNumber: res.data.phoneNumber,
         });
       } else {
         console.error(res.message);
@@ -62,8 +62,8 @@ const ProfilePage = () => {
       if (values.fullName && values.fullName !== user.fullName) {
         formData.append("fullName", values.fullName);
       }
-      if (values.phone !== undefined && values.phone !== user.phoneNumber) {
-        formData.append("phoneNumber", values.phone || "");
+      if (values.phoneNumber !== undefined && values.phoneNumber !== user.phoneNumber) {
+        formData.append("phoneNumber", values.phoneNumber || "");
       }
 
       // chi them mat khau vao formdata neu duoc cung cap
@@ -72,8 +72,8 @@ const ProfilePage = () => {
       }
 
       // them avatar neu co thay doi
-      if (values.avatar?.[0]?.originFileObj) {
-        formData.append("imageFile", values.avatar[0].originFileObj);
+      if (values.imageUrl?.[0]?.originFileObj) {
+        formData.append("imageFile", values.imageUrl[0].originFileObj);
       }
 
       const res = await updateProfileService(formData);
@@ -113,11 +113,12 @@ const ProfilePage = () => {
     form.setFieldsValue({
       email: user?.email,
       fullName: user?.fullName,
-      phone: user?.phoneNumber,
+      phoneNumber: user?.phoneNumber,
       password: "",
     });
   };
 
+  
   const handleFileChange = ({ fileList }) => {
     if (fileList.length > 0) {
       const file = fileList[0].originFileObj;
@@ -302,7 +303,7 @@ const ProfilePage = () => {
                   </Form.Item>
 
                   <Form.Item
-                    name="phone"
+                    name="phoneNumber"
                     label={
                       <span className="font-medium text-gray-700">
                         Số điện thoại
