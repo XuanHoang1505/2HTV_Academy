@@ -12,4 +12,9 @@ const getAllOrders = async (currentPage, pageSize, filterStatus = null) => {
   return response;
 };
 
-export { getAllOrders };
+const getOrderById = async (id) => {
+  const response = await axios.get(`/purchases/${id}`);
+  return response;
+};
+
+export { getAllOrders, getOrderById };
