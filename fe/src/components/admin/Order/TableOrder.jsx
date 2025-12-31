@@ -12,6 +12,7 @@ const TableOrder = (props) => {
     total,
     filterStatus,
     setFilterStatus,
+    handleViewDetail,
   } = props;
 
   const columns = [
@@ -86,7 +87,7 @@ const TableOrder = (props) => {
           size="small"
           icon={<EyeOutlined />}
           className="rounded-lg"
-          onClick={() => console.log("View details", record)}
+          onClick={() => handleViewDetail(record.id)}
         >
           Chi Tiết
         </Button>

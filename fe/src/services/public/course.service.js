@@ -35,7 +35,7 @@ const getAllCoursesPublic = async (
   let URL_BACKEND = `/courses/courses-published?limit=${pageSize}&page=${currentPage}`;
 
   if (filterRating) {
-    URL_BACKEND += `&minRating=${filterRating}`;
+    URL_BACKEND += `&rating=${filterRating}`;
   }
 
   if (filterDuration) {
