@@ -2,9 +2,6 @@ import { useEffect, useState } from "react";
 import Radio from "@mui/material/Radio";
 import RadioGroup from "@mui/material/RadioGroup";
 import FormControlLabel from "@mui/material/FormControlLabel";
-import { FaStar, FaStarHalfAlt } from "react-icons/fa";
-import FormGroup from "@mui/material/FormGroup";
-import Checkbox from "@mui/material/Checkbox";
 import { getAllCoursesPublic } from "../../../services/public/course.service";
 import { App } from "antd";
 import CourseCard from "../../../components/site/CourseCard";
@@ -29,8 +26,8 @@ const CoursesPage = () => {
   const { message, notification } = App.useApp();
   const [selectedRating, setSelectedRating] = useState("");
   const [selectedDuration, setSelectedDuration] = useState("");
-  const [selectedCategories, setSelectedCategories] = useState([]);
-  const [selectedLevels, setSelectedLevels] = useState([]);
+  const [selectedCategory, setSelectedCategory] = useState("");
+  const [selectedLevel, setSelectedLevel] = useState("");
 
   const COURSE_RATINGS = [
     { value: 5, label: "5.0" },
@@ -62,10 +59,10 @@ const CoursesPage = () => {
   }, [
     currentPage,
     pageSize,
-    selectedCategories,
+    selectedCategory,
     selectedRating,
     selectedDuration,
-    selectedLevels,
+    selectedLevel,
   ]);
 
   // Kiểm tra có filter active không
@@ -73,10 +70,10 @@ const CoursesPage = () => {
     const hasActiveFilters =
       selectedRating !== "" ||
       selectedDuration !== "" ||
-      selectedCategories.length > 0 ||
-      selectedLevels.length > 0;
+      selectedCategory !== "" ||
+      selectedLevel !== "";
     setActiveFilters(hasActiveFilters);
-  }, [selectedRating, selectedDuration, selectedCategories, selectedLevels]);
+  }, [selectedRating, selectedDuration, selectedCategory, selectedLevel]);
 
   const fetchCategoriesPublic = async () => {
     try {
@@ -101,14 +98,8 @@ const CoursesPage = () => {
 
       const filterRating = selectedRating || null;
       const filterDuration = selectedDuration || null;
-
-      // chuyen categories thanh chuoi categoryIds
-      const filterCategory =
-        selectedCategories.length > 0 ? selectedCategories.join(",") : null;
-
-      // chuyen levels thanh chuoi categoryIds
-      const filterLevel =
-        selectedLevels.length > 0 ? selectedLevels.join(",") : null;
+      const filterCategory = selectedCategory || null;
+      const filterLevel = selectedLevel || null;
 
       const res = await getAllCoursesPublic(
         currentPage,
@@ -142,8 +133,8 @@ const CoursesPage = () => {
   const clearAllFilters = () => {
     setSelectedRating("");
     setSelectedDuration("");
-    setSelectedCategories([]);
-    setSelectedLevels([]);
+    setSelectedCategory("");
+    setSelectedLevel("");
     setCurrentPage(1);
   };
 
@@ -226,34 +217,22 @@ const CoursesPage = () => {
               <h3 className="font-medium text-lg">Danh mục</h3>
             </AccordionSummary>
             <AccordionDetails>
-              <FormGroup>
+              <RadioGroup
+                value={selectedCategory}
+                onChange={(e) => {
+                  setSelectedCategory(e.target.value);
+                  setCurrentPage(1);
+                }}
+              >
                 {categories.map((category) => (
                   <FormControlLabel
-                    control={
-                      <Checkbox
-                        checked={selectedCategories.includes(category._id)}
-                        onChange={(e) => {
-                          if (e.target.checked) {
-                            setSelectedCategories([
-                              ...selectedCategories,
-                              category._id,
-                            ]);
-                          } else {
-                            setSelectedCategories(
-                              selectedCategories.filter(
-                                (d) => d !== category._id
-                              )
-                            );
-                          }
-                          setCurrentPage(1);
-                        }}
-                      />
-                    }
+                    value={category.id}
+                    control={<Radio />}
                     label={category.name}
-                    key={category._id}
+                    key={category.id}
                   />
                 ))}
-              </FormGroup>
+              </RadioGroup>
             </AccordionDetails>
           </Accordion>
 
@@ -262,34 +241,22 @@ const CoursesPage = () => {
               <h3 className="font-medium text-lg">Cấp độ</h3>
             </AccordionSummary>
             <AccordionDetails>
-              <FormGroup>
+              <RadioGroup
+                value={selectedLevel}
+                onChange={(e) => {
+                  setSelectedLevel(e.target.value);
+                  setCurrentPage(1);
+                }}
+              >
                 {COURSE_LEVELS.map((courseLevel) => (
                   <FormControlLabel
-                    control={
-                      <Checkbox
-                        checked={selectedLevels.includes(courseLevel.value)}
-                        onChange={(e) => {
-                          if (e.target.checked) {
-                            setSelectedLevels([
-                              ...selectedLevels,
-                              courseLevel.value,
-                            ]);
-                          } else {
-                            setSelectedLevels(
-                              selectedLevels.filter(
-                                (d) => d !== courseLevel.value
-                              )
-                            );
-                          }
-                          setCurrentPage(1);
-                        }}
-                      />
-                    }
+                    value={courseLevel.value}
+                    control={<Radio />}
                     label={courseLevel.label}
                     key={courseLevel.value}
                   />
                 ))}
-              </FormGroup>
+              </RadioGroup>
             </AccordionDetails>
           </Accordion>
         </aside>

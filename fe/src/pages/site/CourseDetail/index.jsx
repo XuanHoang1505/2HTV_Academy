@@ -26,8 +26,10 @@ import { CartContext } from "../../../contexts/cart.context";
 import { orderFromCartService } from "../../../services/student/order.service";
 import YouTube from "react-youtube";
 import Flag from "react-world-flags";
+import { AuthContext } from "../../../contexts/auth.context";
 
 const CourseDetailPage = () => {
+  const { user } = useContext(AuthContext);
   const { refreshCart } = useContext(CartContext);
   const { slug } = useParams();
   const navigate = useNavigate();
@@ -37,6 +39,8 @@ const CourseDetailPage = () => {
   const [loadingPayment, setLoadingPayment] = useState(false);
   const [previewVideo, setPreviewVideo] = useState(null);
   const [course, setCourse] = useState(null);
+
+  console.log(">>> check course detail", course);
 
   useEffect(() => {
     if (slug) {
@@ -82,14 +86,17 @@ const CourseDetailPage = () => {
     }
   };
 
-  const handlePaymentNow = async (courseId) => {
+  const handlePaymentNow = async () => {
     try {
       setLoadingPayment(true);
-      const res = await orderFromCartService(courseId);
+      const courseIds = [course.id];
+      const totalPrice =
+        course.coursePrice - (course.coursePrice * course.discount) / 100;
+
+      const res = await orderFromCartService(user?.id, totalPrice, courseIds);
 
       if (res.success) {
-        message.success(res.message);
-        window.location.href = res.data.paymentInfo;
+        window.location.href = res.paymentUrl;
       } else {
         message.warning(res.message);
       }
@@ -286,7 +293,7 @@ const CourseDetailPage = () => {
                     Thêm vào giỏ hàng
                   </Button>
                   <Button
-                    onClick={() => handlePaymentNow(course._id)}
+                    onClick={() => handlePaymentNow()}
                     variant="outlined"
                     className="!w-full"
                     size="large"

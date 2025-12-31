@@ -18,50 +18,58 @@ namespace App.Repositories.Implementations
         public async Task<DashboardOverviewDTO> GetDashboardOverview()
         {
             var result = new DashboardOverviewDTO();
+            var currentYear = DateTime.Now.Year;
 
-            // Tổng khóa học
             result.TotalCourses = await _context.Courses.CountAsync();
 
-            // Tổng học viên (unique)
             result.TotalStudents = await _context.Enrollments
                 .Select(e => e.UserId)
                 .Distinct()
                 .CountAsync();
 
-            // Tổng doanh thu
             result.TotalRevenue =
                 await _context.Purchases
                     .Where(p => p.Status == PurchaseStatus.Completed)
                     .SumAsync(p => (decimal?)p.Amount) ?? 0;
 
-            // Doanh thu theo tháng
-            result.MonthlyRevenue = await _context.Purchases
-                .Where(p => p.Status == PurchaseStatus.Completed)
-                .GroupBy(p => new { p.CreatedAt.Year, p.CreatedAt.Month })
-                .Select(g => new MonthlyRevenueDTO
+            var revenueData = await _context.Purchases
+                .Where(p => p.Status == PurchaseStatus.Completed && p.CreatedAt.Year == currentYear)
+                .GroupBy(p => p.CreatedAt.Month)
+                .Select(g => new
                 {
-                    Year = g.Key.Year,
-                    Month = g.Key.Month,
+                    Month = g.Key,
                     Revenue = g.Sum(x => x.Amount)
                 })
-                .OrderBy(x => x.Year)
-                .ThenBy(x => x.Month)
                 .ToListAsync();
 
-            // Số lượng học viên theo tháng
-            result.MonthlyStudents = await _context.Enrollments
-                .GroupBy(e => new { e.EnrolledAt.Year, e.EnrolledAt.Month })
-                .Select(g => new MonthlyStudentDTO
+            result.MonthlyRevenue = Enumerable.Range(1, 12)
+                .Select(month => new MonthlyRevenueDTO
                 {
-                    Year = g.Key.Year,
-                    Month = g.Key.Month,
+                    Year = currentYear,
+                    Month = month,
+                    Revenue = revenueData.FirstOrDefault(r => r.Month == month)?.Revenue ?? 0
+                })
+                .ToList();
+
+            var studentData = await _context.Enrollments
+                .Where(e => e.EnrolledAt.Year == currentYear)
+                .GroupBy(e => e.EnrolledAt.Month)
+                .Select(g => new
+                {
+                    Month = g.Key,
                     StudentCount = g.Count()
                 })
-                .OrderBy(x => x.Year)
-                .ThenBy(x => x.Month)
                 .ToListAsync();
 
-            // Thống kê khóa học
+            result.MonthlyStudents = Enumerable.Range(1, 12)
+                .Select(month => new MonthlyStudentDTO
+                {
+                    Year = currentYear,
+                    Month = month,
+                    StudentCount = studentData.FirstOrDefault(s => s.Month == month)?.StudentCount ?? 0
+                })
+                .ToList();
+
             var stats = await _context.Courses
                 .Select(c => new CourseStatsDTO
                 {

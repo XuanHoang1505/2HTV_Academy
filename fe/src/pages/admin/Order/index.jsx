@@ -1,6 +1,11 @@
 import React, { useEffect, useState } from "react";
-import { getAllOrders } from "../../../services/admin/order.service";
+import {
+  getAllOrders,
+  getOrderById,
+} from "../../../services/admin/order.service";
 import TableOrder from "../../../components/admin/Order/TableOrder";
+import { App } from "antd";
+import ModalDetailOrder from "../../../components/admin/Order/ModalDetailOrder";
 
 const OrderAdminPage = () => {
   const [dataOrders, setDataOrders] = useState([]);
@@ -9,6 +14,9 @@ const OrderAdminPage = () => {
   const [pageSize, setPageSize] = useState(5);
   const [total, setTotal] = useState(0);
   const [filterStatus, setFilterStatus] = useState(null);
+  const [isModalDetailOrderOpen, setIsModalDetailOrderOpen] = useState(false);
+  const [dataDetailOrder, setDataDetailOrder] = useState(null);
+  const { notification } = App.useApp();
 
   useEffect(() => {
     fetchAllOrders();
@@ -40,6 +48,28 @@ const OrderAdminPage = () => {
     }
   };
 
+  const handleViewDetail = async (orderId) => {
+    try {
+      const res = await getOrderById(orderId);
+
+      if (res.success) {
+        setDataDetailOrder(res.data);
+        setIsModalDetailOrderOpen(true);
+      } else {
+        notification.error({
+          message: "Lỗi",
+          description: res.message || "Không thể tải chi tiết đơn hàng",
+        });
+      }
+    } catch (error) {
+      console.error("Error fetching order detail:", error);
+      notification.error({
+        message: "Lỗi",
+        description: "Có lỗi xảy ra khi tải chi tiết đơn hàng",
+      });
+    }
+  };
+
   return (
     <>
       <div className="flex justify-between items-center mb-6">
@@ -60,6 +90,14 @@ const OrderAdminPage = () => {
         total={total}
         filterStatus={filterStatus}
         setFilterStatus={setFilterStatus}
+        handleViewDetail={handleViewDetail}
+      />
+
+      <ModalDetailOrder
+        isModalDetailOrderOpen={isModalDetailOrderOpen}
+        setIsModalDetailOrderOpen={setIsModalDetailOrderOpen}
+        dataDetailOrder={dataDetailOrder}
+        setDataDetailOrder={setDataDetailOrder}
       />
     </>
   );

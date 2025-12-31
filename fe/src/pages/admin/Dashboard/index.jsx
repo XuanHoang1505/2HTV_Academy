@@ -203,10 +203,10 @@ const DashboardPage = () => {
                 <Line
                   type="monotone"
                   dataKey="revenue"
-                  stroke="#512DA8"
+                  stroke="#01579B"
                   name="Doanh thu"
                   strokeWidth={2}
-                  dot={{ fill: "#512DA8", r: 4 }}
+                  dot={{ fill: "#01579B", r: 4 }}
                 />
               </LineChart>
             </ResponsiveContainer>
@@ -233,8 +233,8 @@ const DashboardPage = () => {
                 <Tooltip />
                 <Legend />
                 <Bar
-                  dataKey="students"
-                  fill="#512DA8"
+                  dataKey="studentCount"
+                  fill="#01579B"
                   name="Số học viên"
                   radius={[8, 8, 0, 0]}
                 />
