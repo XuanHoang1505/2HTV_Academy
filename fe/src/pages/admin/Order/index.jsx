@@ -6,7 +6,7 @@ const OrderAdminPage = () => {
   const [dataOrders, setDataOrders] = useState([]);
   const [loading, setLoading] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
-  const [pageSize, setPageSize] = useState(10);
+  const [pageSize, setPageSize] = useState(5);
   const [total, setTotal] = useState(0);
   const [filterStatus, setFilterStatus] = useState(null);
 
@@ -22,14 +22,19 @@ const OrderAdminPage = () => {
 
       if (res.success) {
         setDataOrders(res.data);
-        setCurrentPage(res.pagination.page);
-        setPageSize(res.pagination.limit);
         setTotal(res.pagination.total);
+
+        if (res.pagination.currentPage) {
+          setCurrentPage(res.pagination.currentPage);
+        }
+        if (res.pagination.limit) {
+          setPageSize(res.pagination.limit);
+        }
       } else {
         console.error(res.message);
       }
     } catch (error) {
-      console.error(error);
+      console.error("Error fetching orders:", error);
     } finally {
       setLoading(false);
     }
