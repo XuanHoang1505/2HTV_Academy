@@ -1,4 +1,4 @@
-import { Space, Table, Tag, Button } from "antd";
+import { Button, Table, Tag } from "antd";
 import { EyeOutlined } from "@ant-design/icons";
 
 const TableOrder = (props) => {
@@ -16,90 +16,49 @@ const TableOrder = (props) => {
 
   const columns = [
     {
-      title: "STT",
-      key: "index",
-      width: 60,
+      title: "ID đơn hàng",
+      dataIndex: "id",
+      key: "id",
+      width: 120,
       align: "center",
-      render: (_, record, item) => {
-        return <>{item + 1 + (currentPage - 1) * pageSize}</>;
-      },
     },
     {
-      title: "Mã đơn hàng",
-      dataIndex: "orderNumber",
-      key: "orderNumber",
-      width: 200,
-    },
-    {
-      title: "Khách hàng",
-      key: "customer",
-      width: 200,
-      render: (_, record) => (
-        <div>
-          <div className="font-medium">{record.userId?.fullName}</div>
-          <div className="text-gray-500 text-sm">{record.userId?.email}</div>
-        </div>
-      ),
-    },
-    {
-      title: "Khóa học",
-      key: "courses",
-      width: 250,
-      render: (_, record) => (
-        <div>
-          {record.items.map((item, index) => (
-            <div key={index} className="mb-1">
-              {item.courseName}
-            </div>
-          ))}
-        </div>
-      ),
+      title: "User ID",
+      dataIndex: "userId",
+      key: "userId",
+      width: 300,
+      ellipsis: true,
     },
     {
       title: "Tổng tiền",
-      dataIndex: "total",
-      key: "total",
-      width: 130,
+      dataIndex: "amount",
+      key: "amount",
+      width: 150,
       align: "right",
-      render: (total) => (
+      render: (amount) => (
         <span className="font-semibold text-green-600">
-          {total?.toLocaleString("vi-VN")} ₫
+          {Number(amount).toLocaleString("vi-VN")} ₫
         </span>
       ),
-      sorter: (a, b) => a.total - b.total,
-    },
-    {
-      title: "Phương thức",
-      dataIndex: "paymentMethod",
-      key: "paymentMethod",
-      width: 120,
-      align: "center",
-      render: (method) => {
-        const methodText = {
-          vnpay: "VNPay",
-          momo: "MoMo",
-          cod: "COD",
-        };
-        return <span>{methodText[method] || method}</span>;
-      },
+      sorter: (a, b) => Number(a.amount) - Number(b.amount),
     },
     {
       title: "Trạng thái",
       dataIndex: "status",
       key: "status",
-      width: 120,
+      width: 140,
       align: "center",
       filters: [
-        { text: "Chờ thanh toán", value: "unpaid" },
-        { text: "Đã thanh toán", value: "paid" },
-        { text: "Đã hủy", value: "cancelled" },
+        { text: "Chờ thanh toán", value: "Pending" },
+        { text: "Đã hoàn thành", value: "Completed" },
+        { text: "Đã hủy", value: "Cancelled" },
       ],
       filteredValue: filterStatus ? [filterStatus] : null,
       render: (status) => {
         const statusConfig = {
-          pending: { color: "gold", text: "Chờ thanh toán" },
-          paid: { color: "green", text: "Đã thanh toán" },
-          cancelled: { color: "red", text: "Đã hủy" },
+          Pending: { color: "gold", text: "Chờ thanh toán" },
+          Completed: { color: "green", text: "Đã hoàn thành" },
+          Cancelled: { color: "red", text: "Đã hủy" },
         };
         const config = statusConfig[status] || {
           color: "default",
@@ -112,9 +71,26 @@ const TableOrder = (props) => {
       title: "Ngày tạo",
       dataIndex: "createdAt",
       key: "createdAt",
-      width: 150,
+      width: 180,
       render: (date) => new Date(date).toLocaleString("vi-VN"),
       sorter: (a, b) => new Date(a.createdAt) - new Date(b.createdAt),
+    },
+    {
+      title: "Hành động",
+      key: "action",
+      align: "center",
+      width: 180,
+      render: (_, record) => (
+        <Button
+          type="primary"
+          size="small"
+          icon={<EyeOutlined />}
+          className="rounded-lg"
+          onClick={() => console.log("View details", record)}
+        >
+          Chi Tiết
+        </Button>
+      ),
     },
   ];
 
@@ -138,6 +114,7 @@ const TableOrder = (props) => {
     if (pagination && pagination.pageSize) {
       if (pagination.pageSize !== pageSize) {
         setPageSize(+pagination.pageSize);
+        setCurrentPage(1);
       }
     }
   };
@@ -147,7 +124,7 @@ const TableOrder = (props) => {
       <Table
         dataSource={dataOrders}
         columns={columns}
-        rowKey="_id"
+        rowKey="id"
         loading={loading}
         pagination={{
           current: currentPage,
@@ -164,7 +141,7 @@ const TableOrder = (props) => {
           },
         }}
         onChange={onChange}
-        scroll={{ x: 1300 }}
+        scroll={{ x: 1100 }}
       />
     </div>
   );
