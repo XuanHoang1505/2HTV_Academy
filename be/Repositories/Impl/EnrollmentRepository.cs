@@ -113,6 +113,11 @@ namespace App.Repositories.Implementations
                 .OrderByDescending(e => e.EnrolledAt)
                 .ToListAsync();
         }
-
+        public async Task<bool> IsUserEnrolledInCourseAsync(string userId, int courseId)
+        {
+            return await _context.Enrollments
+                .AnyAsync(e => e.UserId == userId && e.CourseId == courseId && !e.Deleted && e.Status == EnrollmentStatus.Active &&
+                               (e.ExpiresAt == null || e.ExpiresAt > DateTime.UtcNow));
+        }
     }
 }

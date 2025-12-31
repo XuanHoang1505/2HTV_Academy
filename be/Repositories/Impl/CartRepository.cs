@@ -77,6 +77,8 @@ namespace App.Repositories.Implementations
             {
                 _context.CartItems.RemoveRange(cart.CartItems);
             }
+            cart.TotalPrice = 0;
+            _context.Carts.Update(cart);
         }
 
         // Tính tổng tiền giỏ hàng
@@ -97,6 +99,18 @@ namespace App.Repositories.Implementations
             return cart?.CartItems.Count ?? 0;
         }
 
+        public async Task UpdateCartAsync(Cart cart)
+        {
+            _context.Carts.Update(cart);
+            await _context.SaveChangesAsync();
+        }
+
+        public async Task<decimal> CalculateCartTotalAsync(int cartId)
+        {
+            return await _context.CartItems
+                .Where(ci => ci.CartId == cartId)
+                .SumAsync(ci => ci.Price);
+        }
         // Lưu thay đổi
         public async Task SaveChangesAsync()
         {

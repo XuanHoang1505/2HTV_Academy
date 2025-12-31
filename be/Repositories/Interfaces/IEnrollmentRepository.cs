@@ -15,5 +15,7 @@ public interface IEnrollmentRepository
         Task<bool> ExistsAsync(string userId, int courseId);
         Task<int> GetTotalEnrollmentsByCourseAsync(int courseId);
         Task<IEnumerable<Enrollment>> GetActiveEnrollmentsByUserAsync(string userId);
+        Task<bool> IsUserEnrolledInCourseAsync(string userId, int courseId);
+
     }
 }

@@ -47,6 +47,7 @@ namespace App.Utils.Exceptions
         ReviewAlreadyExists = 4091,
         VerificationTokenInvalidOrExpired = 4092,
         CategoryNotFound = 6001,
+        CourseAlreadyEnrolled= 6002,
 
         CartNotFound = 6006,
         CartItemNotFound = 6007,
