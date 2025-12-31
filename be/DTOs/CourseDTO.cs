@@ -22,7 +22,7 @@ namespace App.DTOs
         public int? TotalDuration { get; set; }
         public int? TotalLectures { get; set; }
         public int? TotalReviews { get; set; }
-
+        public double? AverageRating { get; set; }
         public string? EducatorId { get; set; }
         public string? EducatorName { get; set; }
         public int CategoryId { get; set; }

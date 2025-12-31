@@ -71,7 +71,7 @@ namespace App.Controllers
         [HttpGet("courses-published")]
         public async Task<IActionResult> GetAllCoursesPublish([FromQuery] int? page, [FromQuery] int? limit)
         {
-             if (limit.HasValue && (limit <= 0 || limit > 100))
+            if (limit.HasValue && (limit <= 0 || limit > 100))
             {
                 return BadRequest(new
                 {
@@ -89,7 +89,66 @@ namespace App.Controllers
                 });
             }
 
-            var queryParams = HttpContext.Request.Query
+            var query = HttpContext.Request.Query;
+
+            if (query.TryGetValue("rating", out var ratingValue))
+            {
+                if (!double.TryParse(ratingValue, out var rating) || rating < 0 || rating > 5)
+                {
+                    return BadRequest(new
+                    {
+                        success = false,
+                        message = "Rating phải là số từ 0 đến 5"
+                    });
+                }
+            }
+
+            if (query.TryGetValue("duration", out var durationValue))
+            {
+                var validDurations = new[] { "0-5", "5-10", "10-20", "over-20" };
+
+                var durations = durationValue
+                    .ToString()
+                    .Split(',', StringSplitOptions.RemoveEmptyEntries);
+
+                var invalid = durations.FirstOrDefault(d => !validDurations.Contains(d));
+                if (invalid != null)
+                {
+                    return BadRequest(new
+                    {
+                        success = false,
+                        message = $"Duration không hợp lệ: {invalid}"
+                    });
+                }
+            }
+
+            if (query.TryGetValue("level", out var levelValue))
+            {
+                var validLevels = new[] { "beginner", "intermediate", "advanced" };
+
+                if (!validLevels.Contains(levelValue.ToString().ToLower()))
+                {
+                    return BadRequest(new
+                    {
+                        success = false,
+                        message = $"Level không hợp lệ: {levelValue}"
+                    });
+                }
+            }
+
+            if (query.TryGetValue("categoryId", out var categoryIdValue))
+            {
+                if (!int.TryParse(categoryIdValue, out _))
+                {
+                    return BadRequest(new
+                    {
+                        success = false,
+                        message = "CategoryId phải là số nguyên"
+                    });
+                }
+            }
+
+            var queryParams = query
                 .Where(q => q.Key != "page" && q.Key != "limit")
                 .ToDictionary(q => q.Key, q => q.Value.ToString());
 
@@ -107,7 +166,7 @@ namespace App.Controllers
                         limit = result.Limit,
                         totalPages = result.TotalPages
                     }
-                    : (object)new { total = result.Total}
+                    : (object)new { total = result.Total }
             }
             );
         }

@@ -16,17 +16,20 @@ namespace App.Controllers
         private readonly IConfiguration _config;
         private readonly IPurchaseService _purchaseService;
         private readonly IEnrollmentService _enrollmentService;
+        private readonly ICartService _cartService;
         private readonly ILogger<PaymentController> _logger;
 
         public PaymentController(
             IConfiguration config,
             IPurchaseService purchaseService,
             IEnrollmentService enrollmentService,
+            ICartService cartService,
             ILogger<PaymentController> logger)
         {
             _config = config;
             _purchaseService = purchaseService;
             _enrollmentService = enrollmentService;
+            _cartService = cartService;
             _logger = logger;
         }
 
@@ -161,6 +164,8 @@ namespace App.Controllers
                     };
 
                     await _purchaseService.UpdatePurchaseStatusAsync(purchaseId, updateDto);
+
+                    await _cartService.ClearCartAsync(purchase.UserId);
 
                     // TẠO ENROLLMENT TỰ ĐỘNG CHO TẤT CẢ KHÓA HỌC
                     try

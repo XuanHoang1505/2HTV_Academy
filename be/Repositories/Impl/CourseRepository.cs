@@ -75,12 +75,32 @@ namespace App.Repositories.Implementations
 
                 var lowerKey = key.ToLower();
 
-                // Partial match for searchable fields
+                if (lowerKey == "rating" && double.TryParse(value, out var rating))
+                {
+                    query = query.Where(c => c.AverageRating >= rating);
+                    continue;
+                }
+
+                if (lowerKey == "duration")
+                {
+                    var ranges = value.Split(',', StringSplitOptions.RemoveEmptyEntries);
+
+                    query = query.Where(c =>
+                        ranges.Any(r =>
+                            (r == "0-5" && c.TotalDuration <= 5 * 3600) ||
+                            (r == "5-10" && c.TotalDuration > 5 * 3600 && c.TotalDuration <= 10 * 3600) ||
+                            (r == "10-20" && c.TotalDuration > 10 * 3600 && c.TotalDuration <= 20 * 3600) ||
+                            (r == "over-20" && c.TotalDuration > 20 * 3600)
+                        )
+                    );
+
+                    continue;
+                }
+
                 if (_searchableFields.Contains(key, StringComparer.OrdinalIgnoreCase))
                 {
                     query = ApplyPartialMatch(query, lowerKey, value);
                 }
-                // Exact match for exact match fields
                 else if (_exactMatchFields.Contains(key, StringComparer.OrdinalIgnoreCase))
                 {
                     query = ApplyExactMatch(query, lowerKey, value);
@@ -161,28 +181,6 @@ namespace App.Repositories.Implementations
             return course;
         }
 
-        // public async Task<IEnumerable<CourseProgress>> GetCourseProgressByCourseIdAsync(int courseId)
-        // {
-        //     return await _context.CourseProgresses
-        //         .Include(cp => cp.User)
-        //         .Where(cp => cp.CourseId == courseId)
-        //         .ToListAsync();
-        // }
-
-        // public async Task RemoveCourseProgressForStudentAsync(string studentId, int courseId)
-        // {
-        //     var progresses = await _context.CourseProgresses
-        //         .Where(cp => cp.UserId == studentId && cp.CourseId == courseId)
-        //         .ToListAsync();
-
-        //     if (progresses.Count == 0)
-        //     {
-        //         return;
-        //     }
-
-        //     _context.CourseProgresses.RemoveRange(progresses);
-        //     await _context.SaveChangesAsync();
-        // }
 
         public async Task<IEnumerable<Course>> SearchAsync(CourseFilterDTO filter)
         {

@@ -59,7 +59,9 @@ const EnrollmentDetailPage = () => {
   const handleCompleteLesson = async (lectureId) => {
     try {
       setLoadingCompletedLecture(true);
-      const res = await updateEnrollmentProgress(enrollmentId, lectureId);
+      const enrollmentID = parseInt(enrollmentId);
+
+      const res = await updateEnrollmentProgress(enrollmentID, lectureId);
 
       if (res.success) {
         message.success("Đã đánh dấu hoàn thành bài giảng");

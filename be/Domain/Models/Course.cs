@@ -28,7 +28,7 @@ namespace App.Domain.Models
         public int TotalDuration { set; get; } = 0;
         [Range(0, int.MaxValue, ErrorMessage = "Giá trị phải >= 0")]
         public int TotalReviews { set; get; } = 0;
-        public int AverageRating { set; get; } = 0;
+        public double AverageRating { set; get; } = 0;
         public CourseStatus Status { set; get; } = CourseStatus.draft;
         public bool IsPublished { get; set; } = false;
         public DateTime? PublishedAt { get; set; }
