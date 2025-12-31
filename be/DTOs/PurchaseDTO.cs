@@ -9,6 +9,7 @@ public class PurchaseDTO
     public PurchaseStatus Status { get; set; }
     public DateTime? CreatedAt { get; set; }
     public DateTime? UpdatedAt { get; set; }
+    public string? Email { get; set; }
 
     public List<PurchaseItemDTO>? Items { get; set; }
 }

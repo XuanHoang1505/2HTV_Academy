@@ -70,9 +70,12 @@ namespace App.Mappings
 
             CreateMap<Purchase, PurchaseDTO>();
             CreateMap<PurchaseDTO, Purchase>()
-            .ForMember(dest => dest.Id, opt => opt.Ignore());
+                .ForMember(dest => dest.Id, opt => opt.Ignore());
 
-            CreateMap<PurchaseItem, PurchaseItemDTO>().ReverseMap();
+            CreateMap<PurchaseItem, PurchaseItemDTO>()
+                .ForMember(dest => dest.CourseTitle, opt => opt.MapFrom(src => src.Course.CourseTitle));
+            CreateMap<PurchaseItemDTO, PurchaseItem>()
+                .ForMember(dest => dest.Id, opt => opt.Ignore());
 
 
         }

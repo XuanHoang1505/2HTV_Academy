@@ -55,9 +55,33 @@ public class PurchaseService : IPurchaseService
         var purchase = await _purchaseRepository.GetByIdAsync(purchaseId);
         if (purchase == null)
         {
-            throw new AppException(ErrorCode.PurchaseNotFound, $"Không tìm thấy đơn mua với ID = {purchaseId}");
+            throw new AppException(
+                ErrorCode.PurchaseNotFound,
+                $"Không tìm thấy đơn mua với ID = {purchaseId}"
+            );
         }
-        return _mapper.Map<PurchaseDTO>(purchase);
+
+        var purchaseDto = new PurchaseDTO
+        {
+            Id = purchase.Id,
+            UserId = purchase.UserId,
+            Amount = purchase.Amount,
+            Status = purchase.Status,
+            CreatedAt = purchase.CreatedAt,
+            UserName = purchase.User?.FullName,
+            Email = purchase.User?.Email,
+            Items = purchase.PurchaseItems?
+                .Select(item => new PurchaseItemDTO
+                {
+                    Id = item.Id,
+                    CourseId = item.CourseId,
+                    CourseTitle = item.Course?.CourseTitle,
+                    Price = item.Price
+                })
+                .ToList() ?? new List<PurchaseItemDTO>()
+        };
+
+        return purchaseDto;
     }
 
     public async Task<PurchaseDTO> CreatePurchaseAsync(CreatePurchaseDTO dto)

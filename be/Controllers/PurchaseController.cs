@@ -7,7 +7,6 @@ namespace App.Controllers
 {
     [ApiController]
     [Route("api/purchases")]
-    [Authorize(Roles = "Admin")]
     public class PurchaseController : ControllerBase
     {
         private readonly IPurchaseService _purchaseService;
@@ -17,7 +16,7 @@ namespace App.Controllers
             _purchaseService = purchaseService;
         }
 
-        [Authorize]
+        [Authorize(Roles = "Admin")]
         [HttpGet]
         public async Task<IActionResult> GetAllPurchases(int? page, int? limit)
         {
@@ -41,7 +40,7 @@ namespace App.Controllers
         [HttpGet("{purchaseId}")]
         public async Task<IActionResult> GetPurchaseItems(int purchaseId)
         {
-            var items = await _purchaseService.GetPurchaseItemByPurchaseIdAsync(purchaseId);
+            var items = await _purchaseService.GetPurchaseByIdAsync(purchaseId);
 
             return Ok(new
             {
