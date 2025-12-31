@@ -76,7 +76,8 @@ public class PurchaseService : IPurchaseService
                     Id = item.Id,
                     CourseId = item.CourseId,
                     CourseTitle = item.Course?.CourseTitle,
-                    Price = item.Price
+                    Price = item.Price,
+                    Discount = item.Course?.Discount ?? 0
                 })
                 .ToList() ?? new List<PurchaseItemDTO>()
         };
@@ -86,7 +87,6 @@ public class PurchaseService : IPurchaseService
 
     public async Task<PurchaseDTO> CreatePurchaseAsync(CreatePurchaseDTO dto)
     {
-        // Validate courses exist
         var courses = new List<Course>();
         foreach (var courseId in dto.CourseIds)
         {
@@ -98,14 +98,10 @@ public class PurchaseService : IPurchaseService
             courses.Add(course);
         }
 
-        // Tính tổng tiền
-        decimal totalAmount = courses.Sum(c => c.CoursePrice);
-
-        // Tạo Purchase
         var purchase = new Purchase
         {
             UserId = dto.UserId,
-            Amount = totalAmount,
+            Amount = dto.Amount,
             Status = PurchaseStatus.Pending,
             CreatedAt = DateTime.Now,
             PurchaseItems = new List<PurchaseItem>()

@@ -74,10 +74,7 @@ const EnrollmentPage = () => {
         <CircularProgress />
       </div>
     );
-  }
-
-  console.log(">>>check enrollments", enrollments );
-  
+  }  
 
   return (
     <section className="min-h-screen fade-in-up">

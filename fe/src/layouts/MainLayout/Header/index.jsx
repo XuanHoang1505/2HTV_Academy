@@ -73,6 +73,7 @@ const Header = () => {
       setLoadingCart(false);
     }
   };
+  
 
   const handlePayment = async () => {
     try {
@@ -142,7 +143,6 @@ const Header = () => {
     return roleBackgrounds[role] || "#f3f4f6";
   };
 
-  console.log(">>>check user", user);
 
   return (
     <header className="bg-white shadow-md">
@@ -247,13 +247,10 @@ const Header = () => {
                               </p>
                               <div className="flex items-center justify-between gap-2">
                                 <p className="text-xs text-gray-500 font-semibold line-through">
-                                  {formatVND(cartItem.price)}
+                                  {formatVND(cartItem.price/(1 - cartItem.discount/100))}
                                 </p>
                                 <p className="text-sm text-primary">
-                                  {formatVND(
-                                    cartItem.price -
-                                      (cartItem.price * cartItem.discount) / 100
-                                  )}
+                                  {formatVND(cartItem.price)}
                                 </p>
                               </div>
                             </div>

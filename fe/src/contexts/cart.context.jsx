@@ -23,6 +23,7 @@ export const CartWrapper = (props) => {
     setCartLoading(true);
     try {
       const res = await getCardOfStudentService();
+      
       if (res.success) {
         setCartInfo(res.data);
       }

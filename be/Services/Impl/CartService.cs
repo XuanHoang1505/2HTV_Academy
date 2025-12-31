@@ -11,15 +11,18 @@ namespace App.Services.Implementations
     {
         private readonly ICartRepository _cartRepository;
         private readonly ICourseRepository _courseRepository;
+        private readonly IEnrollmentRepository _enrollmentRepository;
         private readonly IMapper _mapper;
 
         public CartService(
             ICartRepository cartRepository,
             ICourseRepository courseRepository,
+            IEnrollmentRepository enrollmentRepository,
             IMapper mapper)
         {
             _cartRepository = cartRepository;
             _courseRepository = courseRepository;
+            _enrollmentRepository = enrollmentRepository;
             _mapper = mapper;
         }
 
@@ -37,17 +40,32 @@ namespace App.Services.Implementations
                 };
             }
 
-            return _mapper.Map<CartDTO>(cart);
+            var cartDto = new CartDTO
+            {
+                Id = cart.Id,
+                TotalPrice = cart.CartItems.Sum(ci => ci.Price),
+                ItemCount = cart.CartItems.Count,
+                CartItems = cart.CartItems.Select(ci => new CartItemDTO
+                {
+                    Id = ci.Id,
+                    CourseId = ci.CourseId,
+                    CourseName = ci.Course.CourseTitle,
+                    CourseImage = ci.Course.CourseThumbnail,
+                    Price = ci.Price,
+                    Discount = ci.Course.Discount,
+                    AddedAt = ci.AddedAt
+                }).ToList()
+            };
+
+            return cartDto;
         }
 
         public async Task AddCourseToCartAsync(string userId, int courseId)
         {
-            // Kiểm tra khóa học có tồn tại không
             var course = await _courseRepository.GetByIdAsync(courseId);
             if (course == null)
                 throw new AppException(ErrorCode.CourseNotFound, "Khóa học không tồn tại");
 
-            // Lấy hoặc tạo giỏ hàng
             var cart = await _cartRepository.GetCartByUserIdAsync(userId);
             if (cart == null)
             {
@@ -55,21 +73,27 @@ namespace App.Services.Implementations
                 await _cartRepository.SaveChangesAsync();
             }
 
-            // Kiểm tra khóa học đã có trong giỏ chưa
             var existingItem = await _cartRepository.GetCartItemAsync(cart.Id, courseId);
             if (existingItem != null)
                 throw new AppException(ErrorCode.CourseAlreadyInCart, "Khóa học đã có trong giỏ hàng");
 
-            // Thêm khóa học vào giỏ
+            var isEnrolled = await _enrollmentRepository.IsUserEnrolledInCourseAsync(userId, courseId);
+            if (isEnrolled)
+                throw new AppException(ErrorCode.CourseAlreadyEnrolled, "Bạn đã đăng ký khóa học này");
+
             var cartItem = new CartItem
             {
                 CartId = cart.Id,
                 CourseId = courseId,
-                Price = course.CoursePrice,
-                AddedAt = DateTime.UtcNow
+                Price = course.CoursePrice * (1 - course.Discount / 100m),
+                AddedAt = DateTime.Now
             };
 
             await _cartRepository.AddCartItemAsync(cartItem);
+
+            cart.TotalPrice = await _cartRepository.CalculateCartTotalAsync(cart.Id);
+            await _cartRepository.UpdateCartAsync(cart);
+
             await _cartRepository.SaveChangesAsync();
         }
 

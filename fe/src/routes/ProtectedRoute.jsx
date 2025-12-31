@@ -12,10 +12,7 @@ const ProtectedRoute = ({ children, requiredRole }) => {
         <CircularProgress />
       </div>
     );
-  }
-
-  console.log(">>>check user", user);
-  
+  }  
 
   if (!user.id) {
     return <Navigate to="/dang-nhap" replace />;

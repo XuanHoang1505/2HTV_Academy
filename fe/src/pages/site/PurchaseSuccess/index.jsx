@@ -82,11 +82,10 @@ const PurchaseSuccessPage = () => {
   const fetchPurchaseDetails = async (purchaseId) => {
     try {
       const response = await getPurchaseByIdService(purchaseId);
-      console.log("check res", response);
 
       if (response.success && response.data) {
         const purchaseData = response.data;
-
+      
         console.log("check purchase", purchaseData);
 
         if (purchaseData.status === "Completed") {
@@ -122,6 +121,7 @@ const PurchaseSuccessPage = () => {
             id: item.id,
             courseTitle: item.courseTitle || "Khóa học",
             price: item.price,
+            discount: item.discount || 0,
           }));
           setCourses(coursesList);
         }
@@ -137,6 +137,8 @@ const PurchaseSuccessPage = () => {
       setLoading(false);
     }
   };
+
+  
 
   if (loading) {
     return (
@@ -262,6 +264,7 @@ const PurchaseSuccessPage = () => {
     );
   }
 
+
   // Success View
   return (
     <section className="min-h-screen fade-in-up bg-gray-50">
@@ -328,7 +331,7 @@ const PurchaseSuccessPage = () => {
                             {course.courseTitle}
                           </p>
                           <p className="text-sm text-primary mt-1">
-                            {formatVND(course.price)}
+                            {formatVND(course.price - (course.price * course.discount / 100))}
                           </p>
                         </div>
                       ))}

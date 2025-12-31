@@ -19,10 +19,12 @@ namespace App.Repositories.Interfaces
         void RemoveCartItem(CartItem item);
 
         Task ClearCartAsync(string userId);
+        Task UpdateCartAsync(Cart cart);
 
         Task<decimal> GetCartTotalAsync(int cartId);
 
         Task<int> GetCartItemCountAsync(string userId);
+        Task<decimal> CalculateCartTotalAsync(int cartId);
         Task SaveChangesAsync();
     }
 }
