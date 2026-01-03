@@ -18,20 +18,15 @@ const muiTheme = createTheme({
 });
 
 createRoot(document.getElementById("root")).render(
-  <StrictMode>
-    <ConfigProvider
-      locale={viVN}
-      theme={{ token: { colorPrimary: "#01579B" } }}
-    >
-      <ThemeProvider theme={muiTheme}>
-        <AuthWrapper>
-          <CartWrapper>
-            <App>
-              <RouterProvider router={router} />
-            </App>
-          </CartWrapper>
-        </AuthWrapper>
-      </ThemeProvider>
-    </ConfigProvider>
-  </StrictMode>
+  <ConfigProvider locale={viVN} theme={{ token: { colorPrimary: "#01579B" } }}>
+    <ThemeProvider theme={muiTheme}>
+      <AuthWrapper>
+        <CartWrapper>
+          <App>
+            <RouterProvider router={router} />
+          </App>
+        </CartWrapper>
+      </AuthWrapper>
+    </ThemeProvider>
+  </ConfigProvider>
 );

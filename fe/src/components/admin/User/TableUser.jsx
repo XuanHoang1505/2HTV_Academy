@@ -99,9 +99,9 @@ const TableUser = (props) => {
       align: "center",
       render: (isLocked) =>
         isLocked ? (
-          <Tag color="#E34324">Đã khóa</Tag>
+          <Tag color="red">Đã khóa</Tag>
         ) : (
-          <Tag color="#016425">Hoạt động</Tag>
+          <Tag color="green">Hoạt động</Tag>
         ),
       sorter: (a, b) => a.isLocked - b.isLocked,
     },
