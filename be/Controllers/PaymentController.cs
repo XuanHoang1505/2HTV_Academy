@@ -1,7 +1,5 @@
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Configuration;
-using System;
-using System.Linq;
+
 using App.Helpers;
 using App.DTOs;
 using App.Domain.Enums;
@@ -38,12 +36,26 @@ namespace App.Controllers
         {
             try
             {
+                foreach (var courseId in request.CourseIds)
+                {
+                    var isEnrolled = await _enrollmentService.IsUserEnrolledAsync(request.UserId, courseId);
+
+                    if (isEnrolled)
+                    {
+                        return BadRequest(new
+                        {
+                            success = false,
+                            message = "Bạn đã đăng ký khóa học này trước đó.",
+                        });
+                    }
+                }
+
                 // 1. Tạo Purchase trong database trước (Status = Pending)
                 var purchase = await _purchaseService.CreatePurchaseAsync(request);
 
                 // 2. Tạo payment URL với VNPay
                 var vnpay = new VnPayLibrary();
-                
+
                 string vnp_TmnCode = _config["VnPay:TmnCode"];
                 string vnp_HashSecret = _config["VnPay:HashSecret"];
                 string vnp_Url = _config["VnPay:BaseUrl"];
@@ -51,7 +63,7 @@ namespace App.Controllers
 
                 // Sử dụng PurchaseId làm TxnRef để tracking
                 string vnp_TxnRef = purchase.Id.ToString();
-                
+
                 // Thêm các tham số
                 vnpay.AddRequestData("vnp_Version", "2.1.0");
                 vnpay.AddRequestData("vnp_Command", "pay");
@@ -69,8 +81,9 @@ namespace App.Controllers
                 // Tạo URL thanh toán
                 string paymentUrl = vnpay.CreateRequestUrl(vnp_Url, vnp_HashSecret);
 
-                return Ok(new { 
-                    success = true, 
+                return Ok(new
+                {
+                    success = true,
                     paymentUrl = paymentUrl,
                     purchaseId = purchase.Id,
                     amount = purchase.Amount,
@@ -90,7 +103,7 @@ namespace App.Controllers
             try
             {
                 var vnpay = new VnPayLibrary();
-                
+
                 // Lấy toàn bộ query parameters
                 foreach (string key in Request.Query.Keys)
                 {
@@ -226,7 +239,7 @@ namespace App.Controllers
             try
             {
                 var vnpay = new VnPayLibrary();
-                
+
                 foreach (string key in Request.Query.Keys)
                 {
                     if (!string.IsNullOrEmpty(key) && key.StartsWith("vnp_"))

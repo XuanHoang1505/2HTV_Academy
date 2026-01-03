@@ -117,7 +117,7 @@ namespace App.Repositories.Implementations
         {
             return await _context.Enrollments
                 .AnyAsync(e => e.UserId == userId && e.CourseId == courseId && !e.Deleted && e.Status == EnrollmentStatus.Active &&
-                               (e.ExpiresAt == null || e.ExpiresAt > DateTime.UtcNow));
+                              e.ExpiresAt > DateTime.UtcNow);
         }
     }
 }
