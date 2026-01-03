@@ -148,6 +148,7 @@ namespace App.Services.Implementations
                 TotalDuration = course.TotalDuration,
                 TotalStudents = course.TotalStudents,
                 AverageRating = course.AverageRating,
+                TotalReviews = course.TotalReviews,
                 CourseThumbnail = course.CourseThumbnail,
                 Status = course.Status,
                 IsPublished = course.IsPublished,

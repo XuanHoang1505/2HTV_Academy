@@ -12,17 +12,20 @@ namespace App.Services.Implementations
         private readonly IEnrollmentRepository _enrollmentRepo;
         private readonly IPurchaseRepository _purchaseRepo;
         private readonly ICourseRepository _courseRepo;
+        private readonly IReviewRepository _reviewRepo;
         private readonly ILogger<EnrollmentService> _logger;
 
         public EnrollmentService(
             IEnrollmentRepository enrollmentRepo,
             IPurchaseRepository purchaseRepo,
             ICourseRepository courseRepo,
+            IReviewRepository reviewRepo,
             ILogger<EnrollmentService> logger)
         {
             _enrollmentRepo = enrollmentRepo;
             _purchaseRepo = purchaseRepo;
             _courseRepo = courseRepo;
+            _reviewRepo = reviewRepo;
             _logger = logger;
         }
 
@@ -148,6 +151,8 @@ namespace App.Services.Implementations
                 .Select(cp => cp.LectureId)
                 .ToHashSet();
 
+            var userReview = await _reviewRepo.GetByUserAndCourseAsync(enrollment.UserId, enrollment.CourseId);
+
             var result = new EnrollmentDetailDTO
             {
                 Id = enrollment.Id,
@@ -195,6 +200,11 @@ namespace App.Services.Implementations
                                 IsCompleted = completedLectureIds.Contains(l.Id)
                             }).ToList()
                     }).ToList(),
+                },
+                UserReview = userReview == null ? null : new UserReviewDTO
+                {
+                    rating = userReview.Rating,
+                    comment = userReview.Comment
                 }
             };
             return result;

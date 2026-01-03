@@ -19,6 +19,7 @@ public class CourseDetailDTO
     public int TotalLectures { get; set; }
     public int TotalStudents { get; set; }
     public int TotalDuration { get; set; }
+    public int TotalReviews { get; set; }
     public double AverageRating { get; set; }
     public DateTime? PublishedAt { get; set; }
     public DateTime CreatedAt { get; set; }
