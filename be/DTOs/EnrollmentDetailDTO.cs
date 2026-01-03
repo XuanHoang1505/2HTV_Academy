@@ -20,5 +20,6 @@ namespace App.DTOs
         public DateTime CreatedAt { get; set; }
         public DateTime UpdatedAt { get; set; }
         public CourseDetailDTO Course { get; set; } = null!;
+        public UserReviewDTO? UserReview { get; set; }
     }
 }

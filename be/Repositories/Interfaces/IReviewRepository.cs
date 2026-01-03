@@ -19,5 +19,6 @@ namespace App.Repositories.Interfaces
         Task<int> GetTotalReviewsCountAsync(int courseId);
         Task<double> GetAverageRatingAsync(int courseId);
         Task<Dictionary<int, int>> GetRatingDistributionAsync(int courseId);
+        Task<Review?> GetByUserAndCourseAsync(string userId, int courseId);
     }
 }

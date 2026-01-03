@@ -67,14 +67,6 @@ namespace App.Repositories.Implementations
                 .ToListAsync();
         }
 
-        public async Task<Review> GetByUserAndCourseAsync(string userId, int courseId)
-        {
-            return await _context.Reviews
-                .Include(r => r.User)
-                .Include(r => r.Course)
-                .FirstOrDefaultAsync(r => r.UserId == userId && r.CourseId == courseId);
-        }
-
         public async Task<Review> UpdateAsync(Review review)
         {
             review.UpdatedAt = DateTime.Now;
@@ -145,6 +137,12 @@ namespace App.Repositories.Implementations
                .Include(r => r.Course)
                .OrderByDescending(r => r.CreatedAt)
                .ToPagedListAsync(page, limit);
+        }
+
+        public async Task<Review?> GetByUserAndCourseAsync(string userId, int courseId)
+        {
+            return await _context.Reviews
+                .FirstOrDefaultAsync(r => r.UserId == userId && r.CourseId == courseId);
         }
     }
 }
