@@ -3,7 +3,7 @@
 import React, { useEffect, useState } from "react";
 import CircularProgress from "@mui/material/CircularProgress";
 import { useNavigate, useSearchParams } from "react-router-dom";
-import { App } from "antd";
+import { App, Form, Input } from "antd";
 import { getEnrollmentByIdService } from "../../../services/student/enrollment.service";
 import LinearProgress from "@mui/material/LinearProgress";
 import { formatDate, formatTime } from "../../../utils/formatters";
@@ -16,9 +16,15 @@ import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import YouTube from "react-youtube";
 import Button from "@mui/material/Button";
 import { updateEnrollmentProgress } from "../../../services/student/progress.service";
+import {
+  createReview,
+  updateReview,
+} from "../../../services/student/review.service";
+import ReactStars from "react-stars";
 
 const EnrollmentDetailPage = () => {
   const { message } = App.useApp();
+  const [form] = Form.useForm();
   const [enrollment, setEnrollment] = useState(null);
   const [loading, setLoading] = useState(false);
   const [loadingCompletedLecture, setLoadingCompletedLecture] = useState(false);
@@ -26,6 +32,9 @@ const EnrollmentDetailPage = () => {
   const [searchParams] = useSearchParams();
   const enrollmentId = searchParams.get("enrollment");
   const [currentVideo, setCurrentVideo] = useState(null);
+  const [loadingReview, setLoadingReview] = useState(false);
+  const [rating, setRating] = useState(5);
+  const [userReview, setUserReview] = useState(null);
 
   useEffect(() => {
     if (enrollmentId) {
@@ -44,6 +53,15 @@ const EnrollmentDetailPage = () => {
 
       if (res.success) {
         setEnrollment(res.data);
+
+        // Kiểm tra xem user đã đánh giá chưa
+        if (res.data.userReview) {
+          setUserReview(res.data.userReview);
+          setRating(res.data.userReview.rating);
+          form.setFieldsValue({
+            comment: res.data.userReview.comment,
+          });
+        }
       } else {
         message.error(res.message);
         navigate("khoa-hoc-cua-toi");
@@ -83,28 +101,57 @@ const EnrollmentDetailPage = () => {
     }
   };
 
-  const getStatusConfig = (status) => {
-    const configs = {
-      Active: {
-        label: "Đang học",
-        bgColor: "bg-green-500",
-      },
-      Completed: {
-        label: "Hoàn thành",
-        bgColor: "bg-blue-500",
-      },
-      Expired: {
-        label: "Đã hết hạn",
-        bgColor: "bg-gray-500",
-      },
-    };
-    return (
-      configs[status] || {
-        label: status,
-        bgColor: "bg-primary",
-        textColor: "text-primary",
+  const handleCreateReview = async (values) => {
+    try {
+      setLoadingReview(true);
+
+      const dataReview = {
+        courseId: enrollment.course.id,
+        rating: rating,
+        comment: values.comment,
+      };
+
+      const res = await createReview(dataReview);
+
+      if (res.success) {
+        message.success("Đánh giá thành công");
+        setUserReview(res.data);
+        await fetchEnrollmentDetail();
+      } else {
+        message.warning(res.message);
       }
-    );
+    } catch (error) {
+      message.error("Không thể gửi đánh giá");
+      console.error(error);
+    } finally {
+      setLoadingReview(false);
+    }
+  };
+
+  const handleUpdateReview = async (values) => {
+    try {
+      setLoadingReview(true);
+
+      const dataReview = {
+        rating: rating,
+        comment: values.comment,
+      };
+
+      const res = await updateReview(userReview.id, dataReview);
+
+      if (res.success) {
+        message.success("Cập nhật đánh giá thành công");
+        setUserReview(res.data);
+        await fetchEnrollmentDetail();
+      } else {
+        message.warning(res.message);
+      }
+    } catch (error) {
+      message.error("Không thể cập nhật đánh giá");
+      console.error(error);
+    } finally {
+      setLoadingReview(false);
+    }
   };
 
   const getYouTubeVideoId = (url) => {
@@ -136,8 +183,6 @@ const EnrollmentDetailPage = () => {
   }
 
   const course = enrollment.course;
-  console.log(course);
-  
 
   return (
     <section className="min-h-screen fade-in-up">
@@ -149,11 +194,9 @@ const EnrollmentDetailPage = () => {
               <p className="">Tiếp tục học nào</p>
             </div>
             <div
-              className={`${
-                getStatusConfig(enrollment.status).bgColor
-              } text-white px-4 py-2 rounded-full text-sm font-semibold`}
+              className={`bg-primary text-white px-4 py-2 rounded-full text-sm font-semibold`}
             >
-              {getStatusConfig(enrollment.status).label}
+              {enrollment.progress === 100 ? "Hoàn thành" : "Đang học"}
             </div>
           </div>
           <div className="bg-white rounded-lg shadow-md p-6 mb-6">
@@ -198,7 +241,7 @@ const EnrollmentDetailPage = () => {
               )}
             </div>
             {currentVideo && (
-              <div className="p-6">
+              <div className="px-6 mt-4">
                 <div className="flex items-center justify-between mb-4">
                   <h2 className="text-xl font-semibold text-primary">
                     {currentVideo.lectureTitle}
@@ -207,11 +250,6 @@ const EnrollmentDetailPage = () => {
                     {formatTime(currentVideo.lectureDuration)}
                   </span>
                 </div>
-                {currentVideo.content && (
-                  <p className="text-gray-700 mb-4 whitespace-pre-line">
-                    {currentVideo.content}
-                  </p>
-                )}
                 <Button
                   variant="contained"
                   size="large"
@@ -229,9 +267,74 @@ const EnrollmentDetailPage = () => {
                 </Button>
               </div>
             )}
+            <div className="mt-6 px-6" onClick={(e) => e.stopPropagation()}>
+              <Form
+                layout="vertical"
+                form={form}
+                onFinish={userReview ? handleUpdateReview : handleCreateReview}
+                onClick={(e) => e.stopPropagation()}
+              >
+                <div onClick={(e) => e.stopPropagation()}>
+                  <label className="block text-sm font-medium text-gray-700">
+                    Đánh giá sao
+                  </label>
+                  <div className="flex items-center gap-2">
+                    <div onClick={(e) => e.stopPropagation()}>
+                      <ReactStars
+                        count={5}
+                        value={rating}
+                        onChange={setRating}
+                        size={32}
+                        half={false}
+                        color2="#FFD700"
+                      />
+                    </div>
+                    <span className="text-lg font-semibold text-primary">
+                      {rating}/5
+                    </span>
+                  </div>
+                </div>
+
+                <Form.Item
+                  name="comment"
+                  label="Nhận xét"
+                  rules={[
+                    {
+                      required: true,
+                      message: "Vui lòng nhập nhận xét của bạn",
+                    },
+                    {
+                      min: 10,
+                      message: "Nhận xét phải có ít nhất 10 ký tự",
+                    },
+                  ]}
+                  onClick={(e) => e.stopPropagation()}
+                >
+                  <Input.TextArea
+                    rows={4}
+                    placeholder="Chia sẻ trải nghiệm của bạn về khóa học này..."
+                    disabled={loadingReview}
+                    maxLength={500}
+                    showCount
+                    onClick={(e) => e.stopPropagation()}
+                  />
+                </Form.Item>
+
+                <Button
+                  type="submit"
+                  variant="contained"
+                  size="large"
+                  className="!w-full bg-primary"
+                  loading={loadingReview}
+                  onClick={(e) => e.stopPropagation()}
+                >
+                  {userReview ? "Cập nhật đánh giá" : "Gửi đánh giá"}
+                </Button>
+              </Form>
+            </div>
           </div>
           <div className="col-span-4">
-            <div className="rounded-lg shadow-md overflow-hidden">
+            <div className="rounded-lg shadow-md overflow-hidden mb-6">
               <div className="bg-white border-b border-primary text-primary p-4 flex justify-between items-center">
                 <h3 className="text-xl font-semibold mb-2">
                   Nội dung khóa học
@@ -256,7 +359,7 @@ const EnrollmentDetailPage = () => {
                   </span>
                 </div>
               </div>
-              <div className="max-h-[calc(100vh-250px)] overflow-y-auto">
+              <div className="max-h-[calc(100vh-150px)] overflow-y-auto">
                 {course.curriculum.map((section, index) => (
                   <Accordion key={section.id} defaultExpanded={index === 0}>
                     <AccordionSummary

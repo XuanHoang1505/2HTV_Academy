@@ -16,8 +16,6 @@ const ModalUpdateUser = (props) => {
   const [loading, setLoading] = useState(false);
   const [previewImage, setPreviewImage] = useState(null);
 
-  console.log(dataUpdate);
-
   useEffect(() => {
     if (dataUpdate && isModalUpdateOpen) {
       form.setFieldsValue({
@@ -44,7 +42,10 @@ const ModalUpdateUser = (props) => {
       if (values.fullName && values.fullName !== dataUpdate.fullName) {
         formData.append("fullName", values.fullName);
       }
-      if (values.phoneNumber !== undefined && values.phoneNumber !== dataUpdate.phoneNumber) {
+      if (
+        values.phoneNumber !== undefined &&
+        values.phoneNumber !== dataUpdate.phoneNumber
+      ) {
         formData.append("phoneNumber", values.phoneNumber || "");
       }
       if (values.role && values.role !== dataUpdate.role) {
@@ -125,8 +126,6 @@ const ModalUpdateUser = (props) => {
     }
     return false;
   };
-
-  console.log(previewImage);
 
   return (
     <>

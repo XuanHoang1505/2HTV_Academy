@@ -21,8 +21,6 @@ const LoginPage = () => {
         values.password.trim()
       );
 
-      console.log(res);
-
       if (res.success) {
         notification.success({
           message: res.message || "Đăng nhập thành công",
@@ -189,6 +187,14 @@ const LoginPage = () => {
               Đăng Ký Tài Khoản
             </Link>
           </span>
+        </div>
+        <div className="mt-5 text-center">
+          <button
+            onClick={() => navigate("/")}
+            className="text-primary hover:text-primary-dark font-semibold transition-colors inline-flex items-center gap-2"
+          >
+            Quay lại trang chủ
+          </button>
         </div>
       </div>
     </div>

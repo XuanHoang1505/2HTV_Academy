@@ -45,14 +45,12 @@ const PurchaseSuccessPage = () => {
             params: queryParams,
           }
         );
-        
+
         if (vnpayResponse.data.success) {
           setPaymentStatus("success");
 
-          const purchaseId = vnpayResponse.data.purchaseId;          
-          await fetchPurchaseDetails(
-            purchaseId,
-          );
+          const purchaseId = vnpayResponse.data.purchaseId;
+          await fetchPurchaseDetails(purchaseId);
         } else {
           setPaymentStatus("failed");
           setError(vnpayResponse.data.message || "Thanh toán không thành công");
@@ -84,8 +82,6 @@ const PurchaseSuccessPage = () => {
 
       if (response.success && response.data) {
         const purchaseData = response.data;
-      
-        console.log("check purchase", purchaseData);
 
         if (purchaseData.status === "Completed") {
           setPaymentStatus("success");
@@ -112,10 +108,7 @@ const PurchaseSuccessPage = () => {
 
         setOrderDetails(formattedDetails);
 
-        if (
-          purchaseData.items &&
-          purchaseData.items.length > 0
-        ) {
+        if (purchaseData.items && purchaseData.items.length > 0) {
           const coursesList = purchaseData.items.map((item) => ({
             id: item.id,
             courseTitle: item.courseTitle || "Khóa học",
@@ -137,8 +130,6 @@ const PurchaseSuccessPage = () => {
     }
   };
 
-  
-
   if (loading) {
     return (
       <div className="flex flex-col items-center justify-center min-h-screen gap-4">
@@ -152,14 +143,6 @@ const PurchaseSuccessPage = () => {
   if (paymentStatus === "failed") {
     return (
       <section className="min-h-screen bg-gray-50">
-        <div className="bg-gradient-to-r from-red-600 to-red-700 py-8">
-          <div className="container">
-            <h1 className="text-3xl font-bold text-white">
-              Thanh toán không thành công
-            </h1>
-          </div>
-        </div>
-
         <div className="container py-12">
           <div className="max-w-2xl mx-auto">
             <div className="bg-white rounded-2xl shadow-lg p-8 md:p-12 text-center">
@@ -219,20 +202,9 @@ const PurchaseSuccessPage = () => {
   if (error || !orderDetails) {
     return (
       <section className="min-h-screen bg-gray-50">
-        <div className="bg-gradient-to-r from-primary to-primary-dark py-8">
-          <div className="container">
-            <h1 className="text-3xl font-bold text-white">
-              Mua khóa học thành công
-            </h1>
-          </div>
-        </div>
-
         <div className="container py-12">
           <div className="max-w-2xl mx-auto">
             <div className="bg-white rounded-2xl shadow-lg p-8 md:p-12 text-center">
-              <div className="mb-6 flex justify-center">
-                <div className="text-6xl">⚠️</div>
-              </div>
               <h2 className="text-2xl font-bold text-gray-900 mb-4">
                 Không thể tải thông tin đơn hàng
               </h2>
@@ -263,25 +235,12 @@ const PurchaseSuccessPage = () => {
     );
   }
 
-
   // Success View
   return (
     <section className="min-h-screen fade-in-up bg-gray-50">
-      {/* Header */}
-      <div className="bg-gradient-to-r from-primary to-primary-dark py-8">
-        <div className="container">
-          <h1 className="text-3xl font-bold text-white">
-            Mua khóa học thành công
-          </h1>
-        </div>
-      </div>
-
-      {/* Main Content */}
       <div className="container py-12">
-        {/* Success Card */}
         <div className="max-w-2xl mx-auto">
           <div className="bg-white rounded-2xl shadow-lg p-8 md:p-12 text-center">
-            {/* Success Icon */}
             <div className="mb-6 flex justify-center">
               <div className="relative">
                 <div className="w-24 h-24 bg-green-100 rounded-full flex items-center justify-center animate-pulse">
@@ -290,7 +249,6 @@ const PurchaseSuccessPage = () => {
               </div>
             </div>
 
-            {/* Success Message */}
             <h2 className="text-3xl font-bold text-gray-900 mb-2">
               Chúc mừng!
             </h2>
@@ -299,14 +257,12 @@ const PurchaseSuccessPage = () => {
               động
             </p>
 
-            {/* Order Details */}
             <div className="bg-gray-50 rounded-xl p-8 mb-8 text-left">
               <h3 className="text-lg font-semibold text-gray-900 mb-6">
                 Chi tiết đơn hàng
               </h3>
 
               <div className="space-y-4">
-                {/* Order ID */}
                 <div className="flex justify-between items-center pb-4 border-b border-gray-200">
                   <span className="text-gray-600">Mã đơn hàng:</span>
                   <span className="font-semibold text-gray-900">
@@ -314,7 +270,6 @@ const PurchaseSuccessPage = () => {
                   </span>
                 </div>
 
-                {/* Courses */}
                 {courses.length > 0 && (
                   <div className="pb-4 border-b border-gray-200">
                     <span className="text-gray-600 block mb-3">
@@ -330,7 +285,10 @@ const PurchaseSuccessPage = () => {
                             {course.courseTitle}
                           </p>
                           <p className="text-sm text-primary mt-1">
-                            {formatVND(course.price - (course.price * course.discount / 100))}
+                            {formatVND(
+                              course.price -
+                                (course.price * course.discount) / 100
+                            )}
                           </p>
                         </div>
                       ))}
@@ -424,7 +382,7 @@ const PurchaseSuccessPage = () => {
               onClick={() => navigate("/")}
               className="text-primary hover:text-primary-dark font-semibold transition-colors inline-flex items-center gap-2"
             >
-              ← Quay lại trang chủ
+              Quay lại trang chủ
             </button>
           </div>
         </div>

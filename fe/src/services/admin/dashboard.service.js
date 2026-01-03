@@ -1,7 +1,7 @@
 import axios from "../../customs/axios.customize";
 
-const getDashboardService = async () => {
-  const response = await axios.get("/dashboard");
+const getDashboardService = async (year) => {
+  const response = await axios.get(`/dashboard?year=${year}`);
   return response;
 };
 
