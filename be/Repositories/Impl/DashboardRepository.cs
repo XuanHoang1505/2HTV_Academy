@@ -15,10 +15,9 @@ namespace App.Repositories.Implementations
             _context = context;
         }
 
-        public async Task<DashboardOverviewDTO> GetDashboardOverview()
+        public async Task<DashboardOverviewDTO> GetDashboardOverview(int currentYear)
         {
             var result = new DashboardOverviewDTO();
-            var currentYear = DateTime.Now.Year;
 
             result.TotalCourses = await _context.Courses.CountAsync();
 

@@ -15,9 +15,9 @@ namespace App.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetDashboard()
+        public async Task<IActionResult> GetDashboard(int year)
         {
-            var data = await _repo.GetDashboardOverview();
+            var data = await _repo.GetDashboardOverview(year);
             return Ok(new { success = true, dashboard = data });
         }
     }
