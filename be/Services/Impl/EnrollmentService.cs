@@ -203,8 +203,9 @@ namespace App.Services.Implementations
                 },
                 UserReview = userReview == null ? null : new UserReviewDTO
                 {
-                    rating = userReview.Rating,
-                    comment = userReview.Comment
+                    Id = userReview.Id,
+                    Rating = userReview.Rating,
+                    Comment = userReview.Comment
                 }
             };
             return result;
