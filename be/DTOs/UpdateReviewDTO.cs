@@ -4,7 +4,6 @@ namespace App.DTOs
 {
      public class UpdateReviewDTO
     {
-        [Required(ErrorMessage = "Rating là bắt buộc")]
         [Range(1, 5, ErrorMessage = "Rating phải từ 1 đến 5")]
         public int Rating { get; set; }
         

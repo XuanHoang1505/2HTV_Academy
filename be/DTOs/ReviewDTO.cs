@@ -6,7 +6,7 @@ namespace App.DTOs
         public string UserId { get; set; }
         public string UserName { get; set; }
         public string UserAvatar { get; set; }
-        public string CourseId { get; set; }
+        public int CourseId { get; set; }
         public string CourseName { get; set; }
         public int Rating { get; set; }
         public string Comment { get; set; }

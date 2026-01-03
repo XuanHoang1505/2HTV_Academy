@@ -117,9 +117,6 @@ namespace App.Services.Implementations
             if (cart == null)
                 throw new AppException(ErrorCode.CartNotFound, "Giỏ hàng không tồn tại");
 
-            if (!cart.CartItems.Any())
-                throw new AppException(ErrorCode.EmptyCart, "Giỏ hàng đã trống");
-
             await _cartRepository.ClearCartAsync(userId);
             await _cartRepository.SaveChangesAsync();
         }

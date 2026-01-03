@@ -15,6 +15,7 @@ namespace App.Services
         private readonly ICourseRepository _courseRepository;
         private readonly IUserRepository _userRepository;
         private readonly IPurchaseRepository _purchaseRepository;
+        private readonly IEnrollmentRepository _enrollmentRepository;
         private readonly IMapper _mapper;
 
         public ReviewService(
@@ -22,6 +23,7 @@ namespace App.Services
             ICourseRepository courseRepository,
             IUserRepository userRepository,
             IPurchaseRepository purchaseRepository,
+            IEnrollmentRepository enrollmentRepository,
             IMapper mapper)
         {
             _reviewRepository = reviewRepository;
@@ -29,6 +31,7 @@ namespace App.Services
             _userRepository = userRepository;
             _purchaseRepository = purchaseRepository;
             _mapper = mapper;
+            _enrollmentRepository = enrollmentRepository;
         }
 
         public async Task<ReviewDTO> CreateReviewAsync(CreateReviewDTO dto)
@@ -51,15 +54,11 @@ namespace App.Services
                 throw new AppException(ErrorCode.AlreadyReview, "Bạn đã đánh giá khóa học này rồi");
             }
 
-            var userPurchases = await _purchaseRepository.GetAllPurchaseByUserIdAsync(dto.UserId);
-            var hasPurchased = userPurchases
-                .Where(p => p.Status == PurchaseStatus.Completed)
-                .SelectMany(p => p.PurchaseItems)
-                .Any(pi => pi.CourseId == dto.CourseId);
+            var isEnrolled = await _enrollmentRepository.IsUserEnrolledInCourseAsync(dto.UserId, dto.CourseId);
 
-            if (!hasPurchased)
+            if (!isEnrolled)
             {
-                throw new AppException(ErrorCode.BadRequest, "Bạn chỉ có thể đánh giá khóa học đã mua");
+                throw new AppException(ErrorCode.BadRequest, "Bạn chỉ có thể đánh giá khóa học đã đăng ký");
             }
 
             var review = new Review
@@ -79,7 +78,19 @@ namespace App.Services
             await _reviewRepository.GetTotalReviewsCountAsync(createdReview.CourseId);
             await _reviewRepository.GetAverageRatingAsync(createdReview.CourseId);
 
-            return _mapper.Map<ReviewDTO>(result);
+            return new ReviewDTO
+            {
+                Id = result.Id,
+                UserId = result.UserId,
+                UserName = result.User.FullName,
+                UserAvatar = result.User.ImageUrl,
+                CourseId = result.CourseId,
+                CourseName = result.Course.CourseTitle,
+                Rating = result.Rating,
+                Comment = result.Comment,
+                CreatedAt = result.CreatedAt,
+                UpdatedAt = result.UpdatedAt
+            };
         }
 
         public async Task<ReviewDTO> GetReviewByIdAsync(int id)
@@ -147,13 +158,11 @@ namespace App.Services
                 throw new AppException(ErrorCode.NotFound, $"Không tìm thấy đánh giá với ID = {id}");
             }
 
-            // Check ownership
             if (review.UserId != userId)
             {
                 throw new AppException(ErrorCode.Forbidden, "Bạn không có quyền sửa đánh giá này");
             }
 
-            // Update fields
             review.Rating = dto.Rating;
             review.Comment = dto.Comment;
             review.UpdatedAt = DateTime.Now;
@@ -173,7 +182,6 @@ namespace App.Services
                 throw new AppException(ErrorCode.NotFound, $"Không tìm thấy đánh giá với ID = {id}");
             }
 
-            // Check ownership
             if (review.UserId != userId)
             {
                 throw new AppException(ErrorCode.Forbidden, "Bạn không có quyền xóa đánh giá này");

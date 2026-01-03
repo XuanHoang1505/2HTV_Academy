@@ -41,6 +41,7 @@ namespace App.Repositories.Implementations
         public async Task<IEnumerable<Review>> AllAsync()
         {
             return await _context.Reviews
+                .Where(r => r.Status == ReviewStatus.Enable)
                 .Include(r => r.User)
                 .Include(r => r.Course)
                 .OrderByDescending(r => r.CreatedAt)
@@ -139,6 +140,7 @@ namespace App.Repositories.Implementations
         public async Task<IPagedList<Review>> GetAllAsync(int page, int limit)
         {
             return await _context.Reviews
+                .Where(r => r.Status == ReviewStatus.Enable)
                .Include(r => r.User)
                .Include(r => r.Course)
                .OrderByDescending(r => r.CreatedAt)

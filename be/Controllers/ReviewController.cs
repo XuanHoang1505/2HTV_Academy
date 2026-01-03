@@ -38,7 +38,7 @@ namespace App.Controllers
 
                 var review = await _reviewService.CreateReviewAsync(dto);
                 return CreatedAtAction(nameof(GetReviewById), new { id = review.Id },
-                    new { success = true, data = review });
+                    new { success = true, data = review, message = "Tạo đánh giá thành công" });
             }
             catch (Exception ex)
             {
@@ -53,7 +53,7 @@ namespace App.Controllers
             try
             {
                 var review = await _reviewService.GetReviewByIdAsync(id);
-                return Ok(new { success = true, data = review });
+                return Ok(new { success = true, data = review, message = "Lấy đánh giá thành công" });
             }
             catch (Exception ex)
             {
@@ -140,8 +140,12 @@ namespace App.Controllers
             try
             {
                 var userId = GetUserId();
+                if (userId == null)
+                {
+                    return Unauthorized(new { success = false, message = "Unauthorized" });
+                }
                 var review = await _reviewService.UpdateReviewAsync(id, dto, userId);
-                return Ok(new { success = true, data = review });
+                return Ok(new { success = true, data = review, message = "Cập nhật đánh giá thành công" });
             }
             catch (Exception ex)
             {
@@ -157,6 +161,10 @@ namespace App.Controllers
             try
             {
                 var userId = GetUserId();
+                if (userId == null)
+                {
+                    return Unauthorized(new { success = false, message = "Unauthorized" });
+                }
                 var result = await _reviewService.DeleteReviewAsync(id, userId);
                 return Ok(new { success = true, message = "Xóa đánh giá thành công" });
             }
@@ -168,29 +176,12 @@ namespace App.Controllers
         }
 
 
-        [HttpGet("check/{courseId}")]
-        [Authorize]
-        public async Task<IActionResult> CheckUserHasReviewed(int courseId)
-        {
-            try
-            {
-                var userId = GetUserId();
-                var hasReviewed = await _reviewService.UserHasReviewedCourseAsync(userId, courseId);
-                return Ok(new { success = true, hasReviewed = hasReviewed });
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, $"Error checking review for course {courseId}");
-                return BadRequest(new { success = false, message = ex.Message });
-            }
-        }
-
         [Authorize(Roles = "Admin")]
         [HttpPatch("{id}/hide")]
         public async Task<IActionResult> HideReview(int id)
         {
             var result = await _reviewService.HideReviewAsync(id);
-            return Ok(result);
+            return Ok(new { success = true, message = "Đánh giá đã được ẩn", data = result });
         }
 
         [Authorize(Roles = "Admin")]
@@ -198,7 +189,7 @@ namespace App.Controllers
         public async Task<IActionResult> ShowReview(int id)
         {
             var result = await _reviewService.ShowReviewAsync(id);
-            return Ok(result);
+            return Ok(new { success = true, message = "Đánh giá đã được hiển thị", data = result });
         }
     }
 }

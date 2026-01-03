@@ -54,7 +54,6 @@ namespace App.Services.Implementations
 
             var created = await _enrollmentRepo.CreateAsync(enrollment);
 
-            _logger.LogInformation($"Created enrollment {created.Id} for user {dto.UserId} in course {dto.CourseId}");
 
             await TotalStudentsEnrolledAsync(created.CourseId);
 
@@ -93,8 +92,6 @@ namespace App.Services.Implementations
 
                     if (existingEnrollment != null)
                     {
-                        _logger.LogWarning($"Enrollment already exists for User {purchase.UserId} and Course {item.CourseId}");
-
                         var existingCourse = await _courseRepo.GetByIdAsync(item.CourseId);
                         enrollments.Add(MapToResponseDTO(existingEnrollment, existingCourse?.CourseTitle ?? ""));
                         continue;
@@ -122,9 +119,9 @@ namespace App.Services.Implementations
                     };
 
                     var created = await _enrollmentRepo.CreateAsync(enrollment);
+                    await TotalStudentsEnrolledAsync(created.CourseId);
                     enrollments.Add(MapToResponseDTO(created, courseInfo.CourseTitle));
 
-                    _logger.LogInformation($"Created enrollment {created.Id} for course {item.CourseId} from Purchase {purchaseId}");
                 }
                 catch (Exception ex)
                 {
@@ -405,9 +402,13 @@ namespace App.Services.Implementations
             {
                 Id = enrollment.Id,
                 UserId = enrollment.UserId,
+                UserName = enrollment.User.FullName,
+                UserEmail = enrollment.User.Email,
+                UserAvatar = enrollment.User.ImageUrl,
                 CourseId = enrollment.CourseId,
                 CourseName = enrollment.Course?.CourseTitle ?? "",
                 CourseThumbnail = enrollment.Course?.CourseThumbnail ?? "",
+                EnrolledAt = enrollment.EnrolledAt,
                 ExpiresAt = enrollment.ExpiresAt,
                 Progress = enrollment.Progress,
                 Status = enrollment.Status,

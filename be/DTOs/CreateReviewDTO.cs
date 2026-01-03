@@ -3,10 +3,8 @@ using System.ComponentModel.DataAnnotations;
 namespace App.DTOs
 {
     public class CreateReviewDTO
-    {
-        [Required(ErrorMessage = "UserId là bắt buộc")]
-        public string UserId { get; set; }
-        
+    {   
+        public string? UserId { get; set; }
         [Required(ErrorMessage = "CourseId là bắt buộc")]
         public int CourseId { get; set; }
         

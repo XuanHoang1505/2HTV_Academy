@@ -45,14 +45,13 @@ const PurchaseSuccessPage = () => {
             params: queryParams,
           }
         );
-
+        
         if (vnpayResponse.data.success) {
           setPaymentStatus("success");
 
-          const purchaseId = vnpayResponse.data.purchaseId;
+          const purchaseId = vnpayResponse.data.purchaseId;          
           await fetchPurchaseDetails(
             purchaseId,
-            vnpayResponse.data.transactionId
           );
         } else {
           setPaymentStatus("failed");

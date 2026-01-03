@@ -50,7 +50,7 @@ namespace App.Mappings
                 .ForMember(dest => dest.CourseName, opt => opt.MapFrom(src => src.Course.CourseTitle))
                 .ForMember(dest => dest.CourseImage, opt => opt.MapFrom(src => src.Course.CourseThumbnail))
                 .ForMember(dest => dest.Discount, opt => opt.MapFrom(src => src.Course.Discount));
-                
+
             CreateMap<Category, CategoryDTO>();
             CreateMap<CategoryDTO, Category>()
              .ForMember(dest => dest.Id, opt => opt.Ignore());
@@ -77,7 +77,19 @@ namespace App.Mappings
             CreateMap<PurchaseItemDTO, PurchaseItem>()
                 .ForMember(dest => dest.Id, opt => opt.Ignore());
 
+            CreateMap<Review, ReviewDTO>()
+                .ForMember(dest => dest.UserId, opt => opt.MapFrom(src => src.UserId))
+                .ForMember(dest => dest.UserName, opt => opt.MapFrom(src => src.User.FullName))
+                .ForMember(dest => dest.UserAvatar, opt => opt.MapFrom(src => src.User.ImageUrl))
+                .ForMember(dest => dest.CourseName, opt => opt.MapFrom(src => src.Course.CourseTitle))
+                .ForMember(dest => dest.HelpfulCount, opt => opt.Ignore()); 
 
+            CreateMap<ReviewDTO, Review>()
+                .ForMember(dest => dest.Id, opt => opt.Ignore())
+                .ForMember(dest => dest.User, opt => opt.Ignore())
+                .ForMember(dest => dest.Course, opt => opt.Ignore())
+                .ForMember(dest => dest.CourseId, opt => opt.MapFrom(src => src.CourseId))
+                .ForMember(dest => dest.Status, opt => opt.Ignore()); 
         }
     }
 }
