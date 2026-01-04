@@ -82,6 +82,7 @@ const TableUser = (props) => {
         { text: "Admin", value: "Admin" },
         { text: "Student", value: "Student" },
       ],
+      filterMultiple: false,
       filteredValue: filterRole ? [filterRole] : null,
       render: (role) => {
         const colors = {
@@ -103,7 +104,6 @@ const TableUser = (props) => {
         ) : (
           <Tag color="green">Hoạt động</Tag>
         ),
-      sorter: (a, b) => a.isLocked - b.isLocked,
     },
     {
       title: "Hành động",
