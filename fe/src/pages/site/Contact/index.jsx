@@ -38,7 +38,6 @@ const ContactPage = () => {
       // gia lap gui mail
       await new Promise((resolve) => setTimeout(resolve, 1500));
 
-      console.log("Form Values:", values);
       message.success("Cảm ơn bạn! Chúng tôi sẽ liên hệ với bạn sớm nhất.");
       form.resetFields();
     } catch (error) {

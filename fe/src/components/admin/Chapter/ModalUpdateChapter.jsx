@@ -17,7 +17,6 @@ const ModalUpdateChapter = (props) => {
 
   useEffect(() => {
     if (dataUpdateChapter && isModalUpdateChapterOpen) {
-      console.log("dataUpdateChapter:", dataUpdateChapter);
       form.setFieldsValue({
         chapterTitle: dataUpdateChapter.chapterTitle,
         chapterDescription: dataUpdateChapter.chapterDescription,

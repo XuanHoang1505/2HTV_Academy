@@ -15,18 +15,15 @@ import {
   Legend,
   ResponsiveContainer,
 } from "recharts";
-import { Spin, Table } from "antd";
+import { Spin, Table, Select } from "antd";
 import { getDashboardService } from "../../../services/admin/dashboard.service";
+import { formatVND } from "../../../utils/formatters";
 
-const formatVND = (value) => {
-  return new Intl.NumberFormat("vi-VN", {
-    style: "currency",
-    currency: "VND",
-  }).format(value);
-};
+const { Option } = Select;
 
 const DashboardPage = () => {
   const [loading, setLoading] = useState(true);
+  const [selectedYear, setSelectedYear] = useState(new Date().getFullYear());
   const [dashboardData, setDashboardData] = useState({
     totalCourses: 0,
     totalStudents: 0,
@@ -39,12 +36,12 @@ const DashboardPage = () => {
 
   useEffect(() => {
     loadDashboardData();
-  }, []);
+  }, [selectedYear]);
 
   const loadDashboardData = async () => {
     try {
       setLoading(true);
-      const res = await getDashboardService();
+      const res = await getDashboardService(selectedYear);
 
       if (res.success && res.dashboard) {
         setDashboardData(res.dashboard);
@@ -56,7 +53,20 @@ const DashboardPage = () => {
     }
   };
 
-  // Columns cho bảng thống kê khóa học
+  const handleYearChange = (year) => {
+    setSelectedYear(year);
+  };
+
+  // tao danh sach nam tu nam hien tai den 2020
+  const generateYearOptions = () => {
+    const currentYear = new Date().getFullYear();
+    const years = [];
+    for (let year = currentYear; year >= 2020; year--) {
+      years.push(year);
+    }
+    return years;
+  };
+
   const courseStatsColumns = [
     {
       title: "Tên khóa học",
@@ -84,7 +94,6 @@ const DashboardPage = () => {
     },
   ];
 
-  // Columns cho top khóa học
   const topCoursesColumns = [
     {
       title: "Top",
@@ -133,6 +142,25 @@ const DashboardPage = () => {
 
   return (
     <div className="space-y-6">
+      <div className="flex justify-between items-center">
+        <h2 className="text-xl font-bold text-gray-700">Thống kê</h2>
+        <div className="flex items-center gap-2">
+          <span className="text-gray-600">Năm:</span>
+          <Select
+            value={selectedYear}
+            onChange={handleYearChange}
+            style={{ width: 120 }}
+            size="large"
+          >
+            {generateYearOptions().map((year) => (
+              <Option key={year} value={year}>
+                {year}
+              </Option>
+            ))}
+          </Select>
+        </div>
+      </div>
+
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         <div className="bg-white rounded-lg shadow-sm hover:shadow-md transition-shadow duration-300 p-6">
           <div className="flex items-center justify-between">
@@ -229,7 +257,7 @@ const DashboardPage = () => {
               <BarChart data={dashboardData.monthlyStudents}>
                 <CartesianGrid strokeDasharray="3 3" />
                 <XAxis dataKey="month" />
-                <YAxis />
+                <YAxis allowDecimals={false} />
                 <Tooltip />
                 <Legend />
                 <Bar

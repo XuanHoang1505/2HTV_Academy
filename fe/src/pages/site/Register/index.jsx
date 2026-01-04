@@ -163,6 +163,14 @@ const RegisterPage = () => {
               </Link>
             </span>
           </div>
+          <div className="mt-5 text-center">
+            <button
+              onClick={() => navigate("/")}
+              className="text-primary hover:text-primary-dark font-semibold transition-colors inline-flex items-center gap-2"
+            >
+              Quay lại trang chủ
+            </button>
+          </div>
         </Form>
       </div>
     </div>

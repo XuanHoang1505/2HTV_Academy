@@ -36,34 +36,6 @@ const EnrollmentPage = () => {
     }
   };
 
-  const getStatusConfig = (status) => {
-    const configs = {
-      active: {
-        label: "Đang học",
-        bgColor: "bg-green-500",
-        textColor: "text-green-500",
-      },
-      completed: {
-        label: "Hoàn thành",
-        bgColor: "bg-blue-500",
-        textColor: "text-blue-500",
-      },
-      expired: {
-        label: "Đã hết hạn",
-        bgColor: "bg-gray-500",
-        textColor: "text-gray-500",
-      },
-    };
-    return (
-      configs[status] || {
-        label: status,
-        bgColor: "bg-primary",
-        textColor: "text-primary",
-      }
-    );
-  };
-
-
   const handleNavigateToLearning = (slug, enrollmentId) => {
     navigate(`/hoc-tap/${slug}?enrollment=${enrollmentId}`);
   };
@@ -74,7 +46,7 @@ const EnrollmentPage = () => {
         <CircularProgress />
       </div>
     );
-  }  
+  }
 
   return (
     <section className="min-h-screen fade-in-up">
@@ -112,7 +84,7 @@ const EnrollmentPage = () => {
             {enrollments?.map((enrollment) => (
               <div
                 key={enrollment.id}
-                className="bg-white rounded-lg shadow-lg hover:shadow-primary transition-all duration-300 overflow-hidden cursor-pointer"
+                className="bg-white rounded-lg shadow-lg transition-all duration-300 overflow-hidden cursor-pointer"
               >
                 <div className="flex gap-6 p-4">
                   <div>
@@ -128,11 +100,11 @@ const EnrollmentPage = () => {
                         {enrollment.courseName}
                       </h3>
                       <div
-                        className={`${
-                          getStatusConfig(enrollment.status).bgColor
-                        } text-white px-3 py-1 rounded-full text-xs font-semibold`}
+                        className={`bg-primary text-white px-3 py-1 rounded-full text-xs font-semibold`}
                       >
-                        {getStatusConfig(enrollment.status).label}
+                        {enrollment.progress === 100
+                          ? "Hoàn thành"
+                          : "Đang học"}
                       </div>
                     </div>
                     <div className="mb-4">
