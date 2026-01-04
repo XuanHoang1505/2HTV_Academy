@@ -392,7 +392,7 @@ namespace App.Services.Implementations
                 UserId = enrollment.UserId,
                 CourseId = enrollment.CourseId,
                 FinalPrice = enrollment.Course != null
-                    ? enrollment.Course.CoursePrice * (1 - enrollment.Course.Discount / 100)
+                    ? enrollment.Course.CoursePrice - (enrollment.Course.CoursePrice * enrollment.Course.Discount / 100)
                     : 0,
                 CourseName = courseName,
                 Slug = enrollment.Course?.Slug ?? "",

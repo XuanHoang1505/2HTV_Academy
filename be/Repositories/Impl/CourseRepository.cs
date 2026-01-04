@@ -25,6 +25,7 @@ namespace App.Repositories.Implementations
             return await _context.Courses
                 .Include(c => c.Category)
                 .Include(c => c.Educator)
+                .Include(c => c.Reviews)
                 .Include(c => c.CourseContent.OrderBy(ch => ch.ChapterOrder))
                     .ThenInclude(ch => ch.ChapterContent.OrderBy(l => l.LectureOrder))
                 .FirstOrDefaultAsync(c => c.Id == id);

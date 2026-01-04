@@ -75,8 +75,9 @@ namespace App.Services
 
             var result = await _reviewRepository.GetByIdWithDetailsAsync(createdReview.Id);
 
-            await _reviewRepository.GetTotalReviewsCountAsync(createdReview.CourseId);
-            await _reviewRepository.GetAverageRatingAsync(createdReview.CourseId);
+            await TotalReviewsAsync(createdReview.CourseId);
+            await AverageRatingAsync(createdReview.CourseId);
+
 
             return new ReviewDTO
             {
@@ -170,7 +171,9 @@ namespace App.Services
             await _reviewRepository.UpdateAsync(review);
 
             var result = await _reviewRepository.GetByIdWithDetailsAsync(id);
-            await _reviewRepository.GetAverageRatingAsync(review.CourseId);
+            await TotalReviewsAsync(review.CourseId);
+            await AverageRatingAsync(review.CourseId);
+
             return _mapper.Map<ReviewDTO>(result);
         }
 
@@ -187,8 +190,8 @@ namespace App.Services
                 throw new AppException(ErrorCode.Forbidden, "Bạn không có quyền xóa đánh giá này");
             }
 
-            var totalReviews = await _reviewRepository.GetTotalReviewsCountAsync(review.CourseId);
-            var averageRating = await _reviewRepository.GetAverageRatingAsync(review.CourseId);
+            await TotalReviewsAsync(review.CourseId);
+            await AverageRatingAsync(review.CourseId);
 
             return await _reviewRepository.DeleteAsync(id);
         }
@@ -266,7 +269,8 @@ namespace App.Services
                 throw new AppException(ErrorCode.NotFound, $"Không tìm thấy khóa học với ID = {courseId}");
             }
 
-            course.TotalReviews = course.Reviews?.Count ?? 0;
+            var totalReviews = await _reviewRepository.GetTotalReviewsCountAsync(courseId);
+            course.TotalReviews = totalReviews;
             await _courseRepository.UpdateAsync(course);
 
         }
@@ -277,16 +281,9 @@ namespace App.Services
             if (course == null)
                 throw new AppException(ErrorCode.NotFound, $"Không tìm thấy khóa học với ID = {courseId}");
 
-            if (course.Reviews == null || !course.Reviews.Any())
-            {
-                course.AverageRating = 0;
-            }
-            else
-            {
-                course.AverageRating = (int)course.Reviews.Average(r => r.Rating);
-            }
+            var averageRating = await _reviewRepository.GetAverageRatingAsync(courseId);
+            course.AverageRating = Math.Round(averageRating, 2);
             await _courseRepository.UpdateAsync(course);
-
         }
     }
 }
