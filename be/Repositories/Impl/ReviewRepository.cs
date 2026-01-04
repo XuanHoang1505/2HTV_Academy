@@ -94,14 +94,14 @@ namespace App.Repositories.Implementations
         public async Task<int> GetTotalReviewsCountAsync(int courseId)
         {
             return await _context.Reviews
-                .Where(r => r.CourseId == courseId)
+                .Where(r => r.CourseId == courseId && r.Status == ReviewStatus.Enable)
                 .CountAsync();
         }
 
         public async Task<double> GetAverageRatingAsync(int courseId)
         {
             var reviews = await _context.Reviews
-                .Where(r => r.CourseId == courseId)
+                .Where(r => r.CourseId == courseId && r.Status == ReviewStatus.Enable)
                 .ToListAsync();
 
             if (!reviews.Any()) return 0;
