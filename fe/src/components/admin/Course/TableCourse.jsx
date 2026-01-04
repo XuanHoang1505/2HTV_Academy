@@ -105,17 +105,15 @@ const TableCourse = (props) => {
     {
       title: "Danh mục",
       dataIndex: ["categoryName"],
-      key: "categoryName",
+      key: "categoryId",
       width: "12%",
       render: (text) => <span className="text-gray-600">{text}</span>,
       filters: categories.map((cat) => ({
         text: cat.name,
         value: cat.id,
       })),
-      onFilter: (value, record) => {
-        if (!filterCategory) return true;
-        return record.categoryId === value;
-      },
+      filterMultiple: false,
+      filteredValue: filterCategory ? [filterCategory] : null,
     },
     {
       title: "Cấp độ",
@@ -147,6 +145,7 @@ const TableCourse = (props) => {
           {price?.toLocaleString("vi-VN")} ₫
         </span>
       ),
+      sorter: (a, b) => Number(a.coursePrice) - Number(b.coursePrice),
     },
     {
       title: "Giảm giá",
@@ -211,10 +210,13 @@ const TableCourse = (props) => {
     setCurrentPage(pagination.current);
     setPageSize(pagination.pageSize);
 
-    if (filters.categoryId && filters.categoryId.length > 0) {
-      setFilterCategory(filters.categoryId[0]);
-    } else {
-      setFilterCategory(null);
+    if (filters.categoryId !== undefined) {
+      setCurrentPage(1);
+      if (!filters.categoryId || filters.categoryId.length === 0) {
+        setFilterCategory(null);
+      } else {
+        setFilterCategory(filters.categoryId[0]);
+      }
     }
   };
 

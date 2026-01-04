@@ -14,10 +14,10 @@ const CourseCard = ({ course }) => {
 
   return (
     <div
-      className="course-card h-full bg-white rounded-md hover:shadow-primary shadow-lg hover:shadow-lg transition-all duration-300 cursor-pointer"
+      className="course-card h-full bg-white rounded-md shadow-lg transition-all duration-300 cursor-pointer"
       onClick={handleCardClick}
     >
-      <div className="w-full h-50 overflow-hidden rounded-t-md relative">
+      <div className="w-full h-48 overflow-hidden rounded-t-md relative">
         {/* {isNew && (
           <div className="absolute top-2 left-2 bg-green-500 text-white px-3 py-1 rounded-full text-xs font-semibold z-10">
             MỚI
@@ -38,13 +38,13 @@ const CourseCard = ({ course }) => {
         />
       </div>
       <div className="px-3 py-2">
-        <h3 className="text-lg font-[600] text-primary hover:text-primary-700 transition-colors duration-200">
+        <h3 className="text-lg font-[600] text-primary hover:text-primary-700 transition-colors duration-200 line-clamp-1">
           {course.courseTitle}
         </h3>
-        <h4 className="text-sm text-primary-400 truncate">
+        <h4 className="text-sm text-primary-400 line-clamp-2 h-12">
           {course.shortDescription}
         </h4>
-        <div className="flex justify-between mt-2">
+        <div className="flex justify-between items-center">
           <p className="text-gray-500 text-base">B2HTV Academy</p>
           <div className="flex items-center gap-3">
             <div className="flex justify-center items-center gap-1">

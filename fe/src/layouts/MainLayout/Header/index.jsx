@@ -23,7 +23,10 @@ import Skeleton from "@mui/material/Skeleton";
 import { CartContext } from "../../../contexts/cart.context";
 import Popover from "@mui/material/Popover";
 import { formatVND } from "../../../utils/formatters";
-import { removeCourseFromCarte } from "../../../services/student/cart.service";
+import {
+  clearCartService,
+  removeCourseFromCarte,
+} from "../../../services/student/cart.service";
 import { orderFromCartService } from "../../../services/student/order.service";
 
 const Header = () => {
@@ -73,7 +76,25 @@ const Header = () => {
       setLoadingCart(false);
     }
   };
-  
+
+  const handleClearCart = async () => {
+    try {
+      setLoadingCart(true);
+      const res = await clearCartService();
+
+      if (res.success) {
+        message.success(res.message);
+        refreshCart();
+      } else {
+        message.warning(res.message);
+      }
+    } catch (error) {
+      message.error("Không thể xóa khóa học khỏi giỏ hàng");
+      console.log(error);
+    } finally {
+      setLoadingCart(false);
+    }
+  };
 
   const handlePayment = async () => {
     try {
@@ -142,7 +163,6 @@ const Header = () => {
     };
     return roleBackgrounds[role] || "#f3f4f6";
   };
-
 
   return (
     <header className="bg-white shadow-md">
@@ -220,6 +240,14 @@ const Header = () => {
                 ) : (
                   <div className="p-5 w-[300px] mb-3 ">
                     <div>
+                      <div
+                        className="text-red-500 text-xs text-end cursor-pointer"
+                        onClick={() => {
+                          handleClearCart();
+                        }}
+                      >
+                        Xóa tất cả
+                      </div>
                       {cartInfo.cartItems.map((cartItem) => (
                         <div
                           key={cartItem.courseId}
@@ -247,7 +275,10 @@ const Header = () => {
                               </p>
                               <div className="flex items-center justify-between gap-2">
                                 <p className="text-xs text-gray-500 font-semibold line-through">
-                                  {formatVND(cartItem.price/(1 - cartItem.discount/100))}
+                                  {formatVND(
+                                    cartItem.price /
+                                      (1 - cartItem.discount / 100)
+                                  )}
                                 </p>
                                 <p className="text-sm text-primary">
                                   {formatVND(cartItem.price)}

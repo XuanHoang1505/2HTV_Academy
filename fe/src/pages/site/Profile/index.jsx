@@ -62,7 +62,10 @@ const ProfilePage = () => {
       if (values.fullName && values.fullName !== user.fullName) {
         formData.append("fullName", values.fullName);
       }
-      if (values.phoneNumber !== undefined && values.phoneNumber !== user.phoneNumber) {
+      if (
+        values.phoneNumber !== undefined &&
+        values.phoneNumber !== user.phoneNumber
+      ) {
         formData.append("phoneNumber", values.phoneNumber || "");
       }
 
@@ -118,7 +121,6 @@ const ProfilePage = () => {
     });
   };
 
-  
   const handleFileChange = ({ fileList }) => {
     if (fileList.length > 0) {
       const file = fileList[0].originFileObj;
@@ -212,7 +214,7 @@ const ProfilePage = () => {
                         className="w-40 h-40 rounded-full object-cover border-4 border-gray-200 shadow-md"
                       />
                     ) : (
-                      <div className="w-40 h-40 rounded-full bg-gradient-to-br from-blue-400 to-blue-600 flex items-center justify-center text-white text-4xl font-bold shadow-md">
+                      <div className="w-40 h-40 rounded-full bg-primary flex items-center justify-center text-white text-4xl font-bold shadow-md">
                         {user.fullName?.charAt(0)?.toUpperCase() || "?"}
                       </div>
                     )}

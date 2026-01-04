@@ -62,7 +62,7 @@ const EnrollmentPage = () => {
       </div>
       <div className="container py-10">
         {enrollments?.length === 0 ? (
-          <div className="bg-white rounded-lg shadow-md p-12 text-center">
+          <div className="text-center">
             <FaFileVideo className="text-6xl text-gray-300 mx-auto mb-4" />
             <h3 className="text-xl font-semibold text-gray-700 mb-2">
               Chưa có khóa học nào

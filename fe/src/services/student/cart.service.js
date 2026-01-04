@@ -24,10 +24,15 @@ const removeCourseFromCarte = async (courseId) => {
   return response;
 };
 
-// const ClearCartService = async () => {
-//   const URL_BACKEND = `/carts/clear`;
-//   const response = await axios.delete(URL_BACKEND);
-//   return response;
-// };
+const clearCartService = async () => {
+  const URL_BACKEND = `/carts/clear`;
+  const response = await axios.delete(URL_BACKEND);
+  return response;
+};
 
-export { getCardOfStudentService, addToCardService, removeCourseFromCarte };
+export {
+  getCardOfStudentService,
+  addToCardService,
+  removeCourseFromCarte,
+  clearCartService,
+};

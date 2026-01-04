@@ -40,8 +40,6 @@ const CourseDetailPage = () => {
   const [previewVideo, setPreviewVideo] = useState(null);
   const [course, setCourse] = useState(null);
 
-  console.log(">>> check course detail", course);
-
   useEffect(() => {
     if (slug) {
       fetchCourseDetail();

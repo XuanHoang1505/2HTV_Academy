@@ -49,12 +49,6 @@ const TableOrder = (props) => {
       key: "status",
       width: 140,
       align: "center",
-      filters: [
-        { text: "Chờ thanh toán", value: "Pending" },
-        { text: "Đã hoàn thành", value: "Completed" },
-        { text: "Đã hủy", value: "Cancelled" },
-      ],
-      filteredValue: filterStatus ? [filterStatus] : null,
       render: (status) => {
         const statusConfig = {
           Pending: { color: "gold", text: "Chờ thanh toán" },
